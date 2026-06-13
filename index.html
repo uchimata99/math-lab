@@ -420,36 +420,47 @@ function genPower(level) {
     explanation: [`${b}${sup(e)} פירושו ${b} כפול עצמו ${e} פעמים`, `${Array(e).fill(b).join(" × ")}`, `= ${val}`] };
 }
 
-function genPrime(level) {
-  const mode = level === 0 ? pick(["isprime", "smallest"]) : level === 1 ? pick(["factor", "smallest", "isprime"]) : pick(["factor", "factor", "smallest"]);
-  if (mode === "isprime") {
-    const n = ri(2, level === 0 ? 30 : 60);
-    const p = isPrimeN(n);
-    return { kind: "choice", expr: [{ t: "v", v: `${n}` }], choices: ["כן", "לא"],
-      prompt: `האם ${n} מספר ראשוני?`, check: (x) => x === (p ? "כן" : "לא"), answerText: p ? "כן" : "לא",
-      hint: "מספר ראשוני מתחלק רק ב-1 ובעצמו.",
-      explanation: [p ? `${n} מתחלק רק ב-1 ובעצמו — ראשוני` : `${n} = ${factorize(n).join(" × ")} — לא ראשוני`] };
+function compositeInRange(min, max) {
+  const primes = [2, 3, 5, 7];
+  for (let t = 0; t < 400; t++) {
+    let n = 1; const f = [];
+    while (n < min) { const p = pick(primes); if (n * p > max) break; n *= p; f.push(p); }
+    if (n >= min && n <= max && f.length >= 2) return n;
   }
-  if (mode === "smallest") {
-    const n = makeComposite(level === 0 ? 30 : 80, level === 0 ? 2 : 3);
-    const spf = smallestPrime(n);
+  return min % 2 === 0 ? min : min + 1;
+}
+function parseFactors(str) {
+  str = ("" + str).replace(/\s/g, "");
+  if (!str) return null;
+  const parts = str.split(/[×x*]/);
+  const nums = [];
+  for (const p of parts) { if (!/^\d+$/.test(p)) return null; nums.push(Number(p)); }
+  return nums;
+}
+function genPrime(level) {
+  if (level === 0) {
+    if (pick(["isprime", "smallest"]) === "isprime") {
+      const n = ri(2, 30); const p = isPrimeN(n);
+      return { kind: "choice", expr: [{ t: "v", v: `${n}` }], choices: ["כן", "לא"],
+        prompt: `האם ${n} מספר ראשוני?`, check: (x) => x === (p ? "כן" : "לא"), answerText: p ? "כן" : "לא",
+        hint: "מספר ראשוני מתחלק רק ב-1 ובעצמו.",
+        explanation: [p ? `${n} מתחלק רק ב-1 ובעצמו — ראשוני` : `${n} = ${factorize(n).join(" × ")} — לא ראשוני`] };
+    }
+    const n = compositeInRange(10, 40); const spf = smallestPrime(n);
     return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "מהו הגורם הראשוני הקטן ביותר?",
       check: (x) => intEqual(x, spf), answerText: `${spf}`,
       hint: "בדקי לפי הסדר: מתחלק ב-2? ב-3? ב-5?…",
       explanation: [`מחפשים את הראשוני הקטן ביותר שמחלק את ${n}`, `${n} ÷ ${spf} = ${n / spf}`, `הגורם הוא ${spf}`] };
   }
-  const n = makeComposite(level === 1 ? 50 : 120, level === 1 ? 2 : 3);
+  // אתגר: דו-ספרתי · מתקדם: תלת-ספרתי ויותר
+  const n = level === 1 ? compositeInRange(10, 99) : compositeInRange(100, 999);
   const cf = factorize(n);
   const correct = cf.join(" × ");
-  const d1 = [cf[0] * cf[1], ...cf.slice(2)].join(" × ");
-  const d2 = cf.slice(0, -1).join(" × ");
-  const set = [correct];
-  if (d1 !== correct) set.push(d1);
-  if (d2 !== correct && d2 !== d1) set.push(d2);
-  while (set.length < 3) { const extra = cf.concat(pick([2, 3])).sort((a, b) => a - b).join(" × "); if (!set.includes(extra)) set.push(extra); else break; }
-  return { kind: "choice", expr: [{ t: "v", v: `${n}` }], choices: shuffle(set).slice(0, 3),
-    prompt: `מהו הפירוק לגורמים ראשוניים של ${n}?`, check: (x) => x === correct, answerText: correct,
-    hint: "כל הגורמים חייבים להיות מספרים ראשוניים שמכפלתם נותנת את המספר.",
+  return { kind: "factors", expr: [{ t: "v", v: `${n}` }],
+    prompt: "כתבי את הפירוק לגורמים ראשוניים (השתמשי בכפתור ×):",
+    check: (x) => { const f = parseFactors(x); if (!f) return false; const s = f.slice().sort((a, b) => a - b); return s.length === cf.length && s.every((v, i) => v === cf[i]); },
+    answerText: correct,
+    hint: "מפרקים שוב ושוב לגורמים, עד שכל הגורמים ראשוניים, וכותבים אותם עם × ביניהם.",
     explanation: ["מפרקים עד שכל הגורמים ראשוניים", `${n} = ${correct}`] };
 }
 
@@ -479,7 +490,7 @@ const TOPICS_GIFTED = [
     lesson: "חזקה היא כפל חוזר: aⁿ פירושו a כפול עצמו n פעמים. למשל 2⁴ = 2 × 2 × 2 × 2 = 16.",
     example: { expr: [{ t: "v", v: "2⁴ =" }], answer: "16", steps: ["חזקה היא כפל חוזר של הבסיס", "2 × 2 × 2 × 2", "= 16"] } },
   { id: "prime", title: "גורמים ראשוניים", emoji: "🧱", gen: genPrime, color: "#531dab",
-    lesson: "מספר ראשוני מתחלק רק ב-1 ובעצמו. פירוק לגורמים ראשוניים הוא כתיבת המספר כמכפלה של ראשוניים בלבד.",
+    lesson: "מספר ראשוני מתחלק רק ב-1 ובעצמו. בפירוק לגורמים ראשוניים כותבים את המספר כמכפלת ראשוניים בלבד, עם הסימן × ביניהם (למשל 12 = 2×2×3).",
     example: { expr: [], answer: "2 × 2 × 3", steps: ["מפרקים את 12 שלב אחר שלב", "12 = 2 × 6", "6 = 2 × 3", "12 = 2 × 2 × 3"] } },
 ];
 
@@ -643,6 +654,18 @@ function NumPad({ mode, onKey, isTablet, landscape }) {
       </div>
     );
   }
+  if (mode === "factors") {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: isTablet ? 13 : 10, width: "100%", maxWidth: big ? 440 : isTablet ? 380 : 320, margin: "0 auto", direction: "ltr" }}>
+        {["7", "8", "9", "4", "5", "6", "1", "2", "3"].map((d) => btn(d, d))}
+        {btn("×", "×", { bg: "#f9f0ff", color: "#722ed1" })}
+        {btn("0", "0")}
+        {btn("⌫", "back", { bg: "#f0f0f0", color: "#595959" })}
+        {btn("נקה", "clear", { fs: big ? 24 : 20, bg: "#f0f0f0", color: "#595959" })}
+        {btn("✓ בדיקה", "submit", { fs: big ? 28 : 23, bg: "#52c41a", color: "#fff", span: 2 })}
+      </div>
+    );
+  }
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: isTablet ? 13 : 10, width: "100%", maxWidth: big ? 440 : isTablet ? 380 : 320, margin: "0 auto", direction: "ltr" }}>
       {["7", "8", "9", "4", "5", "6", "1", "2", "3"].map((d) => btn(d, d))}
@@ -788,7 +811,8 @@ function App() {
     if (k === "clear") return setInput("");
     if (k === "back") return setInput((s) => s.slice(0, -1));
     if (problem.kind === "compare") return setInput(k);
-    setInput((s) => (s.length < 7 ? s + k : s));
+    const cap = problem.kind === "factors" ? 24 : 7;
+    setInput((s) => (s.length < cap ? s + k : s));
   }
   function check() {
     if (!problem || input.trim() === "") return;
@@ -983,39 +1007,54 @@ function renderInput(input, kind) {
   return <span>{input}</span>;
 }
 
-/* ---------- דף טיוטה לכתיבה עם עט (S Pen) ---------- */
-const PAGE_H = 1800; // דף טיוטה ארוך לגלילה
+/* ---------- דף טיוטה לכתיבה עם עט (S Pen) — דפים נפרדים, בלי גלילה ---------- */
 function ScratchPad({ isTablet, open, setOpen }) {
   const [color, setColor] = useState("#1f2937");
   const [erase, setErase] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
+  const [pageIndex, setPageIndex] = useState(0);
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const drawing = useRef(false);
   const last = useRef(null);
+  const pagesRef = useRef([null]); // dataURL לכל דף
+  const idxRef = useRef(0);
 
   const setup = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const ratio = window.devicePixelRatio || 1;
-    const w = Math.max(1, Math.floor(rect.width * ratio));
-    const h = Math.max(1, Math.floor(PAGE_H * ratio));
-    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+    canvas.height = Math.max(1, Math.floor(rect.height * ratio));
     const ctx = canvas.getContext("2d");
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
     ctxRef.current = ctx;
   }, []);
 
+  const clearCanvas = () => {
+    const c = canvasRef.current, ctx = ctxRef.current; if (!c || !ctx) return;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
+  };
+  const restore = (idx) => {
+    clearCanvas();
+    const d = pagesRef.current[idx]; if (!d) return;
+    const img = new Image();
+    img.onload = () => { const c = canvasRef.current, ctx = ctxRef.current; if (!c || !ctx) return; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(img, 0, 0, c.width, c.height); ctx.restore(); };
+    img.src = d;
+  };
+  const snapshot = () => { const c = canvasRef.current; if (c) { try { pagesRef.current[idxRef.current] = c.toDataURL(); } catch (_) {} } };
+
   useEffect(() => {
     if (!open) return;
-    const id = requestAnimationFrame(setup);
-    const onR = () => setup();
+    const id = requestAnimationFrame(() => { setup(); restore(idxRef.current); });
+    const onR = () => { snapshot(); setup(); restore(idxRef.current); };
     window.addEventListener("resize", onR);
-    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", onR); };
+    window.addEventListener("orientationchange", onR);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", onR); window.removeEventListener("orientationchange", onR); };
   }, [open, setup]);
 
   const pos = (e) => { const r = canvasRef.current.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-  // מצב מחיקה: כפתור המחק במסך, או כפתור צד / קצה־מחק של העט אם המכשיר חושף אותם
   const isPenErase = (e) => (e.buttons & 2) !== 0 || (e.buttons & 32) !== 0;
   const drawSeg = (a, b, e) => {
     const ctx = ctxRef.current; if (!ctx) return;
@@ -1027,11 +1066,11 @@ function ScratchPad({ isTablet, open, setOpen }) {
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   };
   const down = (e) => {
-    if (e.pointerType === "touch") return; // אצבע = גלילה
+    if (e.pointerType === "touch") return; // אצבע לא מציירת ולא גוללת את הדף
     e.preventDefault();
     drawing.current = true;
     const p = pos(e); last.current = p;
-    drawSeg(p, { x: p.x + 0.01, y: p.y + 0.01 }, e); // נקודה גם בנגיעה בודדת
+    drawSeg(p, { x: p.x + 0.01, y: p.y + 0.01 }, e);
     try { canvasRef.current.setPointerCapture(e.pointerId); } catch (_) {}
   };
   const move = (e) => {
@@ -1044,12 +1083,15 @@ function ScratchPad({ isTablet, open, setOpen }) {
     last.current = prev;
   };
   const up = () => { drawing.current = false; last.current = null; };
-  const clear = () => {
-    const c = canvasRef.current, ctx = ctxRef.current; if (!c || !ctx) return;
-    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
-  };
+
+  const clearPage = () => { clearCanvas(); pagesRef.current[idxRef.current] = null; };
+  const goTo = (ni) => { snapshot(); idxRef.current = ni; setPageIndex(ni); restore(ni); };
+  const newPage = () => { snapshot(); pagesRef.current.push(null); const ni = pagesRef.current.length - 1; idxRef.current = ni; setPageCount(pagesRef.current.length); setPageIndex(ni); clearCanvas(); };
+  const prevPage = () => { if (idxRef.current > 0) goTo(idxRef.current - 1); };
+  const nextPage = () => { if (idxRef.current < pagesRef.current.length - 1) goTo(idxRef.current + 1); };
 
   const tbtn = { fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 10, padding: "5px 11px", fontSize: 13, fontWeight: 800, background: "#f0f0f0", color: "#595959", touchAction: "manipulation" };
+  const navbtn = (dis) => ({ ...tbtn, opacity: dis ? 0.4 : 1, padding: "5px 12px" });
 
   if (!open) {
     return (
@@ -1067,7 +1109,7 @@ function ScratchPad({ isTablet, open, setOpen }) {
   return (
     <div dir="rtl" style={{ position: "fixed", left: 0, right: 0, bottom: 0, height: "50vh", zIndex: 60, background: "#fff",
       borderTop: "3px solid #36cfc9", boxShadow: "0 -10px 30px rgba(0,0,0,0.15)", display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", borderBottom: "1px solid #eee", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "5px 10px", borderBottom: "1px solid #eee", flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: 5 }}>
           {palette.map((c) => (
             <button key={c} onClick={() => { setColor(c); setErase(false); }}
@@ -1075,15 +1117,18 @@ function ScratchPad({ isTablet, open, setOpen }) {
                 border: (!erase && color === c) ? "3px solid #36cfc9" : "2px solid #ddd", touchAction: "manipulation" }} />
           ))}
         </div>
-        <button onClick={() => setErase((e) => !e)} style={{ ...tbtn, background: erase ? "#fff7e6" : "#f0f0f0", color: erase ? "#d46b08" : "#595959" }}>🧽 מחק</button>
-        <button onClick={clear} style={tbtn}>🗑️ נקה</button>
+        <button onClick={() => setErase((e) => !e)} style={{ ...tbtn, background: erase ? "#fff7e6" : "#f0f0f0", color: erase ? "#d46b08" : "#595959" }}>🧽</button>
+        <button onClick={clearPage} style={tbtn}>🗑️</button>
+        <span style={{ width: 1, height: 22, background: "#eee" }} />
+        <button onClick={prevPage} style={navbtn(pageIndex === 0)}>‹</button>
+        <span style={{ fontSize: 13, fontWeight: 800, color: "#595959", minWidth: 56, textAlign: "center" }}>דף {pageIndex + 1}/{pageCount}</span>
+        <button onClick={nextPage} style={navbtn(pageIndex === pageCount - 1)}>›</button>
+        <button onClick={newPage} style={{ ...tbtn, background: "#e6fffb", color: "#08979c" }}>➕ דף</button>
         <button onClick={() => setOpen(false)} style={{ ...tbtn, marginInlineStart: "auto" }}>✕ סגור</button>
       </div>
-      <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
-        <div style={{ position: "relative", width: "100%", height: PAGE_H, backgroundImage: gridBg }}>
-          <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", touchAction: "pan-y", cursor: "crosshair" }} />
-        </div>
+      <div style={{ flex: 1, position: "relative", backgroundImage: gridBg, overflow: "hidden" }}>
+        <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", touchAction: "none", cursor: "crosshair" }} />
       </div>
     </div>
   );
