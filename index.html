@@ -387,15 +387,25 @@ const sup = (n) => ("" + n).split("").map((d) => SUP[d] || d).join("");
 function isPrimeN(n) { if (n < 2) return false; for (let i = 2; i * i <= n; i++) if (n % i === 0) return false; return true; }
 function factorize(n) { const f = []; let m = n; for (let p = 2; p <= m; p++) { while (m % p === 0) { f.push(p); m /= p; } } return f; }
 function smallestPrime(n) { for (let p = 2; p <= n; p++) if (n % p === 0) return p; return n; }
-function makeComposite(maxProd, maxFactors) {
-  const primes = [2, 3, 5, 7];
-  let n, f;
-  do {
-    f = []; let prod = 1; const k = ri(2, maxFactors);
-    for (let i = 0; i < k; i++) { const p = pick(primes); if (prod * p > maxProd) break; f.push(p); prod *= p; }
-    n = prod;
-  } while (f.length < 2 || isPrimeN(n));
-  return n;
+/* גיוון: שומרים את המספר האחרון כדי לא לחזור עליו פעמיים ברצף */
+let primeLast = -1;
+const setLast = (n) => { primeLast = n; return n; };
+/* מספר פריק אקראי בטווח [min,max] — אחיד על כל הפריקים, לגיוון רחב.
+   pred — תנאי נוסף (למשל "קשה יותר"). */
+function randComposite(min, max, pred) {
+  if (min < 4) min = 4;
+  for (let t = 0; t < 800; t++) {
+    const n = ri(min, max);
+    if (n === primeLast || isPrimeN(n) || (pred && !pred(n))) continue;
+    return setLast(n);
+  }
+  for (let n = min; n <= max; n++) if (n !== primeLast && !isPrimeN(n) && (!pred || pred(n))) return setLast(n);
+  return setLast(min % 2 === 0 ? min : min + 1);
+}
+/* מספר שלם אקראי בטווח, עם הימנעות מחזרה על האחרון */
+function randInt(min, max) {
+  for (let t = 0; t < 60; t++) { const n = ri(min, max); if (n !== primeLast) return setLast(n); }
+  return setLast(ri(min, max));
 }
 
 function genPower(level) {
@@ -420,15 +430,6 @@ function genPower(level) {
     explanation: [`${b}${sup(e)} פירושו ${b} כפול עצמו ${e} פעמים`, `${Array(e).fill(b).join(" × ")}`, `= ${val}`] };
 }
 
-function compositeInRange(min, max) {
-  const primes = [2, 3, 5, 7];
-  for (let t = 0; t < 400; t++) {
-    let n = 1; const f = [];
-    while (n < min) { const p = pick(primes); if (n * p > max) break; n *= p; f.push(p); }
-    if (n >= min && n <= max && f.length >= 2) return n;
-  }
-  return min % 2 === 0 ? min : min + 1;
-}
 function parseFactors(str) {
   str = ("" + str).replace(/\s/g, "");
   if (!str) return null;
@@ -438,23 +439,70 @@ function parseFactors(str) {
   return nums;
 }
 function genPrime(level) {
+  /* ---------- חימום: זיהוי ראשוני/פריק וגורם קטן ביותר ---------- */
   if (level === 0) {
-    if (pick(["isprime", "smallest"]) === "isprime") {
-      const n = ri(2, 30); const p = isPrimeN(n);
+    const mode = pick(["isprime", "isprime", "primecomp", "smallest", "smallest"]);
+    if (mode === "isprime") {
+      const n = randInt(2, 40); const p = isPrimeN(n);
       return { kind: "choice", expr: [{ t: "v", v: `${n}` }], choices: ["כן", "לא"],
         prompt: `האם ${n} מספר ראשוני?`, check: (x) => x === (p ? "כן" : "לא"), answerText: p ? "כן" : "לא",
         hint: "מספר ראשוני מתחלק רק ב-1 ובעצמו.",
         explanation: [p ? `${n} מתחלק רק ב-1 ובעצמו — ראשוני` : `${n} = ${factorize(n).join(" × ")} — לא ראשוני`] };
     }
-    const n = compositeInRange(10, 40); const spf = smallestPrime(n);
+    if (mode === "primecomp") {
+      const n = randInt(4, 50); const p = isPrimeN(n);
+      return { kind: "choice", expr: [{ t: "v", v: `${n}` }], choices: ["ראשוני", "פריק"],
+        prompt: `${n} — ראשוני או פריק?`, check: (x) => x === (p ? "ראשוני" : "פריק"), answerText: p ? "ראשוני" : "פריק",
+        hint: "פריק = אפשר לכתוב ככפל של מספרים קטנים יותר. ראשוני = אי אפשר.",
+        explanation: [p ? `${n} מתחלק רק ב-1 ובעצמו — ראשוני` : `${n} = ${factorize(n).join(" × ")} — פריק`] };
+    }
+    const n = randComposite(10, 60); const spf = smallestPrime(n);
     return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "מהו הגורם הראשוני הקטן ביותר?",
       check: (x) => intEqual(x, spf), answerText: `${spf}`,
       hint: "בדקי לפי הסדר: מתחלק ב-2? ב-3? ב-5?…",
       explanation: [`מחפשים את הראשוני הקטן ביותר שמחלק את ${n}`, `${n} ÷ ${spf} = ${n / spf}`, `הגורם הוא ${spf}`] };
   }
-  // אתגר: דו-ספרתי · מתקדם: תלת-ספרתי ויותר
-  const n = level === 1 ? compositeInRange(10, 99) : compositeInRange(100, 999);
+
+  /* ---------- אתגר / מתקדם: מספרים בין 0 ל-100, מגוון סוגי שאלות ---------- */
+  const hard = level >= 2;
+  // ברמה המתקדמת בוחרים מספרים "קשים יותר": ≥3 גורמים, או גורם ראשוני גדול (≥11)
+  const pred = hard ? ((x) => { const f = factorize(x); return f.length >= 3 || f[f.length - 1] >= 11; }) : null;
+  const n = randComposite(hard ? 24 : 10, hard ? 100 : 99, pred);
   const cf = factorize(n);
+  const mode = pick(hard
+    ? ["factorize", "factorize", "largest", "count", "complete"]
+    : ["factorize", "factorize", "factorize", "smallest", "largest", "complete"]);
+
+  if (mode === "smallest") {
+    const spf = cf[0];
+    return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "מהו הגורם הראשוני הקטן ביותר?",
+      check: (x) => intEqual(x, spf), answerText: `${spf}`,
+      hint: "בדקי לפי הסדר: מתחלק ב-2? ב-3? ב-5? ב-7?…",
+      explanation: [`${n} = ${cf.join(" × ")}`, `הגורם הראשוני הקטן ביותר הוא ${spf}`] };
+  }
+  if (mode === "largest") {
+    const lpf = cf[cf.length - 1];
+    return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "מהו הגורם הראשוני הגדול ביותר?",
+      check: (x) => intEqual(x, lpf), answerText: `${lpf}`,
+      hint: "מפרקים את המספר לגורמים ראשוניים, ובוחרים את הגדול שבהם.",
+      explanation: [`${n} = ${cf.join(" × ")}`, `הגורם הראשוני הגדול ביותר הוא ${lpf}`] };
+  }
+  if (mode === "count") {
+    const c = cf.length;
+    return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "מכמה גורמים ראשוניים מורכב המספר (כולל חזרות)?",
+      check: (x) => intEqual(x, c), answerText: `${c}`,
+      hint: "פרקי את המספר, וספרי כמה ראשוניים יש בפירוק (גם אם הם חוזרים).",
+      explanation: [`${n} = ${cf.join(" × ")}`, `סך הכול ${c} גורמים ראשוניים`] };
+  }
+  if (mode === "complete") {
+    const idx = ri(0, cf.length - 1); const missing = cf[idx];
+    const shown = cf.map((p, i) => (i === idx ? "▢" : p)).join(" × ");
+    return { kind: "number", expr: [{ t: "v", v: `${n} = ${shown}` }], prompt: "איזה גורם ראשוני חסר במקום ▢?",
+      check: (x) => intEqual(x, missing), answerText: `${missing}`,
+      hint: "כפלי את הגורמים הידועים, ובדקי במה צריך עוד להכפיל כדי לקבל את המספר.",
+      explanation: [`${n} = ${cf.join(" × ")}`, `הגורם החסר הוא ${missing}`] };
+  }
+  // ברירת מחדל: פירוק מלא לגורמים ראשוניים
   const correct = cf.join(" × ");
   return { kind: "factors", expr: [{ t: "v", v: `${n}` }],
     prompt: "כתבי את הפירוק לגורמים ראשוניים (השתמשי בכפתור ×):",
