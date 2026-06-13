@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<title>מעבדת המספרים</title>
+<meta name="theme-color" content="#36cfc9" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="מעבדה" />
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogItee16LXkdeT16og15TXnteh16TXqNeZ150iLCAic2hvcnRfbmFtZSI6ICLXntei15HXk9eUIiwgImRlc2NyaXB0aW9uIjogIteX15XXkdeo16og16rXqNeS15XXnCDXnteq157XmNeZ16fXlCDXkNeZ16DXmNeo15DXp9eY15nXkdeZ16oiLCAic3RhcnRfdXJsIjogIi4iLCAic2NvcGUiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAib3JpZW50YXRpb24iOiAiYW55IiwgImJhY2tncm91bmRfY29sb3IiOiAiI2VlZjJmZiIsICJ0aGVtZV9jb2xvciI6ICIjMzZjZmM5IiwgImxhbmciOiAiaGUiLCAiZGlyIjogInJ0bCIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQU1BQUFBREFDQVlBQUFCUzNHd0hBQUFFMDBsRVFWUjRuTzNielhJYk54Q0ZVVHFWQjdJMzB2c3ZwWTN6UnM0aXhiSkQvNGdBdWdFTStweDFVcHlTN3lkd3hPSHRCZ0FBQUFBQUFBQndqRStyTDJERXk5ZTNiNnV2Z2YrOGYzbTk1Sll1YzlIR2ZqMVhpR0xyQ3pUNmMrd2F3NVlYWmZqbjJpMkVyUzdHOE92WUpZUXRMc0x3NjFvZHd0SVhOM3p1Vm9YdzE0b1h2ZDJNbi85YnRZZnAxUmsrSDVsNUdrdzlBWXlmWjh6Y3liUUFqSjhXcy9ZeUpRRGpwOGVNM2FRSFlQeU15TjVQYWdER1Q0VE1IYVVGWVB4RXl0cFRTZ0RHVDRhTVhZVUhZUHhraXQ1WGFBREd6d3lSTzF2MktBVHNJQ3dBdi8yWktXcHZJUUVZUHl0RTdNNWJJRW9iRHNCdmYxWWEzWjhUZ05LR0F2RGJueDJNN05BSlFHbmRBZmp0ejA1NjkrZ0VvTFN1QVB6MlowYzl1M1FDVUpvQUtLMDVBRzkvMkZuclBwMEFsQ1lBU2hOQWtMZlBMMGUrMXVrRUVPQSt5Qm5EblBsYUZUUUY0QWI0WjQ5RHpCem16TmU2c3BhZE9nRUcvRzZBR2NPYytWcVZDS0RUUjhPTEhPYk0xNnBHQUIyZUhWekVNR2UrVmtVQzZQRDZ6L3ZULyszSU1GdiszNVpyNGpzQmRNcU93UGpuRU1DQXJBaU1meDRCRElxT3dQam5Fa0NBcUFpTWZ6NEJCQm1Od1BqWEVFQ2czZ2lNZngwQkJHdU53UGpYRWtDQ2pLRWFmdzRCSklrY3JQSG5FVUNpaU9FYWZ5NEJKQnNac1BIbkU4QUVQVU0yL2prRU1FSDJzMEQwRTBDeVdVK0Qwa2NBaVdaK0g0QStBa2d5OHh0aDlCTkFncG5mQ1dhTUFJSzFQdG93Njl0bC9Kb0FBdlUrMXlPQ2RRUVFaUFNoTmhHc0lZQUFVVTkwaW1BK0FReUtmcHhaQkhNSllFRFdzL3dpbUVjQW5iSy95Q0tDT1FUUVlkYTN1RVNRVHdDTlpuK0ZVUVM1Qk5EbzJVR3UrRWFZUjZqYkNhRERSME5iOFoxZzQrOGpnRTYvRzF6bUVGZTg1dWtFTU9CeGVET0d1T0kxVHlhQVFmY0J6aHppaXRjOGxRQUNyQmlpOGNjUUFLVUpnTklFUUdrQ29EUUJVSm9BS0UwQWxDWUFTaE1BcGYyOStnS3llRFkrM29tZlBoOTVBaGgvamhOL3JzY0ZjT0kvMGs1Tysva2VGd0MwRUFDbEhSZkFpVGRxT3pudDUzdGNBTGZiZWY5SXV6ang1M3JzbjBGUC9NY2kzcEVuQUR4TEFKUW1BRW9UQUtVSmdOSUVRR2tDb0RRQlVKb0FLTzNZVDRLejdQNDRzRS9BMnpnQktFMEFsQ1lBU25NUGNKakhleFQzQkgvbUJLQTBBVkNhQUNoTkFKVG1KcmpSVGplVnUzOG9kd1ZPQUVvVEFLVUpnTklFUUdsdWdodTU4VHlMRTREU0JFQnBBcUEwOXdBZjhKNy9iQUk0ekU2ZlZGK0J0MENVSmdCS0V3Q2x1UWNJNEgzM2RUa0JLRTBBbENZQVNoTUFwUW1BMHZ3VktNQk9qMHY0aTFRYkp3Q2xDWURTQkVCcEFxQTBOOEVmZUx5cDNPbUdsM0ZPQUVwckN1RDl5K3VuckF1QktDMDdkUUpRbW51QVJqNW9Pb3NUZ05JRVFHbk5BYmdSWm1ldCszUUNVSm9BS0swckFHK0QyRkhQTHAwQWxOWWRnRk9BbmZUdTBRbEFhVU1CT0FYWXdjZ09uUUNVTmh5QVU0Q1ZSdmZuQktDMGtBQ2NBcXdRc2J1d0UwQUV6QlMxTjIrQktDMDBBS2NBTTBUdUxQd0VFQUdab3ZlVjhoWklCR1RJMkZYYVBZQUlpSlMxcDlTYllCRVFJWE5INlg4RkVnRWpzdmN6NWMrZ0lxREhqTjFNK3h4QUJMU1l0WmVwSDRTSmdHZk0zTW15UWI1OGZmdTI2clhaMDRwZmtNc2VoWEFhOEtOVmU5aGloRTZEdWxiL0l0d2lnRHNoMUxGNitIZGJYTVFqSVp4cmwrSGZiWFV4ajRSd2p0MkdmN2ZsUmYyS0dLNW4xOUgvYVBzTC9CTlI3T01LWXdjQUFBQUFBQUNnZ244QkpqbTdFVkRHVVRNQUFBQUFTVVZPUks1Q1lJST0iLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQWdBQUFBSUFDQVlBQUFEMGVOVDZBQUFQcTBsRVFWUjRuTzNkUVhiYlZoWkZVYVJXQnVUcVNQTnZTcDE0UnFtR3k3Rmp5UkpCQXZqdnZidjNCQXgrVUxnblZKYTRiUUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQThLZy9WbDhBdFR6OTlmTDM2bXNBenZQNjMyZlBmYlp0RXdCeEREendFWUdRdzQwZXpOZ0RSeEFGTTdtcGd4aDg0QXFDWUFZM3NUR0REMVFnQ0hweTA1b3gra0JsWXFBUE42b0JvdzkwSkFacWMzT0tNdnJBSkdLZ0hqZWtHTU1QVENZRTZuQWpDakQ2UUNJeHNKYkRYOGp3QXdpQlZSejZBb1lmNEMwaGNDMkhmU0hERC9BNUlYQU5oM3dCd3crd254QTRsOE05a2VFSGVKd1FPTWQvVmwvQVZNWWY0QmllcCtkUVZRZnpSZ1U0ajA4RGp1TWdEMkw0QWE0akJCN25Wd0FITVA0QTEvTGNmWnlDZW9BM0lNQjZQZzI0ajA4QTdtVDhBV3J3UEw2UEFMaUROeHRBTFo3TCsvbllaQWR2TUlENi9FcmdOajRCdUpIeEIrakI4L28yQXVBRzNrd0F2WGh1Zjg3SEpCL3dCZ0xvejY4RTN1Y1RnTjh3L2dBemVKNi9Ud0M4dzVzRllCYlA5YmNFd0MrOFNRQm04bnovTndId0UyOE9nTms4NTM4UUFQL25UUUdRd2ZQK0d3R3dlVE1BcFBIY0Z3RGVCQUNoMHAvLzBRR1Fmdk1CMGlYdlFHd0FKTjkwQUg1STNZUElBRWk5MlFDOEwzRVg0Z0lnOFNZRDhMbTBmWWdLZ0xTYkM4QStTVHNSRXdCSk54V0ErNlhzUlVRQXBOeE1BSTZSc0J2akF5RGhKZ0p3dk9uN01Ub0FwdDg4QU00MWVVZEdCd0FBOEw2eEFUQzUyZ0M0enRROUdSa0FVMjhXQUd0TTNKVnhBVER4SmdHdzNyUjlHUmNBQU1EblJnWEF0RG9Eb0paSk96TW1BQ2JkRkFEcW1ySTNJd0pneXMwQW9JY0p1ek1pQUFDQWZkb0h3SVFLQTZDZjd2dlRPZ0M2SHo0QXZYWGVvZFlCQUFEY3AyMEFkSzR1QU9ib3VrZHRBd0FBdUYvTEFPaGFXd0RNMUhHWDJnVkF4ME1HWUw1dSs5UXVBQUNBeDdVS2dHNTFCVUNXVGp2VktnQUFnR08wQ1lCT1ZRVkFyaTU3MVNZQUFJRGp0QWlBTGpVRkFOdldZN2RhQkFBQWNLenlBZENob2dEZ1Y5WDNxM3dBQUFESEt4MEExZXNKQUQ1U2VjZEtCd0FBY0E0QkFBQ0J5Z1pBNVk5TkFPQldWZmVzYkFBQUFPY3BHUUJWYXdrQTdsRngxMG9HQUFCd0xnRUFBSUhLQlVERmowa0E0RkhWOXExY0FBQUE1eE1BQUJDb1ZBQlUrM2dFQUk1VWFlZEtCUUFBY0EwQkFBQ0J5Z1JBcFk5RkFPQXNWZmF1VEFBQUFOY1JBQUFRU0FBQVFLQVNBVkRsOXlFQWNJVUt1MWNpQUFDQWF3a0F1TkRMbDZmVmwxQ1dzNEZyQ1FDNHlQZUJNM1J2T1J1NDN2SUFxUEI3RURqYnI4Tm02SDV3TnFSYXZYL0xBd0NtKzkyZ0dUcG5BeXNKQURqUlowT1dQSFRPQnRZU0FIQ1NXd2NzY2VpY0Rhd25BT0FFZTRjcmFlaWNEZFN3TkFCVy93OFFjSVo3Qnl0aDZKd04vTnZLSGZRSkFCem8wYUdhUEhUT0Jtb1JBSENRb3dacTR0QTVHNmhIQU1BQmpoNm1TVVBuYktBbUFRQVBPbXVRSmd5ZHM0RzZCQUE4NE93aDZqeDB6Z1pxRXdCd3A2c0dxT1BRT1J1b1R3REFIYTRlbms1RDUyeWdoMlVCNEc4QTBOV3F3ZWt3ZE00RzlsdTFoejRCZ0IxV0Q4M3FmLzhqcTY5dDliOFAzUWdBMk9INTYrdnFTeWc1ZEJXdXFjSzlnVTRFQU94VVlXZ3FETzUzRmE2bHdqMkJiZ1FBM0tIQzRGUVkzZ3JYVU9GZVFFY0NBTzVVWVhoV0RyRHhoOTRFQUR5Z3dnQ3RHR0xqRC8wSkFIaFFoU0c2Y3BDTlA4d2dBT0FBRlFicGltRTIvakNIQUlDRFZCaW1Nd2ZhK01Nc0FnQU9WR0dnemhocTR3L3pDQUE0V0lXaE9uS3dqVC9NSkFEZ0JCVUc2NGpoTnY0d2x3Q0FrMVFZcmtjRzNQakRiQUlBVGxSaHdPNFpjdU1QOHdrQU9GbUZJZHN6Nk1ZZk1nZ0F1RUNGUWJ0bDJJMC81QkFBY0pFS3cvYlJ3QnQveUNJQTRFSVZCdTY5b1RmK2tFY0F3TVVxRE4zUGcyLzhJWk1BZ0FVcURON0xseWZqRDhFRUFDeGkrSndCckNRQVlLSGtBVXgrN1ZDQkFJREZFb2N3OFRWRE5RSUFDa2dheEtUWENwVUpBQ2dpWVJnVFhpTjBJUUNna01rRE9mbTFRVWNDQUlxWk9KUVRYeE4wSndDZ29FbURPZW0xd0NRQ0FJcWFNSndUWGdOTUpRQ2dzTTREMnZuYUlZRUFnT0k2RG1uSGE0WTBBZ0FhNkRTb25hNFZrZ2tBYUtMRHNIYTRSdUFiQVFDTlZCN1l5dGNHdkNVQW9KbUtRMXZ4bW9DUENRQm9xTkxnVnJvVzRIWUNBQUFDQ1FCbzZPWEwwK3BMK0VlbGF3RnVKd0NnbVlxRFcvR2FnSThKQUdpazh0Qld2amJnTFFFQVRYUVkyQTdYQ0h3akFLQ0JUc1BhNlZvaG1RQ0E0am9PYXNkcmhqUUNBQXJyUEtTZHJ4MFNDQUFvYXNLQVRuZ05NSlVBZ0lJbURlZWsxd0tUQ0FBb1p1SmdUbnhOMEowQWdFSW1EK1hrMXdZZENRQW9JbUVnRTE0amRDRUFvSUNrWVV4NnJWQ1pBSURGRWdjeDhUVkROUUlBRmtvZXd1VFhEaFVJQUZqRUFEb0RXRWtBd0FJVmh1LzU2K3YyL1BWMTlXV1VPQXRJSkFEZ1loVUc3K2ZoRndHUVNRREFoU29NM1h1REx3SWdqd0NBaTFRWXVJK0dYZ1JBRmdFQUY2Z3diTGNNdkFpQUhBSUFUbFpoMFBZTXV3aUFEQUlBVGxSaHlPNFpkQkVBOHdrQU9FbUZBWHRreUVVQXpDWUE0QVFWaHV1SUFSY0JNSmNBZ0lOVkdLd2poMXNFd0V3Q0FBNVVZYWpPR0d3UkFQTUlBRGhJaFlFNmM2aEZBTXdpQU9BQUZZYnBpb0VXQVRDSEFJQUhWUmlrSzRkWkJNQU1BZ0FlVUdHSVZneXlDSUQrQkFEY3FjSUFyUnhpRVFDOUNRQzRRNFhocVREQUZhNmh3cjJBamdRQTdGUmhjQ29NNzNjVnJxWENQWUZ1QkFEc1VHRm9LZ3p1cnlwY1U0VjdBNTBJQU5oaDlkQ3QvdmMvc3ZyYVZ2LzcwSTBBZ0oxV0RVMkhnWE0yMEljQWdEdGNQVGlkQnM3WlFBOENBTzUwMWZCMEhEaG5BL1VKQUhqQTJRUFVlZUNjRGRRbUFPQkJadzNSaElGek5sQ1hBSUFESEQxSWt3Yk8yVUJOQWdBT2N0UXdUUnc0WndQMUNBQTQwS01ETlhuZ25BM1VJZ0RnWVBjT1ZjTEFPUnVvUXdEQUNmWU9WdExBT1J1b1FRREFTVzRkcnNTQmN6YXduZ0NBRTMwMllNa0Q1MnhnTFFFQUovdmRrQms0WndNckNRQzR3SytEWnVCK2NEYXdoZ0NBaTN3Zk5nUDNsck9CNndrQXVKQ0IrejFuQTljU0FBQVFTQUFBUUNBQkFBQ0JCQUFBQkJJQUFCQklBQUJBSUFFQUFJRUVBQUFFRWdBQUVFZ0FBRUFnQVFBQWdRUUFBQVFTQUFBUVNBQUFRQ0FCQUFDQkJBQUFCQklBQUJCSUFBQkFJQUVBQUlFRUFBQUVFZ0FBRUVnQUFFQWdBUUFBZ1FRQUFBUVNBQUFRU0FBQVFLQS9WMThBdmIxOGVWcDlDUkR0K2V2cjZrdWdLUUhBWFF3LzFQRDlaMUVJc0pkZkFiQ2I4WWQ2L0Z5eWx3QmdGdzhacU12UEozc0lBRzdtNFFMMStUbmxWZ0lBQUFJSkFHN2l2eXFnRHordjNFSUFBRUFnQVFBQWdRUUFBQVFTQUFBUVNBQndFMzlsRFBydzg4b3RCQUFBQkJJQTNNeC9WVUI5Zms2NWxRQmdGdzhYcU12UEozc0lBSGJ6a0lGNi9GeXlsNjhENWk3Zkh6Yis0aGlzWmZpNWx3RGdJUjQrQUQzNUZRQUFCQklBQUJCSUFBQkFJQUVBQUlFRUFBQUVFZ0FBRUVnQUFFQWdBUUFBZ1FRQUFBUVNBQUFRU0FBQVFDQUJBQUNCQkFBQUJCSUFBQkJJQUFCQUlBRUFBSUVFQUFBRUVnQUFFRWdBQUVBZ0FRQUFnUVFBQUFRU0FBQVFTQUFBUUNBQkFBQ0JCQUFBQkJJQUFCRG96OVVYQUoyOGZIbGFmUWw4NFBucjYrcExnRFo4QWdBQWdRUUFBQVFTQUFBUVNBQUFRQ0FCQUFDQkJBQUFCQklBQUJCSUFBQkFJQUVBQUlFRUFBQUVFZ0FBRU1oM0FRQmo3UDJ1QnQ4ZFFES2ZBQUJBSUFFQUFJRUVBQUFFRWdBQUVFZ0FBRUFnQVFBQWdRUUFBQVFTQUFBUVNBQUFRQ0FCQUFDQkJBQUFCQklBQUJESWx3SEJEcjQ4NWpwN3Y5Z0gyTWNuQUFBUVNBQUFRQ0FCQUFDQkJBQUFCQklBQUJCSUFBQkFJQUVBQUlFRUFBQUVFZ0FBRUVnQUFFQWdBUUFBZ1FRQUFBUVNBQUFReUxjQndnNitvUTZZd2ljQUFCQklBQUJBSUFFQUFJRUVBQUFFRWdBQUVFZ0FBRUFnQVFBQWdRUUFBQVFTQUFBUVNBQUFRQ0FCQUFDQmZCY0EwZnh0ZnlDVkFBREdlUDc2dXZvU29BMi9BZ0NBUUFJQUFBSUpBQUFJSkFBQUlKQUFBSUJBQWdBQUFna0FBQWdrQUFBZ2tBQUFnRUFDQUFBQ0NRQUFDT1M3QU9Cay9qNDlVSkZQQUFBZ2tBQUFnRUFDQUFBQ0NRQUFDQ1FBQUNDUUFBQ0FRQUlBQUFJSkFBQUlKQUFBSUpBQUFJQkFBZ0FBQWdrQUFBamt5NERnWkM5Zm5sWmZRZ3hmdkFTMzh3a0FBQVFTQUFBUVNBQUFRQ0FCQUFDQkJBQUFCQklBQUJCSUFBQkFJQUVBQUlFRUFBQUVFZ0FBRUVnQUFFQ2daUUh3K3QvblAxYjkyd0JReGFvOTlHVkFSTnY3NVRHKzJBZVl3cThBQUNDUUFBQ0FRQUlBQUFJSkFBQUlKQUFBSUpBQUFJQkFTd1BBM3dJQUlObktIZlFKQUFBRUVnQUFFRWdBQUVBZ0FRQUFnVXI4VDNoUGY3Mzh2Zm9hQU9CS3EvOUhlSjhBQUVBZ0FRQUFnUVFBQUFRcUVRQ3JmdzhDQUZlcXNIc2xBZ0FBdUpZQUFJQkFBZ0FBQXBVSmdBcS9Ed0dBczFYWnV6SUJBQUJjUndBQVFLQlNBVkRsWXhFQU9FT2xuU3NWQUFEQU5RUUFBQVFxRndDVlBoNEJnS05VMjdkeUFRQUFuRThBQUVDZ2tnRlE3V01TQUhoRXhWMHJHUUFBd0xuS0JrREZXZ0tBdmFydVdka0FBQURPSXdBQUlGRHBBS2o2c1FrQTNLTHlqcFVPQUFEZ0hPVURvSEk5QWNEdlZOK3Y4Z0VBQUJ5dlJRQlVyeWdBK0ZtSDNXb1JBQURBc2RvRVFJZWFBb0F1ZTlVbUFBQ0E0N1FLZ0M1VkJVQ21UanZWS2dBQWdHTzBDNEJPZFFWQWptNzcxQzRBdHEzZklRTXdXOGRkYWhrQUFNQmoyZ1pBeDlvQ1lKNnVlOVEyQUFDQSs3VU9nSzdWQmNBTW5YZW9kUUJzVysvREI2Q3Y3dnZUUGdBQWdQMUdCRUQzQ2dPZ2x3bTdNeUlBdG0zR3pRQ2d2aWw3TXlZQXRtM09UUUdncGtrN015b0FBSURiakF1QVNYVUdRQjNUOW1WY0FHemJ2SnNFd0ZvVGQyVmtBR3piekpzRndQV203c25ZQUFBQWZtOTBBRXl0TmdDdU1YbEhSZ2ZBdHMyK2VRQ2NaL3ArakErQWJadC9Fd0U0VnNKdVJBVEF0bVhjVEFBZWw3SVhNUUd3YlRrM0ZZRDdKTzFFVkFCc1c5Yk5CZUIyYWZzUUZ3RGJsbmVUQWZoWTRpNUVCc0MyWmQ1c0FONUszWVBZQU5pMjNKc093RGZKT3hBZEFOdVdmZk1Ca3FVLy8rTURZTnU4Q1FEU2VPNExnSDk0TXdCazhMei9SZ0Q4eEpzQ1lEYlArUjhFd0MrOE9RQm04bnovTndId0RtOFNnRms4MTk4U0FML2h6UUl3ZytmNSt4ektEWjcrZXZsNzlUVUFzSS9oLzVoUEFHN2dUUVRRaStmMjV3VEFqYnlaQUhyd3ZMNk5RN3FEWHdrQTFHUDQ5L0VKd0IyOHlRQnE4VnplVHdEY3lac05vQWJQNC9zNHRBUDRsUURBOVF6L1kzd0NjQUJ2UW9CcmVlNCt6Z0VlektjQkFPY3gvTWR4a0NjUkFnREhNZnpIOHl1QWszaXpBaHpEOC9RY0R2VUNQZzBBMk0vd244dmhYa2dJQUh6TzhGL0RJUzhnQkFEZU12elhjdGdMQ1FFQXc3K0tReTlBQ0FDSkRQOWFEcjhZTVFCTVp2VHJjQ09LRWdMQUpJYS9IamVrQVRFQWRHVDBhM056bWhFRFFHVkd2dzgzcWpFeEFGUmc5SHR5MHdZUkJNQVZEUDRNYnVKZ2dnQTRnc0dmeVUwTkl3cUFqeGo3SEc0MC95SVFZRFlERHdBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFKem1mNUFiWGlSTnAzUUtBQUFBQUVsRlRrU3VRbUNDIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9wbmciLCAicHVycG9zZSI6ICJhbnkifSwgeyJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFnQUFBQUlBQ0FZQUFBRDBlTlQ2QUFBTWlVbEVRVlI0bk8zZFFYTGJ4aHBHMGZoVkZ1U1J0UCtoTkxGMjVEZElPVW5aaVVLUUJQQTM3amtiY0tOVjFIZE5WeGxmWHI2OWZmOE5BRWo1MzlrSEFBQ09Kd0FBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFCM3I3K25MMkVjWnlOM0FzQVFBSCtURndodTVYN2dhT0p3RGdBRDhQbTZIN2k3dUJjd2dBMk5tL0RacWhjemR3SmdFQU8vcXZJU3NQbmJ1QmN3a0EyTW10QTFZY09uY0Q1eE1Bc0lPdHcxVWFPbmNETXdnQWVMSjdCNnN3ZE80RzVoQUE4RVNQRHRXVmg4N2R3Q3dDQUo3a1dRTjF4YUZ6TnpDUEFJQW5lUFl3WFdubzNBM01KQURnUVhzTjBoV0d6dDNBWEFJQUhyRDNFSzA4ZE80R1poTUFjS2VqQm1qRm9YTTNNSjhBZ0RzY1BUd3JEWjI3Z1RVSUFOam9yTUZaWWVqY0RheERBTUFHWncvTjJYLytaODQrMjlsL1BxeEdBTUFHcngvdlp4OWg1TkJOT05PRW53MnNSQURBUmhPR1pzTGcvakRoTEJOK0pyQWFBUUIzbURBNEU0WjN3aGttL0N4Z1JRSUE3alJoZU00Y1lPTVBheE1BOElBSkEzVEdFQnQvV0o4QWdBZE5HS0lqQjluNHd6VUlBSGlDQ1lOMHhEQWJmN2dPQVFCUE1tR1k5aHhvNHcvWElnRGdpU1lNMUI1RGJmemhlZ1FBUE5tRW9Ycm1ZQnQvdUNZQkFEdVlNRmpQR0c3akQ5Y2xBR0FuRTRicmtRRTMvbkJ0QWdCMk5HSEE3aGx5NHcvWEp3QmdaeE9HYk11Z0czOW9FQUJ3Z0FtRGRzdXdHMy9vRUFCd2tBbkQ5dG5BRzM5b0VRQndvQWtEOTA5RGIveWhSd0RBd1NZTTNkOEgzL2hEMDVlWGIyL2Z6ejRFRkUwWTNnbU1QNXpETndCd0VzUG5EdUJNQWdCT1ZCN0E4clBEQkFJQVRsWWN3dUl6d3pRQ0FBWW9EV0xwV1dFeUFRQkRGSWF4OEl5d0NnRUFnMXg1SUsvOGJMQWlBUUREWEhFb3IvaE1zRG9CQUFOZGFUQ3Y5Q3h3SlFJQWhyckNjRjdoR2VDcUJBQU10dktBcm54MktCQUFNTnlLUTdyaW1hRkdBTUFDVmhyVWxjNEtaUUlBRnJIQ3NLNXdSdUFQQWdBV01ubGdKNThOK0pVQWdNVk1ITnFKWndJK0p3QmdRWk1HZDlKWmdOc0pBQUFJRWdDd29MZXZMMmNmNFUrVHpnTGNUZ0RBWWlZTzdzUXpBWjhUQUxDUXlVTTcrV3pBcndRQUxHS0ZnVjNoak1BZkJBQXNZS1ZoWGVtc1VDWUFZTGdWQjNYRk0wT05BSURCVmg3U2xjOE9CUUlBaHJyQ2dGN2hHZUNxQkFBTWRLWGh2Tkt6d0pVSUFCam1pb041eFdlQzFRa0FHT1RLUTNubFo0TVZDUUFZb2pDUWhXZUVWUWdBR0tBMGpLVm5oY2tFQUp5c09JakZaNFpwQkFDY3FEeUU1V2VIQ1FRQW5NUUF1Z000a3dDQUUwd1l2dGVQOTk5ZVA5N1BQc2FJdTRBaUFRQUhtekI0Zng5K0VRQk5BZ0FPTkdIby9tbndSUUQwQ0FBNHlJU0IrMnpvUlFDMENBQTR3SVJodTJYZ1JRQjBDQURZMllSQjJ6THNJZ0FhQkFEc2FNS1EzVFBvSWdDdVR3REFUaVlNMkNORExnTGcyZ1FBN0dEQ2NEMWp3RVVBWEpjQWdDZWJNRmpQSEc0UkFOY2tBT0NKSmd6VkhvTXRBdUI2QkFBOHlZU0Iybk9vUlFCY2l3Q0FKNWd3VEVjTXRBaUE2eEFBOEtBSmczVGtNSXNBdUFZQkFBK1lNRVJuRExJSWdQVUpBTGpUaEFFNmM0aEZBS3hOQU1BZEpnelBoQUdlY0lZSlB3dFlrUUNBalNZTXpvVGgvV0hDV1NiOFRHQTFBZ0EybURBMEV3YjNaeFBPTk9GbkF5c1JBTERCMlVOMzlwLy9tYlBQZHZhZkQ2c1JBTERSV1VPendzQzVHMWlIQUlBN0hEMDRLdzJjdTRFMUNBQzQwMUhEcytMQXVSdVlUd0RBQS9ZZW9KVUh6dDNBYkFJQUhyVFhFRjFoNE53TnpDVUE0QW1lUFVoWEdqaDNBek1KQUhpU1p3M1RGUWZPM2NBOEFnQ2U2TkdCdXZMQXVSdVlSUURBazkwN1ZJV0JjemN3aHdDQUhXd2RyTkxBdVJ1WVFRREFUbTRkcnVMQXVSczRud0NBSGYzWGdKVUh6dDNBdVFRQTdPemZoc3pBdVJzNGt3Q0FBL3c4YUFidUwrNEd6aUVBNENBL2hzM0EvY3Jkd1BHK3ZIeDcrMzcySVFDQVkva0dBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJQMSs5Z0ZZMjl2WGw3T1BBR212SCs5bkg0RkZDUUR1WXZoaGhoK2ZSU0hBVnY0SmdNMk1QOHpqYzhsV0FvQk4vSktCdVh3KzJVSUFjRE8vWEdBK24xTnVKUUFBSUVnQWNCTi9xNEIxK0x4eUN3RUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FOekUveklHNi9CNTVSWUNBQUNDQkFBMzg3Y0ttTS9ubEZzSkFEYnh5d1htOHZsa0N3SEFabjdKd0R3K2wyemxkY0RjNWNjdkcvL2pHSnpMOEhNdkFjQkQvUElCV0pOL0FnQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVHL24zMEFXTW5iMTVlemo4QW5Yai9leno0Q0xNTTNBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1Fkd0VBbDdIMVhRM2VIVUNaYndBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRmVCZ1FiZUhuTWNiYSsyQWZZeGpjQUFCQWtBQUFnU0FBQVFKQUFBSUFnQVFBQVFRSUFBSUlFQUFBRUNRQUFDQklBQUJBa0FBQWdTQUFBUUpBQUFJQWdBUUFBUWQ0R0NCdDRReDF3RmI0QkFJQWdBUUFBUVFJQUFJSUVBQUFFQ1FBQUNCSUFBQkFrQUFBZ1NBQUFRSkFBQUlBZ0FRQUFRUUlBQUlLOEM0QTAvN2MvVUNVQWdNdDQvWGcvK3dpd0RQOEVBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUjVGd0RzelA5UEQwemtHd0FBQ0JJQUFCQWtBQUFnU0FBQVFKQUFBSUFnQVFBQVFRSUFBSUlFQUFBRUNRQUFDQklBQUJBa0FBQWdTQUFBUUpDWEFjSE8zcjYrbkgyRURDOWVndHY1QmdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVPUmxRS1J0ZlhtTUYvc0FWK0ViQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0RJdXdCZ2c2M3ZEZ0NZeWpjQUFCQWtBQUFnU0FBQVFKQUFBSUFnQVFBQVFRSUFBSUlFQUFBRUNRQUFDQklBQUJBa0FBQWdTQUFBUUpBQUFJQWdBUUFBUVFJQUFJSUVBQUFFQ1FBQUNCSUFBQkFrQUFBZ1NBQUFRSkFBQUlBZ0FRQUFRUUlBQUlJRUFBQUVDUUFBQ0JJQUFCQWtBQUFnU0FBQVFKQUFBSUFnQVFBQVFRSUFBSUlFQUFBRUNRQUFDQklBQUJBa0FBQWdTQUFBUUpBQUFJQWdBUUFBUVFJQUFJSUVBQUFFQ1FBQUNCSUFBQkFrQUFBZ1NBQUFRSkFBQUlBZ0FRQUFRUUlBQUlJRUFBQUVDUUFBQ0JJQUFCQWtBQUFnU0FBQVFKQUFBSUFnQVFBQVFRSUFBSUlFQUFBRUNRQUFDQklBQUJBa0FBQWdTQUFBUUpBQUFJQWdBUUFBUVFJQUFJSUVBQUFFQ1FBQUNCSUFBQkFrQUFBZ1NBQUFRSkFBQUlBZ0FRQUFRUUlBQUlJRUFBQUVDUUFBQ0JJQUFCQWtBQUFnU0FBQVFKQUFBSUFnQVFBQVFRSUFBSUlFQUFBRUNRQUFDQklBQUJBa0FBQWdTQUFBUUpBQUFJQWdBUUFBUVFJQUFJSUVBQUFFQ1FBQUNCSUFBQkFrQUFBZ1NBQUFRSkFBQUlBZ0FRQUFRUUlBQUlJRUFBQUVDUUFBQ0JJQUFCQWtBQUFnU0FBQVFKQUFBSUFnQVFBQVFRSUFBSUlFQUFBRUNRQUFDQklBQUJBa0FBQWdTQUFBUUpBQUFJQWdBUUFBUVFJQUFJSUVBQUFFQ1FBQUNCSUFBQkFrQUFBZ1NBQUFRSkFBQUlBZ0FRQUFRZjhINW8xTW4wVW9hZUFBQUFBQVNVVk9SSzVDWUlJPSIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAibWFza2FibGUifV19" />
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAEbElEQVR4nO3bwW7bOBSGUXcwDzTdJO+/TDadN+osimAMI7ZE6pKUf5+zbkHB+nJBWfTlAgAAAAAAALyeH6svoMXbr4/fq6/hVX3+fH+KVk59kQI+r7MGfrqLEvHzOVPcp7gQEedYHffSxYWca1XYf61Y9HIRc7pV93f6X5GQX8/MaT11Qov5Nc2871P+coTMl9HTeviEFjPXRvcwNGgx852RXQwLWsw8MqqPIUGLmT1GdFIetJhpUd1LadBipkdlN2VBi5kjqvpZ9uobRigJ2nSmQkVHh4MWM5WO9mTLQZRDQZvOjHCkq+6gxcxIvX3ZchClK2jTmRl6OjOhiSJoojQHbbvBTK29mdBEETRRmoK23WCFlu5MaKIImiiC7vDxz1vEGol2B23//MdXaCODm7HGs9nbnwnd4DawEcHNWCOZoHe6F1ZlcDPWSCfoHbaCqghuxhqvQNAb9oZ0JLgZa7wKQW94//dz97/tCa7l/7Rcy6sS9A6johZzPUHvVB21mMcQdIOqqMU8jqAbHY1azGMJukNv1GIeT9CdWqMW8xyCPmBEeGI+RtAHVQYo5uMEXaAiRDHXEHSRI0GKuY6gC/WEKeZagi40+iwH2wRdZMZpO7YJusCM89DsI+iDZvxihf0EfcCM3xTSRtCdWl9lj/6hAH8IukPvuQxRjyfoRkcPGYl6LEE3qDoxJ+pxBL1T9fFPUY8h6B1GnWUWdT1Bbxh9MF/UtQT9wKxfmYi6jqAf2BvazPPQTuc9JugNWwHN/MWKmLcJeod7Ic38TaGY9xH0TrdBjQxs5lppBN3gK6wZgc1cK4mgG80MTMztBE0UQRNF0EQRNFEETRRBE0XQRBE0Uf5efQGVHK3sl/ISJ2ZCi/mYlM8vIuiUm7FawucYETR8ETRRIoJOeaBZLeFzjAj6csm4GSulfH5RX9ul3BT6xUxouFwETRhBE0XQRBE0UQRNFEETRdBEiXqxMsIZT6B5gXSfCU0UQRNF0ESxh35Ct/t6e+r/mdBEETRRBE0UQRPFQ+GG1Q9cZ3yxc2YmNFEETRRBE8UeeoM97HMxoYkiaKIImij20DfsmZ+boJ/Q6pc9Z2bLQRRBE0XQRLGH7mAPe14mNFEETRRBE0XQRPFQ2GH120QPpfeZ0EQRNFEETRRBE8VD4Y3bB67VD4C0MaGJImii7A768+f7j5EXAo/s7c8eeoOXGM/FloMogiZKU9D20azQ0p0JTRRBE6U5aNsOZmrtzYQmiqCJ0hW0bQcz9HRmQhOlO2hTmpF6+zo0oUXNCEe6suUgyuGgTWkqHe2pZEKLmgoVHdlyEKUsaFOaI6r6KZ3QoqZHZTflWw5R06K6lyF7aFGzx4hOhj0UippHRvUx9FsOUfOdkV0M/9pO1Fwb3cPU2N5+ffyeuR7nMWuwTX2xYlq/ppn3fVlgpnW+FQNs2atv0zrbqvt7iqhM6xyrB9Upgr4m7uezOuJrp7mQ74j7vM4U8bVTXtQ9Al/nrAEDAAAAAADQ6T89v57/CIMWigAAAABJRU5ErkJggg==" />
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAE00lEQVR4nO3bzXIbNxCFUTqVB7I30vsvpY3zRs4ixbJD/4gAugEM+px1UpyS7ydwxOHtBgAAAAAAAABwjE+rL2DEy9e3b6uvgf+8f3m95JYuc9HGfj1XiGLrCzT6c+waw5YXZfjn2i2ErS7G8OvYJYQtLsLw61odwtIXN3zuVoXw14oXvd2Mn/9btYfp1Rk+H5l5Gkw9AYyfZ8zcybQAjJ8Ws/YyJQDjp8eM3aQHYPyMyN5PagDGT4TMHaUFYPxEytpTSgDGT4aMXYUHYPxkit5XaADGzwyRO1v2KATsICwAv/2ZKWpvIQEYPytE7M5bIEobDsBvf1Ya3Z8TgNKGAvDbnx2M7NAJQGndAfjtz0569+gEoLSuAPz2Z0c9u3QCUJoAKK05AG9/2FnrPp0AlCYAShNAkLfPL0e+1ukEEOA+yBnDnPlaFTQF4Ab4Z49DzBzmzNe6spadOgEG/G6AGcOc+VqVCKDTR8OLHObM16pGAB2eHVzEMGe+VkUC6PD6z/vT/+3IMFv+35Zr4jsBdMqOwPjnEMCArAiMfx4BDIqOwPjnEkCAqAiMfz4BBBmNwPjXEECg3giMfx0BBGuNwPjXEkCCjKEafw4BJIkcrPHnEUCiiOEafy4BJBsZsPHnE8AEPUM2/jkEMEH2s0D0E0CyWU+D0kcAiWZ+H4A+Akgy8xth9BNAgpnfCWaMAIK1Ptow69tl/JoAAvU+1yOCdQQQZPShNhGsIYAAUU90imA+AQyKfpxZBHMJYEDWs/wimEcAnbK/yCKCOQTQYda3uESQTwCNZn+FUQS5BNDo2UGu+EaYR6jbCaDDR0Nb8Z1g4+8jgE6/G1zmEFe85ukEMOBxeDOGuOI1TyaAQfcBzhziitc8lQACrBii8ccQAKUJgNIEQGkCoDQBUJoAKE0AlCYAShMApf29+gKyeDY+3omfPh95Ahh/jhN/rscFcOI/0k5O+/keFwC0EAClHRfAiTdqOznt53tcALfbef9Iuzjx53rsn0FP/Mci3pEnADxLAJQmAEoTAKUJgNIEQGkCoDQBUJoAKO3YT4Kz7P44sE/A2zgBKE0AlCYASnMPcJjHexT3BH/mBKA0AVCaAChNAJTmJrjRTjeVu38odwVOAEoTAKUJgNIEQGlughu58TyLE4DSBEBpAqA09wAf8J7/bAI4zE6fVF+Bt0CUJgBKEwCluQcI4H33dTkBKE0AlCYAShMApQmA0vwVKMBOj0v4i1QbJwClCYDSBEBpAqA0N8EfeLyp3OmGl3FOAEprCuD9y+unrAuBKC07dQJQmnuARj5oOosTgNIEQGnNAbgRZmet+3QCUJoAKK0rAG+D2FHPLp0AlNYdgFOAnfTu0QlAaUMBOAXYwcgOnQCUNhyAU4CVRvfnBKC0kACcAqwQsbuwE0AEzBS1N2+BKC00AKcAM0TuLPwEEAGZoveV8hZIBGTI2FXaPYAIiJS1p9SbYBEQIXNH6X8FEgEjsvcz5c+gIqDHjN1M+xxABLSYtZepH4SJgGfM3MmyQb58ffu26rXZ04pfkMsehXAa8KNVe9hihE6Dulb/ItwigDsh1LF6+HdbXMQjIZxrl+HfbXUxj4Rwjt2Gf7flRf2KGK5n19H/aPsL/BNR7OMKYwcAAAAAAACggn8BJjm7EVDGUTMAAAAASUVORK5CYII=" />
+<style>
+  html,body{margin:0;padding:0;background:#eef2ff;-webkit-text-size-adjust:100%;overscroll-behavior:none;}
+  *{ -webkit-tap-highlight-color: transparent; }
+  #loading{font-family:system-ui,sans-serif;text-align:center;padding:80px 20px;color:#36cfc9;font-size:22px;font-weight:800}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js" crossorigin></script>
+</head>
+<body>
+<div id="root"><div id="loading">טוען את מעבדת המספרים…</div></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useCallback, useRef } = React;
+
+
+/* ============================================================
+   מעבדת המספרים — גרסה מאוחדת (טלפון + טאבלט, זיהוי אוטומטי)
+   · גאומטריה עם ציורים (SVG)
+   · דוגמה פתורה מפורטת לפני כל נושא — כל הדרך, שלב בכל שורה
+   · פתרונות מפורקים לשלבים (שורה לכל שלב)
+   · מקלדת ללא מקלדת מערכת, שברים + משוואות + השוואות (>,<,=)
+   ============================================================ */
+
+/* ---------- כלי עזר מתמטיים ---------- */
+const ri = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
+function simplify(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; }
+function parseFrac(str) {
+  if (str == null) return null;
+  str = ("" + str).trim().replace(/\s/g, "");
+  if (str === "" || str === "-" || str === "/") return null;
+  if (str.includes("/")) {
+    const parts = str.split("/"); if (parts.length !== 2) return null;
+    const n = Number(parts[0]); const d = Number(parts[1]);
+    if (!Number.isInteger(n) || !Number.isInteger(d) || d === 0) return null;
+    return [n, d];
+  }
+  const num = Number(str); if (!Number.isInteger(num)) return null; return [num, 1];
+}
+function fracEqual(input, an, ad) {
+  const p = parseFrac(input); if (!p) return false;
+  const [n, d] = simplify(p[0], p[1]); const [a, b] = simplify(an, ad);
+  return n === a && d === b;
+}
+function intEqual(input, val) { const s = ("" + input).trim(); if (!/^-?\d+$/.test(s)) return false; return Number(s) === val; }
+const fracText = (n, d) => (d === 1 ? `${n}` : `${n}/${d}`);
+const coef = (k) => (k === 1 ? "x" : `${k}x`); // 1x → x
+
+/* ---------- שבר עם קו אופקי ---------- */
+function Frac({ n, d, color = "currentColor", size = 1 }) {
+  return (
+    <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", verticalAlign: "middle", margin: "0 6px", lineHeight: 1, color }}>
+      <span style={{ fontSize: `${0.92 * size}em`, fontWeight: 800, padding: "0 5px" }}>{n}</span>
+      <span style={{ width: "100%", height: 3.5, background: color, borderRadius: 3, margin: "3.5px 0" }} />
+      <span style={{ fontSize: `${0.92 * size}em`, fontWeight: 800, padding: "0 5px" }}>{d}</span>
+    </span>
+  );
+}
+function MathLine({ parts }) {
+  if (!parts || parts.length === 0) return null;
+  return (
+    <span dir="ltr" style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", justifyContent: "center", gap: 5 }}>
+      {parts.map((p, i) => (p.t === "frac"
+        ? <Frac key={i} n={p.n} d={p.d} size={1.05} />
+        : <span key={i} style={{ fontWeight: p.t === "op" ? 700 : 800, margin: p.t === "op" ? "0 8px" : 0 }}>{p.v}</span>))}
+    </span>
+  );
+}
+
+/* ---------- שורות פתרון: שלב בכל שורה, עם שברים בקו אופקי ---------- */
+const hasHebrew = (s) => /[\u0590-\u05FF]/.test("" + s);
+/* ממיר כל תבנית של מספר/מספר בטקסט לשבר עם קו אופקי */
+function renderMathText(str, size = 0.82) {
+  const parts = ("" + str).split(/(\d+\/\d+)/g);
+  return parts.map((seg, i) => {
+    const m = seg.match(/^(\d+)\/(\d+)$/);
+    if (m) return <Frac key={i} n={m[1]} d={m[2]} size={size} />;
+    return <span key={i}>{seg}</span>;
+  });
+}
+function StepLines({ lines, big }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 4 }}>
+      {lines.map((ln, i) => (
+        <div key={i} dir={hasHebrew(ln) ? "rtl" : "ltr"}
+          style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 2, fontSize: big ? 18 : 16, fontWeight: i === lines.length - 1 ? 800 : 600, color: i === lines.length - 1 ? "#1f2937" : "#4b5563", lineHeight: 1.5 }}>
+          {renderMathText(ln, big ? 0.88 : 0.82)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- תרגיל במאונך (טורים): חיבור / כפל ---------- */
+function Vertical({ data, color, big }) {
+  const fs = big ? 42 : 34;
+  return (
+    <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "stretch", fontFamily: "'Varela Round', monospace", fontWeight: 800, direction: "ltr", color: "#1f2937", minWidth: big ? 150 : 120 }}>
+      {data.rows.map((r, i) => (
+        <div key={i} style={{ display: "flex", justifyContent: "flex-end", gap: 16, fontSize: fs, padding: "2px 12px", letterSpacing: 3 }}>
+          {i === data.rows.length - 1 && <span style={{ marginRight: "auto", color }}>{data.op}</span>}
+          <span>{r}</span>
+        </div>
+      ))}
+      <div style={{ borderTop: `3px solid ${color}`, marginTop: 6 }} />
+    </div>
+  );
+}
+
+/* ---------- ציורים גאומטריים (SVG) ---------- */
+function Figure({ fig, color }) {
+  if (fig.type === "rect") {
+    const { w, h } = fig;
+    const long = Math.max(w, h);
+    const scale = 150 / long;
+    const W = Math.max(46, Math.round(w * scale));
+    const H = Math.max(46, Math.round(h * scale));
+    const pad = 40;
+    const vw = W + pad * 2, vh = H + pad * 2;
+    return (
+      <svg width={vw} height={vh} viewBox={`0 0 ${vw} ${vh}`} style={{ maxWidth: "100%" }}>
+        <rect x={pad} y={pad} width={W} height={H} fill={`${color}22`} stroke={color} strokeWidth="3" rx="5" />
+        <text x={pad + W / 2} y={pad + H + 26} textAnchor="middle" fontSize="18" fontWeight="800" fill="#1f2937">{w} ס״מ</text>
+        <text x={pad - 12} y={pad + H / 2} textAnchor="middle" fontSize="18" fontWeight="800" fill="#1f2937"
+          transform={`rotate(-90 ${pad - 12} ${pad + H / 2})`}>{h} ס״מ</text>
+      </svg>
+    );
+  }
+  if (fig.type === "triangle") {
+    const { a1, a2 } = fig;
+    const A = [26, 140], B = [214, 140], C = [150, 24];
+    return (
+      <svg width="240" height="168" viewBox="0 0 240 168" style={{ maxWidth: "100%" }}>
+        <polygon points={`${A[0]},${A[1]} ${B[0]},${B[1]} ${C[0]},${C[1]}`} fill={`${color}22`} stroke={color} strokeWidth="3" strokeLinejoin="round" />
+        <text x={A[0] + 26} y={A[1] - 12} textAnchor="middle" fontSize="17" fontWeight="800" fill="#1f2937">{a1}°</text>
+        <text x={B[0] - 30} y={B[1] - 12} textAnchor="middle" fontSize="17" fontWeight="800" fill="#1f2937">{a2}°</text>
+        <text x={C[0]} y={C[1] + 34} textAnchor="middle" fontSize="22" fontWeight="800" fill="#cf1322">?</text>
+      </svg>
+    );
+  }
+  if (fig.type === "shape") {
+    const cx = 110, cy = 86, r = 62;
+    const poly = (n, rot) => {
+      const pts = [];
+      for (let i = 0; i < n; i++) {
+        const ang = (Math.PI * 2 * i) / n + rot;
+        pts.push(`${(cx + r * Math.cos(ang)).toFixed(1)},${(cy + r * Math.sin(ang)).toFixed(1)}`);
+      }
+      return pts.join(" ");
+    };
+    let el;
+    if (fig.name === "עיגול") el = <circle cx={cx} cy={cy} r={r} fill={`${color}22`} stroke={color} strokeWidth="3" />;
+    else if (fig.name === "משולש") el = <polygon points={poly(3, -Math.PI / 2)} fill={`${color}22`} stroke={color} strokeWidth="3" strokeLinejoin="round" />;
+    else if (fig.name === "ריבוע") el = <rect x={cx - 56} y={cy - 56} width={112} height={112} rx="4" fill={`${color}22`} stroke={color} strokeWidth="3" />;
+    else if (fig.name === "מלבן") el = <rect x={cx - 72} y={cy - 44} width={144} height={88} rx="4" fill={`${color}22`} stroke={color} strokeWidth="3" />;
+    else if (fig.name === "מחומש") el = <polygon points={poly(5, -Math.PI / 2)} fill={`${color}22`} stroke={color} strokeWidth="3" strokeLinejoin="round" />;
+    else if (fig.name === "משושה") el = <polygon points={poly(6, -Math.PI / 2)} fill={`${color}22`} stroke={color} strokeWidth="3" strokeLinejoin="round" />;
+    return <svg width="220" height="172" viewBox="0 0 220 172" style={{ maxWidth: "100%" }}>{el}</svg>;
+  }
+  if (fig.type === "angle") {
+    const deg = fig.deg;
+    const V = [40, 134], L = 150;
+    const rad = (deg * Math.PI) / 180;
+    const e1 = [V[0] + L, V[1]];
+    const e2 = [V[0] + L * Math.cos(rad), V[1] - L * Math.sin(rad)];
+    return (
+      <svg width="220" height="168" viewBox="0 0 220 168" style={{ maxWidth: "100%" }}>
+        <line x1={V[0]} y1={V[1]} x2={e1[0]} y2={e1[1]} stroke={color} strokeWidth="4" strokeLinecap="round" />
+        <line x1={V[0]} y1={V[1]} x2={e2[0]} y2={e2[1]} stroke={color} strokeWidth="4" strokeLinecap="round" />
+        {deg === 90 && <rect x={V[0]} y={V[1] - 20} width={20} height={20} fill="none" stroke={color} strokeWidth="2.5" />}
+        <circle cx={V[0]} cy={V[1]} r="4" fill={color} />
+      </svg>
+    );
+  }
+  return null;
+}
+
+/* ============================================================
+   מחוללי תרגילים — כל תרגיל שלם, פתרון כשלבים (מערך שורות)
+   ============================================================ */
+
+/* ----- חשבון: חישוב + השוואות ----- */
+function arithExpr(level) {
+  if (level === 0) {
+    if (pick(["add", "mul"]) === "add") { const a = ri(2, 9), b = ri(2, 9); return { s: `${a} + ${b}`, v: a + b }; }
+    const a = ri(2, 6), b = ri(2, 6); return { s: `${a} × ${b}`, v: a * b };
+  }
+  if (level === 1) {
+    return pick([
+      (() => { const a = ri(2, 7), b = ri(2, 7); return { s: `${a} × ${b}`, v: a * b }; })(),
+      (() => { const a = ri(2, 6), b = ri(2, 6), c = ri(2, 6); return { s: `${a} + ${b} × ${c}`, v: a + b * c }; })(),
+      (() => { const a = ri(2, 6), b = ri(2, 6), c = ri(2, 5); return { s: `(${a} + ${b}) × ${c}`, v: (a + b) * c }; })(),
+    ]);
+  }
+  return pick([
+    (() => { const a = ri(3, 8), b = ri(2, 6), c = ri(2, 9); return { s: `${a} × ${b} + ${c}`, v: a * b + c }; })(),
+    (() => { const a = ri(2, 6), b = ri(2, 9); return { s: `${a}² + ${b}`, v: a * a + b }; })(),
+    (() => { const a = ri(4, 9), b = ri(2, 6), c = ri(1, 8); return { s: `${a} × ${b} − ${c}`, v: a * b - c }; })(),
+  ]);
+}
+function genArithCompare(level) {
+  const L = arithExpr(level); let R = arithExpr(level);
+  if (Math.random() < 0.22) R = { s: `${L.v}`, v: L.v };
+  const ans = L.v > R.v ? ">" : L.v < R.v ? "<" : "=";
+  return {
+    kind: "compare",
+    expr: [{ t: "v", v: L.s }, { t: "op", v: "?" }, { t: "v", v: R.s }],
+    prompt: "איזה סימן מתאים? בחרי >, < או =:",
+    check: (x) => ("" + x).trim() === ans, answerText: ans,
+    hint: "חשבי כל צד בנפרד, ואז השווי בין שתי התוצאות.",
+    explanation: ["מחשבים כל צד בנפרד", `הצד הימני = ${L.v}`, `הצד השמאלי = ${R.v}`, `הסימן המתאים: ${ans}`],
+  };
+}
+function genVAdd(level) {
+  let rows;
+  if (level === 0) rows = [ri(11, 89), ri(11, 89)];
+  else if (level === 1) rows = [ri(120, 899), ri(120, 899)];
+  else rows = [ri(120, 899), ri(120, 899), ri(120, 899)];
+  const sum = rows.reduce((a, b) => a + b, 0);
+  return { kind: "number", vertical: { op: "+", rows }, expr: [], prompt: "חברי במאונך:",
+    check: (v) => intEqual(v, sum), answerText: `${sum}`,
+    hint: "חברי טור אחר טור מימין לשמאל, והעבירי 1 לטור הבא כשצריך.",
+    explanation: ["מחברים טור אחר טור, מימין לשמאל", `${rows.join(" + ")}`, `= ${sum}`] };
+}
+function genVMul(level) {
+  let a, b;
+  if (level === 0) { a = ri(11, 99); b = ri(2, 9); }
+  else if (level === 1) { a = ri(12, 99); b = ri(3, 9); }
+  else { a = ri(12, 99); b = ri(11, 29); }
+  const prod = a * b;
+  return { kind: "number", vertical: { op: "×", rows: [a, b] }, expr: [], prompt: "כפלי במאונך:",
+    check: (v) => intEqual(v, prod), answerText: `${prod}`,
+    hint: "הכפילי ספרה־ספרה, ואז חברי את התוצאות.",
+    explanation: ["מכפילים ספרה אחר ספרה ומחברים", `${a} × ${b}`, `= ${prod}`] };
+}
+function genArithmetic(level) {
+  const r = Math.random();
+  if (r < 0.25) return genArithCompare(level);
+  if (r < 0.50) return genVAdd(level);
+  if (r < 0.72) return genVMul(level);
+  if (level === 0) {
+    const a = ri(2, 9), b = ri(2, 9), c = ri(2, 9); const val = a + b * c;
+    return { kind: "number", expr: [{ t: "v", v: `${a} + ${b} × ${c} =` }], prompt: "פתרי לפי סדר הפעולות:",
+      check: (x) => intEqual(x, val), answerText: `${val}`, hint: "קודם מחשבים את הכפל, ורק אחר כך מחברים.",
+      explanation: ["כפל לפני חיבור", `${b} × ${c} = ${b * c}`, `${a} + ${b * c}`, `= ${val}`] };
+  }
+  if (level === 1) {
+    const a = ri(3, 9), b = ri(2, 6), c = ri(2, 6), d = ri(2, 9); const val = (a + b) * c - d;
+    return { kind: "number", expr: [{ t: "v", v: `(${a} + ${b}) × ${c} − ${d} =` }], prompt: "שימי לב לסוגריים:",
+      check: (x) => intEqual(x, val), answerText: `${val}`, hint: "מתחילים מהסוגריים, אחר כך כפל, ובסוף חיסור.",
+      explanation: ["קודם הסוגריים", `${a} + ${b} = ${a + b}`, `${a + b} × ${c} = ${(a + b) * c}`, `${(a + b) * c} − ${d}`, `= ${val}`] };
+  }
+  const a = ri(4, 9), b = ri(2, 5), c = ri(2, 4), d = ri(2, 6); const val = a * b + c * c - d;
+  return { kind: "number", expr: [{ t: "v", v: `${a} × ${b} + ${c}² − ${d} =` }], prompt: "כולל חזקה — שימי לב לסדר:",
+    check: (x) => intEqual(x, val), answerText: `${val}`, hint: "חזקה ראשונה, אחר כך כפל, ובסוף חיבור וחיסור.",
+    explanation: ["חזקה תחילה", `${c}² = ${c * c}`, `${a} × ${b} = ${a * b}`, `${a * b} + ${c * c} − ${d}`, `= ${val}`] };
+}
+
+/* ----- שברים: חיבור / חיסור / כפל / השוואה ----- */
+function genFraction(level) {
+  const denoms = level === 0 ? [2, 3, 4, 5, 6] : level === 1 ? [3, 4, 5, 6, 8, 10] : [4, 6, 8, 9, 12];
+  const mode = level === 0 ? pick(["add", "sub", "compare"]) : pick(["add", "sub", "mul", "compare"]);
+  const makeFrac = () => { const d = pick(denoms); return [ri(1, d - 1), d]; };
+
+  if (mode === "add" || mode === "sub") {
+    let [n1, d1] = makeFrac(); let [n2, d2] = makeFrac();
+    if (mode === "sub" && n1 / d1 < n2 / d2) { [n1, d1, n2, d2] = [n2, d2, n1, d1]; }
+    const num = mode === "add" ? n1 * d2 + n2 * d1 : n1 * d2 - n2 * d1; const den = d1 * d2;
+    const [sn, sd] = simplify(num, den); const opSym = mode === "add" ? "+" : "−";
+    const lcm = (d1 * d2) / gcd(d1, d2);
+    const steps = ["מביאים למכנה משותף", `מכנה משותף: ${den}`, `${n1 * d2}/${den} ${opSym} ${n2 * d1}/${den}`, `= ${num}/${den}`];
+    if (sd !== den || sn !== num) steps.push(`בצמצום = ${fracText(sn, sd)}`);
+    return { kind: "fraction", expr: [{ t: "frac", n: n1, d: d1 }, { t: "op", v: opSym }, { t: "frac", n: n2, d: d2 }, { t: "op", v: "=" }],
+      prompt: "פתרי וכתבי בצורה מצומצמת (למשל 3/4):", check: (x) => fracEqual(x, sn, sd),
+      answerText: fracText(sn, sd), hint: `המכנה המשותף הקטן ביותר הוא ${lcm}. הרחיבי אליו את שני השברים.`, explanation: steps };
+  }
+  if (mode === "mul") {
+    const [n1, d1] = makeFrac(); const [n2, d2] = makeFrac(); const [sn, sd] = simplify(n1 * n2, d1 * d2);
+    const steps = ["מונה כפול מונה, מכנה כפול מכנה", `${n1} × ${n2} = ${n1 * n2}`, `${d1} × ${d2} = ${d1 * d2}`, `= ${n1 * n2}/${d1 * d2}`];
+    if (sd !== d1 * d2 || sn !== n1 * n2) steps.push(`בצמצום = ${fracText(sn, sd)}`);
+    return { kind: "fraction", expr: [{ t: "frac", n: n1, d: d1 }, { t: "op", v: "×" }, { t: "frac", n: n2, d: d2 }, { t: "op", v: "=" }],
+      prompt: "כפל שברים — תשובה מצומצמת:", check: (x) => fracEqual(x, sn, sd),
+      answerText: fracText(sn, sd), hint: "מכפילים מונה במונה ומכנה במכנה, ואז מצמצמים.", explanation: steps };
+  }
+  let [n1, d1] = makeFrac(); let [n2, d2] = makeFrac();
+  if (Math.random() < 0.25) { const k = ri(2, 3); n2 = n1 * k; d2 = d1 * k; }
+  const left = n1 * d2, right = n2 * d1; const ans = left > right ? ">" : left < right ? "<" : "=";
+  return { kind: "compare", expr: [{ t: "frac", n: n1, d: d1 }, { t: "op", v: "?" }, { t: "frac", n: n2, d: d2 }],
+    prompt: "איזה סימן מתאים בין השברים? בחרי >, < או =:", check: (x) => ("" + x).trim() === ans, answerText: ans,
+    hint: "הביאו למכנה משותף והשוו את המונים.",
+    explanation: ["מביאים למכנה משותף ומשווים מונים", `${left}/${d1 * d2}  מול  ${right}/${d1 * d2}`, `הסימן המתאים: ${ans}`] };
+}
+
+/* ----- משוואות עם נעלם אחד ----- */
+function genEquation(level) {
+  if (level === 0) {
+    if (pick(["add", "sub"]) === "add") {
+      const x = ri(2, 20), a = ri(2, 15), b = x + a;
+      return { kind: "number", expr: [{ t: "v", v: `x + ${a} = ${b}` }], prompt: "מצאי את x:",
+        check: (v) => intEqual(v, x), answerText: `${x}`, hint: "מעבירים את המספר בסימן הפוך: x = b − a.",
+        explanation: ["מבודדים את x", `מעבירים את ${a} בסימן הפוך`, `x = ${b} − ${a}`, `x = ${x}`] };
+    }
+    const x = ri(5, 25), a = ri(2, 15), b = x - a;
+    return { kind: "number", expr: [{ t: "v", v: `x − ${a} = ${b}` }], prompt: "מצאי את x:",
+      check: (v) => intEqual(v, x), answerText: `${x}`, hint: "מוסיפים את a לשני האגפים.",
+      explanation: ["מבודדים את x", `מוסיפים ${a} לשני האגפים`, `x = ${b} + ${a}`, `x = ${x}`] };
+  }
+  if (level === 1) {
+    if (Math.random() < 0.5) {
+      const a = ri(2, 9), x = ri(2, 12), b = a * x;
+      return { kind: "number", expr: [{ t: "v", v: `${coef(a)} = ${b}` }], prompt: "מצאי את x:",
+        check: (v) => intEqual(v, x), answerText: `${x}`, hint: "מחלקים את שני האגפים ב־a.",
+        explanation: [`מחלקים ב־${a}`, `x = ${b} ÷ ${a}`, `x = ${x}`] };
+    }
+    const a = ri(2, 8), x = ri(2, 10), c = ri(1, 12), d = a * x + c;
+    return { kind: "number", expr: [{ t: "v", v: `${coef(a)} + ${c} = ${d}` }], prompt: "מצאי את x:",
+      check: (v) => intEqual(v, x), answerText: `${x}`, hint: "מעבירים את c לצד השני, אחר כך מחלקים ב־a.",
+      explanation: [`מעבירים את ${c}`, `${coef(a)} = ${d} − ${c}`, `${coef(a)} = ${a * x}`, `מחלקים ב־${a}`, `x = ${x}`] };
+  }
+  let a, b, c, d, x;
+  do { x = ri(1, 9); a = ri(2, 7); c = ri(1, a - 1); b = ri(1, 10); d = (a - c) * x + b; } while (a - c <= 0);
+  return { kind: "number", expr: [{ t: "v", v: `${coef(a)} + ${b} = ${coef(c)} + ${d}` }], prompt: "נעלם בשני האגפים — מצאי את x:",
+    check: (v) => intEqual(v, x), answerText: `${x}`, hint: "מקבצים את ה־x לצד אחד ואת המספרים לצד השני.",
+    explanation: ["מקבצים את ה־x לצד אחד", `${coef(a)} − ${coef(c)} = ${d} − ${b}`, `${coef(a - c)} = ${d - b}`, `x = ${x}`] };
+}
+
+/* ----- חשיבה לוגית ----- */
+function genLogic(level) {
+  if (level === 0) {
+    const start = ri(2, 9), step = ri(2, 6); const seq = [start, start + step, start + 2 * step, start + 3 * step]; const next = start + 4 * step;
+    return { kind: "number", expr: [{ t: "v", v: `${seq.join(", ")}, __` }], prompt: "איזה מספר ממשיך את הסדרה?",
+      check: (v) => intEqual(v, next), answerText: `${next}`, hint: `בכל פעם מוסיפים ${step}.`,
+      explanation: ["בודקים את ההפרש בין האיברים", `ההפרש הקבוע הוא ${step}`, `${seq[3]} + ${step}`, `= ${next}`] };
+  }
+  if (level === 1) {
+    const start = ri(2, 4), r = ri(2, 3); const seq = [start, start * r, start * r * r, start * r * r * r]; const next = seq[3] * r;
+    return { kind: "number", expr: [{ t: "v", v: `${seq.join(", ")}, __` }], prompt: "המשיכי את הסדרה (היא כפלית):",
+      check: (v) => intEqual(v, next), answerText: `${next}`, hint: `בכל פעם מכפילים ב־${r}.`,
+      explanation: ["זו סדרה כפלית", `כל איבר כפול ${r} מהקודם`, `${seq[3]} × ${r}`, `= ${next}`] };
+  }
+  const sum = ri(20, 40), diff = ri(2, 10); const big = (sum + diff) / 2, small = (sum - diff) / 2;
+  if (!Number.isInteger(big)) return genLogic(2);
+  return { kind: "number", expr: [{ t: "v", v: "?" }], prompt: `לשני מספרים סכום ${sum} והפרש ${diff}. מהו המספר הגדול?`,
+    check: (v) => intEqual(v, big), answerText: `${big}`, hint: "המספר הגדול = (סכום + הפרש) חלקי 2.",
+    explanation: ["הגדול שווה (סכום ועוד הפרש) חלקי 2", `(${sum} + ${diff}) ÷ 2`, `= ${big}`, `(הקטן הוא ${small})`] };
+}
+
+/* ----- גאומטריה ומרחב — עם ציורים ----- */
+function genGeometry(level) {
+  if (level === 0) {
+    const a = ri(3, 12), b = ri(3, 12); const area = a * b;
+    return { kind: "number", figure: { type: "rect", w: a, h: b }, expr: [], prompt: "מהו שטח המלבן שבציור? (בסמ\"ר)",
+      check: (v) => intEqual(v, area), answerText: `${area}`, hint: "שטח מלבן = אורך × רוחב.",
+      explanation: ["שטח מלבן = אורך כפול רוחב", `${a} × ${b}`, `= ${area} סמ״ר`] };
+  }
+  if (level === 1) {
+    const a = ri(3, 15), b = ri(3, 15); const per = 2 * (a + b);
+    return { kind: "number", figure: { type: "rect", w: a, h: b }, expr: [], prompt: "מהו היקף המלבן שבציור? (בס\"מ)",
+      check: (v) => intEqual(v, per), answerText: `${per}`, hint: "היקף = 2 × (אורך + רוחב).",
+      explanation: ["היקף = 2 כפול (אורך ועוד רוחב)", `2 × (${a} + ${b})`, `2 × ${a + b}`, `= ${per} ס״מ`] };
+  }
+  const x = ri(30, 80), y = ri(30, 80); if (x + y >= 175) return genGeometry(2); const z = 180 - x - y;
+  return { kind: "number", figure: { type: "triangle", a1: x, a2: y }, expr: [], prompt: "מהי הזווית השלישית במשולש שבציור? (במעלות)",
+    check: (v) => intEqual(v, z), answerText: `${z}`, hint: "סכום הזוויות במשולש הוא 180°.",
+    explanation: ["סכום הזוויות במשולש = 180°", `${x}° + ${y}° = ${x + y}°`, `180° − ${x + y}°`, `= ${z}°`] };
+}
+
+/* ---------- חזקות וגורמים ראשוניים ---------- */
+const SUP = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+const sup = (n) => ("" + n).split("").map((d) => SUP[d] || d).join("");
+function isPrimeN(n) { if (n < 2) return false; for (let i = 2; i * i <= n; i++) if (n % i === 0) return false; return true; }
+function factorize(n) { const f = []; let m = n; for (let p = 2; p <= m; p++) { while (m % p === 0) { f.push(p); m /= p; } } return f; }
+function smallestPrime(n) { for (let p = 2; p <= n; p++) if (n % p === 0) return p; return n; }
+function makeComposite(maxProd, maxFactors) {
+  const primes = [2, 3, 5, 7];
+  let n, f;
+  do {
+    f = []; let prod = 1; const k = ri(2, maxFactors);
+    for (let i = 0; i < k; i++) { const p = pick(primes); if (prod * p > maxProd) break; f.push(p); prod *= p; }
+    n = prod;
+  } while (f.length < 2 || isPrimeN(n));
+  return n;
+}
+
+function genPower(level) {
+  if (level >= 1 && Math.random() < 0.25) {
+    const opts = level === 1 ? [[2, 2], [3, 2], [2, 3], [2, 4], [5, 2], [3, 3], [4, 2]] : [[2, 5], [2, 6], [3, 3], [3, 4], [5, 3], [6, 3], [2, 7], [10, 2]];
+    const [b1, e1] = pick(opts); const [b2, e2] = pick(opts);
+    const v1 = Math.pow(b1, e1), v2 = Math.pow(b2, e2);
+    const ans = v1 > v2 ? ">" : v1 < v2 ? "<" : "=";
+    return { kind: "compare", expr: [{ t: "v", v: `${b1}${sup(e1)}` }, { t: "op", v: "?" }, { t: "v", v: `${b2}${sup(e2)}` }],
+      prompt: "איזה סימן מתאים בין החזקות?", check: (x) => ("" + x).trim() === ans, answerText: ans,
+      hint: "חשבי כל חזקה בנפרד, ואז השווי.",
+      explanation: [`${b1}${sup(e1)} = ${v1}`, `${b2}${sup(e2)} = ${v2}`, `הסימן המתאים: ${ans}`] };
+  }
+  let b, e;
+  if (level === 0) { e = pick([2, 2, 2, 3]); b = e === 3 ? ri(2, 4) : ri(2, 10); }
+  else if (level === 1) { const o = pick([[2, 4], [2, 5], [3, 3], [4, 3], [5, 2], [6, 2], [7, 2], [2, 6], [3, 4]]); b = o[0]; e = o[1]; }
+  else { const o = pick([[2, 7], [2, 8], [3, 5], [5, 3], [6, 3], [7, 3], [10, 3], [2, 9]]); b = o[0]; e = o[1]; }
+  const val = Math.pow(b, e);
+  return { kind: "number", expr: [{ t: "v", v: `${b}${sup(e)} =` }], prompt: "חשבי את החזקה:",
+    check: (x) => intEqual(x, val), answerText: `${val}`,
+    hint: "חזקה היא כפל חוזר: הבסיס כפול עצמו, מספר פעמים כמו המעריך.",
+    explanation: [`${b}${sup(e)} פירושו ${b} כפול עצמו ${e} פעמים`, `${Array(e).fill(b).join(" × ")}`, `= ${val}`] };
+}
+
+function genPrime(level) {
+  const mode = level === 0 ? pick(["isprime", "smallest"]) : level === 1 ? pick(["factor", "smallest", "isprime"]) : pick(["factor", "factor", "smallest"]);
+  if (mode === "isprime") {
+    const n = ri(2, level === 0 ? 30 : 60);
+    const p = isPrimeN(n);
+    return { kind: "choice", expr: [{ t: "v", v: `${n}` }], choices: ["כן", "לא"],
+      prompt: `האם ${n} מספר ראשוני?`, check: (x) => x === (p ? "כן" : "לא"), answerText: p ? "כן" : "לא",
+      hint: "מספר ראשוני מתחלק רק ב-1 ובעצמו.",
+      explanation: [p ? `${n} מתחלק רק ב-1 ובעצמו — ראשוני` : `${n} = ${factorize(n).join(" × ")} — לא ראשוני`] };
+  }
+  if (mode === "smallest") {
+    const n = makeComposite(level === 0 ? 30 : 80, level === 0 ? 2 : 3);
+    const spf = smallestPrime(n);
+    return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "מהו הגורם הראשוני הקטן ביותר?",
+      check: (x) => intEqual(x, spf), answerText: `${spf}`,
+      hint: "בדקי לפי הסדר: מתחלק ב-2? ב-3? ב-5?…",
+      explanation: [`מחפשים את הראשוני הקטן ביותר שמחלק את ${n}`, `${n} ÷ ${spf} = ${n / spf}`, `הגורם הוא ${spf}`] };
+  }
+  const n = makeComposite(level === 1 ? 50 : 120, level === 1 ? 2 : 3);
+  const cf = factorize(n);
+  const correct = cf.join(" × ");
+  const d1 = [cf[0] * cf[1], ...cf.slice(2)].join(" × ");
+  const d2 = cf.slice(0, -1).join(" × ");
+  const set = [correct];
+  if (d1 !== correct) set.push(d1);
+  if (d2 !== correct && d2 !== d1) set.push(d2);
+  while (set.length < 3) { const extra = cf.concat(pick([2, 3])).sort((a, b) => a - b).join(" × "); if (!set.includes(extra)) set.push(extra); else break; }
+  return { kind: "choice", expr: [{ t: "v", v: `${n}` }], choices: shuffle(set).slice(0, 3),
+    prompt: `מהו הפירוק לגורמים ראשוניים של ${n}?`, check: (x) => x === correct, answerText: correct,
+    hint: "כל הגורמים חייבים להיות מספרים ראשוניים שמכפלתם נותנת את המספר.",
+    explanation: ["מפרקים עד שכל הגורמים ראשוניים", `${n} = ${correct}`] };
+}
+
+/* ---------- נושאים (חוברת מחוננים) + דוגמה פתורה ---------- */
+const TOPICS_GIFTED = [
+  { id: "arith", title: "חשבון מתקדם", emoji: "🧮", gen: genArithmetic, color: "#ff7a45",
+    lesson: "סדר פעולות: קודם חזקות, אחר כך כפל וחילוק, ובסוף חיבור וחיסור — משמאל לימין. סוגריים קודמים לכול. בתרגילי השוואה מחשבים כל צד ובוחרים >, < או =.",
+    example: { expr: [{ t: "v", v: "2 + 3 × 4 =" }], answer: "14",
+      steps: ["לפי סדר הפעולות, כפל לפני חיבור", "3 × 4 = 12", "עכשיו מחברים:", "2 + 12", "= 14"] } },
+  { id: "frac", title: "שברים", emoji: "🍕", gen: genFraction, color: "#36cfc9",
+    lesson: "לחיבור/חיסור צריך מכנה משותף. בכפל מכפילים מונה במונה ומכנה במכנה. בסוף תמיד מצמצמים. בהשוואה מביאים למכנה משותף ובוחרים >, < או =.",
+    example: { expr: [{ t: "frac", n: 1, d: 2 }, { t: "op", v: "+" }, { t: "frac", n: 1, d: 3 }, { t: "op", v: "=" }], answer: "5/6",
+      steps: ["מחפשים מכנה משותף ל־2 ול־3", "המכנה המשותף הוא 6", "1/2 = 3/6", "1/3 = 2/6", "3/6 + 2/6", "= 5/6"] } },
+  { id: "eq", title: "משוואות (נעלם אחד)", emoji: "⚖️", gen: genEquation, color: "#9254de",
+    lesson: "מבודדים את x: מה שעובר אגף משנה סימן, ומקדם של x מתחלק לשני האגפים.",
+    example: { expr: [{ t: "v", v: "x + 5 = 12" }], answer: "x = 7",
+      steps: ["רוצים לבודד את x", "מעבירים את 5 לצד השני בסימן הפוך", "x = 12 − 5", "x = 7"] } },
+  { id: "logic", title: "חשיבה לוגית", emoji: "🧩", gen: genLogic, color: "#ffc53d",
+    lesson: "בסדרות מחפשים את הכלל: הפרש קבוע או מכפיל קבוע. בחידות מנסחים את הנתון כמשוואה.",
+    example: { expr: [{ t: "v", v: "2, 4, 6, 8, __" }], answer: "10",
+      steps: ["בודקים את ההפרש בין האיברים", "4 − 2 = 2", "6 − 4 = 2", "ההפרש קבוע: 2", "8 + 2", "= 10"] } },
+  { id: "geo", title: "גאומטריה ומרחב", emoji: "📐", gen: genGeometry, color: "#4096ff",
+    lesson: "כל תרגיל מגיע עם ציור. שטח מלבן = אורך × רוחב. היקף = 2×(אורך+רוחב). סכום זוויות במשולש = 180°.",
+    example: { figure: { type: "rect", w: 4, h: 3 }, expr: [], answer: "12 סמ\"ר",
+      steps: ["שטח מלבן = אורך כפול רוחב", "כאן האורך 4 והרוחב 3", "4 × 3", "= 12 סמ״ר"] } },
+  { id: "pow", title: "חזקות", emoji: "⚡", gen: genPower, color: "#eb2f96",
+    lesson: "חזקה היא כפל חוזר: aⁿ פירושו a כפול עצמו n פעמים. למשל 2⁴ = 2 × 2 × 2 × 2 = 16.",
+    example: { expr: [{ t: "v", v: "2⁴ =" }], answer: "16", steps: ["חזקה היא כפל חוזר של הבסיס", "2 × 2 × 2 × 2", "= 16"] } },
+  { id: "prime", title: "גורמים ראשוניים", emoji: "🧱", gen: genPrime, color: "#531dab",
+    lesson: "מספר ראשוני מתחלק רק ב-1 ובעצמו. פירוק לגורמים ראשוניים הוא כתיבת המספר כמכפלה של ראשוניים בלבד.",
+    example: { expr: [], answer: "2 × 2 × 3", steps: ["מפרקים את 12 שלב אחר שלב", "12 = 2 × 6", "6 = 2 × 3", "12 = 2 × 2 × 3"] } },
+];
+
+/* ============================================================
+   חוברת כיתה ב' — מחוללי תרגילים
+   ============================================================ */
+function genG2AddSub(level) {
+  const cap = level === 0 ? 20 : level === 1 ? 50 : 100;
+  const op = pick(["+", "−"]);
+  let a, b, val;
+  if (op === "+") { a = ri(2, cap - 2); b = ri(1, cap - a); val = a + b; }
+  else { a = ri(3, cap); b = ri(1, a - 1); val = a - b; }
+  return { kind: "number", expr: [{ t: "v", v: `${a} ${op} ${b} =` }],
+    prompt: op === "+" ? "כמה זה ביחד?" : "כמה נשאר?",
+    check: (v) => intEqual(v, val), answerText: `${val}`,
+    hint: op === "+" ? "אפשר לספור קדימה מהמספר הגדול." : "אפשר לספור אחורה.",
+    explanation: [op === "+" ? "מחברים את שני המספרים" : "מחסרים מהמספר הגדול", `${a} ${op} ${b}`, `= ${val}`] };
+}
+function genG2Mul(level) {
+  const a = level === 0 ? ri(2, 4) : level === 1 ? ri(2, 5) : ri(2, 6);
+  const b = level === 0 ? ri(2, 5) : ri(2, 6);
+  const val = a * b;
+  return { kind: "number", expr: [{ t: "v", v: `${a} × ${b} =` }],
+    prompt: "כמה זה?", check: (v) => intEqual(v, val), answerText: `${val}`,
+    hint: `כפל זה חיבור חוזר: ${a} פעמים ${b}.`,
+    explanation: [`${a} × ${b} זה ${a} פעמים ${b}`, `${Array(a).fill(b).join(" + ")}`, `= ${val}`] };
+}
+function genG2Times5(level) {
+  const tables = level === 0 ? [2, 5] : level === 1 ? [2, 3, 4, 5] : [1, 2, 3, 4, 5];
+  const a = pick(tables), b = ri(1, 10), val = a * b;
+  return { kind: "number", expr: [{ t: "v", v: `${a} × ${b} =` }],
+    prompt: `לוח הכפל של ${a}:`, check: (v) => intEqual(v, val), answerText: `${val}`,
+    hint: `דלגי במספרים של ${a}: ${a}, ${2 * a}, ${3 * a}…`,
+    explanation: [`לוח הכפל של ${a}`, `${a} × ${b}`, `= ${val}`] };
+}
+function genG2Word(level) {
+  const names = ["דני", "מאיה", "יואב", "נועה", "רון", "תמר"];
+  const objs = ["תפוחים", "בלונים", "מדבקות", "עוגיות", "כדורים", "ציורים"];
+  const name = pick(names), obj = pick(objs);
+  const type = level === 0 ? pick(["add", "sub"]) : pick(["add", "sub", "mul"]);
+  if (type === "add") {
+    const a = ri(2, level === 0 ? 9 : 20), b = ri(2, level === 0 ? 9 : 20);
+    return { kind: "number", expr: [],
+      prompt: `ל${name} היו ${a} ${obj}. נוספו עוד ${b}. כמה ${obj} יש עכשיו?`,
+      check: (v) => intEqual(v, a + b), answerText: `${a + b}`,
+      hint: "כשמוסיפים — מחברים.", explanation: [`ל${name} היו ${a} ${obj}, נוספו ${b}`, "מחברים", `${a} + ${b}`, `= ${a + b}`] };
+  }
+  if (type === "sub") {
+    const a = ri(6, level === 0 ? 12 : 30), b = ri(1, a - 1);
+    return { kind: "number", expr: [],
+      prompt: `ל${name} היו ${a} ${obj}. ${b} מהם ניתנו במתנה. כמה ${obj} נשארו?`,
+      check: (v) => intEqual(v, a - b), answerText: `${a - b}`,
+      hint: "כשנותנים — מחסרים.", explanation: [`היו ${a}, ניתנו ${b}`, "מחסרים", `${a} − ${b}`, `= ${a - b}`] };
+  }
+  const a = ri(2, 5), b = ri(2, 5);
+  return { kind: "number", expr: [],
+    prompt: `ל${name} יש ${a} קופסאות, ובכל קופסה ${b} ${obj}. כמה ${obj} בסך הכול?`,
+    check: (v) => intEqual(v, a * b), answerText: `${a * b}`,
+    hint: "כמה קבוצות וכמה בכל קבוצה — מכפילים.", explanation: [`${a} קופסאות, בכל אחת ${b}`, `${a} × ${b}`, `= ${a * b}`] };
+}
+function genG2Shapes(level) {
+  const shapes = level === 0
+    ? [{ n: "עיגול", s: 0 }, { n: "משולש", s: 3 }, { n: "ריבוע", s: 4 }]
+    : [{ n: "עיגול", s: 0 }, { n: "משולש", s: 3 }, { n: "ריבוע", s: 4 }, { n: "מלבן", s: 4 }, { n: "מחומש", s: 5 }, { n: "משושה", s: 6 }];
+  const mode = pick(level === 0 ? ["name", "sides"] : ["name", "sides", "angle"]);
+  if (mode === "name") {
+    const sh = pick(shapes);
+    const others = shuffle(shapes.map((x) => x.n).filter((n) => n !== sh.n)).slice(0, 2);
+    return { kind: "choice", figure: { type: "shape", name: sh.n }, expr: [], choices: shuffle([sh.n, ...others]),
+      prompt: "מה שם הצורה?", check: (x) => x === sh.n, answerText: sh.n,
+      hint: "סִפרי את הצלעות והפינות.", explanation: [`לצורה הזו קוראים ${sh.n}`] };
+  }
+  if (mode === "sides") {
+    const sh = pick(shapes.filter((x) => x.s > 0));
+    return { kind: "number", figure: { type: "shape", name: sh.n }, expr: [],
+      prompt: "כמה צלעות יש לצורה?", check: (v) => intEqual(v, sh.s), answerText: `${sh.s}`,
+      hint: "צלע היא קו ישר בגבול הצורה.", explanation: [`ל${sh.n} יש ${sh.s} צלעות`] };
+  }
+  const kinds = [{ t: "זווית חדה", deg: pick([30, 40, 50, 60]) }, { t: "זווית ישרה", deg: 90 }, { t: "זווית קהה", deg: pick([110, 120, 130, 140]) }];
+  const k = pick(kinds);
+  return { kind: "choice", figure: { type: "angle", deg: k.deg }, expr: [], choices: shuffle(["זווית חדה", "זווית ישרה", "זווית קהה"]),
+    prompt: "איזו זווית זו?", check: (x) => x === k.t, answerText: k.t,
+    hint: "זווית ישרה היא כמו פינה של ריבוע (90°). חדה קטנה ממנה, קהה גדולה ממנה.",
+    explanation: [k.t === "זווית ישרה" ? "הזווית בדיוק 90° — זווית ישרה" : k.t === "זווית חדה" ? "הזווית קטנה מ־90° — זווית חדה" : "הזווית גדולה מ־90° — זווית קהה"] };
+}
+
+const TOPICS_G2 = [
+  { id: "g2add", title: "חיבור וחיסור", emoji: "➕", gen: genG2AddSub, color: "#ff7a45",
+    lesson: "מחברים כשמוסיפים, מחסרים כשלוקחים. אפשר לעזור לעצמך בספירה קדימה ואחורה.",
+    example: { expr: [{ t: "v", v: "7 + 5 =" }], answer: "12", steps: ["מחברים את שני המספרים", "7 + 5", "= 12"] } },
+  { id: "g2mul", title: "כפל בסיסי", emoji: "✖️", gen: genG2Mul, color: "#9254de",
+    lesson: "כפל הוא חיבור חוזר: 3 × 4 זה שלוש פעמים 4.",
+    example: { expr: [{ t: "v", v: "3 × 4 =" }], answer: "12", steps: ["3 × 4 זה 3 פעמים 4", "4 + 4 + 4", "= 12"] } },
+  { id: "g2t5", title: "לוח הכפל עד 5", emoji: "🔢", gen: genG2Times5, color: "#36cfc9",
+    lesson: "לומדים בעל פה את לוחות הכפל של 1 עד 5. אפשר לדלג במספרים: 5, 10, 15…",
+    example: { expr: [{ t: "v", v: "5 × 3 =" }], answer: "15", steps: ["לוח הכפל של 5", "5, 10, 15", "= 15"] } },
+  { id: "g2word", title: "בעיות מילוליות", emoji: "📖", gen: genG2Word, color: "#ffc53d",
+    lesson: "קוראים את הסיפור, מחליטים אם לחבר, לחסר או לכפול, ואז מחשבים.",
+    example: { expr: [], answer: "8", steps: ["לדני היו 5 בלונים, נוספו עוד 3", "מחברים", "5 + 3", "= 8"] } },
+  { id: "g2shape", title: "צורות וזוויות", emoji: "🔷", gen: genG2Shapes, color: "#4096ff",
+    lesson: "מזהים צורות לפי מספר הצלעות, וזוויות לפי הגודל: חדה (קטנה), ישרה (90°), קהה (גדולה).",
+    example: { figure: { type: "shape", name: "משולש" }, expr: [], answer: "משולש", steps: ["סופרים את הצלעות", "יש 3 צלעות", "זהו משולש"] } },
+];
+
+const COURSES = [
+  { id: "grade2", title: "מתמטיקה כיתה ב'", emoji: "🧮", subtitle: "כיתה ב'", color: "#36cfc9", topics: TOPICS_G2 },
+  { id: "gifted", title: "מעבדת המספרים", emoji: "🔬", subtitle: "כיתה ד' · אתגר", color: "#9254de", topics: TOPICS_GIFTED },
+];
+
+const LEVELS = [
+  { id: 0, name: "חימום", stars: 1, badge: "🌱" },
+  { id: 1, name: "אתגר", stars: 2, badge: "🔥" },
+  { id: 2, name: "מתקדם", stars: 3, badge: "🏆" },
+];
+
+/* ---------- זיהוי מכשיר ---------- */
+function useDevice() {
+  const calc = () => {
+    if (typeof window === "undefined") return { isTablet: true, landscape: true };
+    const w = window.innerWidth, h = window.innerHeight;
+    return { isTablet: Math.min(w, h) >= 600, landscape: w > h };
+  };
+  const [d, setD] = useState(calc);
+  useEffect(() => {
+    const on = () => setD(calc());
+    window.addEventListener("resize", on);
+    window.addEventListener("orientationchange", on);
+    return () => { window.removeEventListener("resize", on); window.removeEventListener("orientationchange", on); };
+  }, []);
+  return d;
+}
+
+/* ---------- מקלדת מותאמת מגע ו־S Pen ---------- */
+function NumPad({ mode, onKey, isTablet, landscape }) {
+  const big = isTablet && landscape;
+  const H = big ? 92 : isTablet ? 76 : 62;
+  const FS = big ? 38 : isTablet ? 32 : 26;
+  const press = (e, down) => {
+    e.currentTarget.style.transform = down ? "translateY(3px)" : "";
+    e.currentTarget.style.boxShadow = down ? "0 2px 0 rgba(0,0,0,0.13)" : "0 5px 0 rgba(0,0,0,0.13)";
+  };
+  const btn = (label, val, opts = {}) => (
+    <button key={label} onClick={() => onKey(val)}
+      onPointerDown={(e) => press(e, true)} onPointerUp={(e) => press(e, false)} onPointerLeave={(e) => press(e, false)} onPointerCancel={(e) => press(e, false)}
+      style={{
+        fontFamily: "inherit", fontSize: opts.fs || FS, fontWeight: 800, border: "none", borderRadius: 18,
+        height: H, cursor: "pointer", color: opts.color || "#1f2937", background: opts.bg || "#fff",
+        boxShadow: "0 5px 0 rgba(0,0,0,0.13)", transition: "transform .05s, box-shadow .05s",
+        touchAction: "manipulation", userSelect: "none", WebkitUserSelect: "none", WebkitTapHighlightColor: "transparent",
+        gridColumn: opts.span ? `span ${opts.span}` : undefined,
+      }}>{label}</button>
+  );
+
+  if (mode === "compare") {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: isTablet ? 16 : 12, width: "100%", maxWidth: big ? 540 : 420, margin: "0 auto", direction: "ltr" }}>
+        {btn("<", "<", { fs: big ? 52 : 42, bg: "#e6f7ff", color: "#0958d9" })}
+        {btn("=", "=", { fs: big ? 52 : 42, bg: "#f6ffed", color: "#389e0d" })}
+        {btn(">", ">", { fs: big ? 52 : 42, bg: "#fff7e6", color: "#d46b08" })}
+        {btn("✓ בדיקה", "submit", { fs: big ? 28 : 23, bg: "#52c41a", color: "#fff", span: 3 })}
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: isTablet ? 13 : 10, width: "100%", maxWidth: big ? 440 : isTablet ? 380 : 320, margin: "0 auto", direction: "ltr" }}>
+      {["7", "8", "9", "4", "5", "6", "1", "2", "3"].map((d) => btn(d, d))}
+      {mode === "fraction" ? btn("/", "/", { bg: "#e6fffb", color: "#08979c" }) : btn("−", "-", { bg: "#fff1f0", color: "#cf1322" })}
+      {btn("0", "0")}
+      {btn("⌫", "back", { bg: "#f0f0f0", color: "#595959" })}
+      {btn("נקה", "clear", { fs: big ? 24 : 20, bg: "#f0f0f0", color: "#595959" })}
+      {btn("✓ בדיקה", "submit", { fs: big ? 28 : 23, bg: "#52c41a", color: "#fff", span: 2 })}
+    </div>
+  );
+}
+
+/* ---------- שמירת התקדמות (לפי שחקן) ---------- */
+const STORE_KEY = "mathlab_players_v1";
+let memStore = null;
+function readStore() {
+  try { const raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch (_) { return memStore; }
+}
+function writeStore(v) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(v)); }
+  catch (_) { memStore = v; }
+}
+const blankP = () => ({ stars: 0, streak: 0, solved: 0 });
+
+function PlayerSelect({ players, onPick, onAdd }) {
+  const [name, setName] = useState("");
+  const names = Object.keys(players);
+  const add = () => { const n = name.trim(); if (n) { onAdd(n); setName(""); } };
+  return (
+    <div dir="rtl" style={{ minHeight: "100vh", fontFamily: "'Varela Round', system-ui, sans-serif",
+      background: "radial-gradient(circle at 18% 8%, #fef3c7 0%, transparent 38%), radial-gradient(circle at 88% 26%, #dbeafe 0%, transparent 42%), linear-gradient(180deg,#f8fafc,#eef2ff)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", boxSizing: "border-box" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Varela+Round&display=swap" rel="stylesheet" />
+      <div style={{ width: "100%", maxWidth: 480, textAlign: "center" }}>
+        <div style={{ fontSize: 56 }}>🔬</div>
+        <h1 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: 34, margin: "4px 0 6px", color: "#1f2937" }}>מעבדת המספרים</h1>
+        <p style={{ color: "#6b7280", fontSize: 18, marginBottom: 22 }}>מי משחק?</p>
+        <div style={{ display: "grid", gap: 12, marginBottom: 18 }}>
+          {names.map((n) => (
+            <button key={n} onClick={() => onPick(n)} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 18, padding: "16px 20px", background: "#fff", boxShadow: "0 5px 0 rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "space-between", touchAction: "manipulation" }}>
+              <span style={{ fontSize: 22, fontWeight: 800, color: "#1f2937" }}>👤 {n}</span>
+              <span style={{ fontSize: 15, color: "#9ca3af" }}>⭐ {(players[n] || {}).stars || 0}</span>
+            </button>
+          ))}
+          {names.length === 0 && <div style={{ color: "#9ca3af", fontSize: 15 }}>עדיין אין שחקנים — הוסיפו שם כדי להתחיל</div>}
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") add(); }} placeholder="שם חדש…" maxLength={12}
+            style={{ flex: 1, fontFamily: "inherit", fontSize: 18, padding: "12px 14px", borderRadius: 14, border: "2px solid #e5e7eb", outline: "none", textAlign: "right" }} />
+          <button onClick={add} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 14, padding: "12px 20px", fontSize: 18, fontWeight: 800, background: "#36cfc9", color: "#fff", touchAction: "manipulation" }}>➕ הוסף</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WorkbookSelect({ courses, onPick, onBack }) {
+  return (
+    <div dir="rtl" style={{ minHeight: "100vh", fontFamily: "'Varela Round', system-ui, sans-serif",
+      background: "radial-gradient(circle at 18% 8%, #fef3c7 0%, transparent 38%), radial-gradient(circle at 88% 26%, #dbeafe 0%, transparent 42%), linear-gradient(180deg,#f8fafc,#eef2ff)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", boxSizing: "border-box" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Varela+Round&display=swap" rel="stylesheet" />
+      <div style={{ width: "100%", maxWidth: 520, textAlign: "center" }}>
+        <button onClick={onBack} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "transparent", color: "#6b7280", fontSize: 16, fontWeight: 700, marginBottom: 8 }}>→ החלף שחקן</button>
+        <div style={{ fontSize: 52 }}>📚</div>
+        <h1 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: 32, margin: "4px 0 18px", color: "#1f2937" }}>בחרו חוברת</h1>
+        <div style={{ display: "grid", gap: 14 }}>
+          {courses.map((c) => (
+            <button key={c.id} onClick={() => onPick(c.id)}
+              style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 22, padding: "24px 18px", background: "#fff",
+                boxShadow: "0 7px 0 rgba(0,0,0,0.08)", borderTop: `7px solid ${c.color}`, touchAction: "manipulation" }}>
+              <div style={{ fontSize: 46 }}>{c.emoji}</div>
+              <div style={{ fontSize: 23, fontWeight: 800, color: "#1f2937", marginTop: 6 }}>{c.title}</div>
+              <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{c.subtitle}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   אפליקציה
+   ============================================================ */
+function App() {
+  const { isTablet, landscape } = useDevice();
+  const twoCol = isTablet && landscape;
+
+  const [screen, setScreen] = useState("home");
+  const [topic, setTopic] = useState(null);
+  const [level, setLevel] = useState(null);
+  const [problem, setProblem] = useState(null);
+  const [input, setInput] = useState("");
+  const [feedback, setFeedback] = useState(null);
+  const [showHint, setShowHint] = useState(false);
+  const [showSol, setShowSol] = useState(false);
+  const [players, setPlayers] = useState({});
+  const [current, setCurrent] = useState(null);
+  const [course, setCourse] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const data = readStore();
+    if (data && data.players) {
+      setPlayers(data.players);
+      setCurrent(data.current && data.players[data.current] ? data.current : null);
+    }
+    setLoaded(true);
+  }, []);
+
+  const cur = (current && players[current]) || blankP();
+  const stars = cur.stars, streak = cur.streak, solved = cur.solved;
+
+  function persist(np, cu) { writeStore({ players: np, current: cu }); }
+  function pickPlayer(n) { setCurrent(n); persist(players, n); }
+  function addPlayer(n) {
+    const np = players[n] ? players : { ...players, [n]: blankP() };
+    setPlayers(np); setCurrent(n); persist(np, n);
+  }
+  function switchPlayer() { setScreen("home"); setProblem(null); setCourse(null); setCurrent(null); persist(players, null); }
+  function applyResult(ok) {
+    setPlayers((prev) => {
+      const c = prev[current] || blankP();
+      const nx = ok ? { stars: c.stars + level.stars, streak: c.streak + 1, solved: c.solved + 1 } : { ...c, streak: 0 };
+      const np = { ...prev, [current]: nx };
+      persist(np, current);
+      return np;
+    });
+  }
+
+  const newProblem = useCallback((t, l) => {
+    setProblem(t.gen(l.id)); setInput(""); setFeedback(null); setShowHint(false); setShowSol(false);
+  }, []);
+  function startLevel(t, l) {
+    setTopic(t); setLevel(l); setScreen("play");
+    setProblem(t.gen(l.id)); setInput(""); setFeedback(null); setShowHint(false); setShowSol(false);
+  }
+  function handleKey(k) {
+    if (k === "submit") return check();
+    if (feedback === "ok") return;
+    if (k === "clear") return setInput("");
+    if (k === "back") return setInput((s) => s.slice(0, -1));
+    if (problem.kind === "compare") return setInput(k);
+    setInput((s) => (s.length < 7 ? s + k : s));
+  }
+  function check() {
+    if (!problem || input.trim() === "") return;
+    const ok = problem.check(input);
+    setFeedback(ok ? "ok" : "no");
+    applyResult(ok);
+  }
+  const padMode = problem ? problem.kind : "number";
+
+  const S = {
+    homeTitle: isTablet ? (landscape ? 54 : 46) : 38,
+    homeCols: twoCol ? "repeat(5,1fr)" : isTablet ? "repeat(3,1fr)" : "repeat(2,1fr)",
+    levelCols: isTablet ? "repeat(3,1fr)" : "1fr",
+    expr: twoCol ? 50 : isTablet ? 44 : 34,
+    prompt: isTablet ? 20 : 16,
+    emoji: isTablet ? 54 : 40,
+    topicTitle: isTablet ? 22 : 19,
+  };
+  const sp = { stars, streak, solved, isTablet, landscape, player: current, onSwitch: switchPlayer };
+
+  if (!loaded) return null;
+  if (!current) return <PlayerSelect players={players} onPick={pickPlayer} onAdd={addPlayer} />;
+  if (!course) return <WorkbookSelect courses={COURSES} onPick={setCourse} onBack={switchPlayer} />;
+  const courseObj = COURSES.find((c) => c.id === course) || COURSES[0];
+  const courseTopics = courseObj.topics;
+  const backToCourses = () => { setScreen("home"); setProblem(null); setCourse(null); };
+
+  /* ---------- בית ---------- */
+  if (screen === "home") {
+    return (
+      <Shell {...sp}>
+        <BackBtn onClick={backToCourses} isTablet={isTablet} />
+        <h1 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: S.homeTitle, margin: "4px 0 4px", color: "#1f2937", textAlign: "center" }}>{courseObj.emoji} {courseObj.title}</h1>
+        <p style={{ textAlign: "center", color: "#6b7280", margin: "0 0 26px", fontSize: isTablet ? 21 : 17 }}>בחרי נושא, ואז רמת אתגר. בהצלחה!</p>
+        <div style={{ display: "grid", gridTemplateColumns: S.homeCols, gap: isTablet ? 18 : 14 }}>
+          {courseTopics.map((t) => (
+            <button key={t.id} onClick={() => { setTopic(t); setScreen("level"); }}
+              style={{
+                fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 24,
+                padding: isTablet ? "30px 14px" : "22px 12px", background: "#fff", boxShadow: "0 7px 0 rgba(0,0,0,0.08)",
+                borderTop: `7px solid ${t.color}`, textAlign: "center",
+                touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
+              }}>
+              <div style={{ fontSize: S.emoji }}>{t.emoji}</div>
+              <div style={{ fontSize: S.topicTitle, fontWeight: 800, marginTop: 8, color: "#1f2937" }}>{t.title}</div>
+            </button>
+          ))}
+        </div>
+      </Shell>
+    );
+  }
+
+  /* ---------- בחירת רמה + דוגמה פתורה ---------- */
+  if (screen === "level") {
+    const ex = topic.example;
+    return (
+      <Shell {...sp}>
+        <BackBtn onClick={() => setScreen("home")} isTablet={isTablet} />
+        <div style={{ textAlign: "center", marginBottom: 18 }}>
+          <div style={{ fontSize: isTablet ? 60 : 46 }}>{topic.emoji}</div>
+          <h2 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: isTablet ? 38 : 30, margin: "4px 0", color: topic.color }}>{topic.title}</h2>
+          <p style={{ color: "#6b7280", fontSize: isTablet ? 19 : 16, maxWidth: 620, margin: "8px auto 0", lineHeight: 1.6 }}>{topic.lesson}</p>
+        </div>
+
+        {/* כרטיס דוגמה פתורה — כל הדרך, שלב בכל שורה */}
+        <div style={{
+          maxWidth: 600, margin: "0 auto 22px", background: "#fff", borderRadius: 22,
+          border: `2px dashed ${topic.color}`, padding: isTablet ? "22px 26px" : "18px 18px",
+        }}>
+          <div style={{ fontSize: isTablet ? 17 : 15, fontWeight: 800, color: topic.color, marginBottom: 12, textAlign: "center" }}>✏️ דוגמה פתורה — שלב אחר שלב</div>
+          {ex.figure && <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><Figure fig={ex.figure} color={topic.color} /></div>}
+          {ex.expr && ex.expr.length > 0 && (
+            <div dir="ltr" style={{ fontSize: isTablet ? 30 : 26, fontWeight: 800, color: "#1f2937", display: "flex", justifyContent: "center", marginBottom: 14 }}>
+              <MathLine parts={ex.expr} />
+            </div>
+          )}
+          <div style={{ background: "#fafafa", borderRadius: 14, padding: isTablet ? "16px 20px" : "13px 16px" }}>
+            <StepLines lines={ex.steps} big={isTablet} />
+          </div>
+          <div style={{ textAlign: "center", marginTop: 14 }}>
+            <span style={{ background: "#f6ffed", color: "#389e0d", borderRadius: 12, padding: "6px 18px", fontSize: isTablet ? 20 : 18, fontWeight: 800, display: "inline-flex", alignItems: "center", gap: 4 }} dir="ltr">
+              <span>תשובה:</span> {renderMathText(ex.answer, isTablet ? 0.9 : 0.85)}
+            </span>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: S.levelCols, gap: 16, maxWidth: 720, margin: "0 auto" }}>
+          {LEVELS.map((l) => (
+            <button key={l.id} onClick={() => startLevel(topic, l)}
+              style={{
+                fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 20,
+                padding: isTablet ? "24px 20px" : "18px 20px", background: "#fff", boxShadow: "0 5px 0 rgba(0,0,0,0.08)",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
+              }}>
+              <span style={{ fontSize: isTablet ? 25 : 22, fontWeight: 800, color: "#1f2937" }}>{l.badge} {l.name}</span>
+              <span style={{ fontSize: isTablet ? 17 : 15, color: "#9ca3af" }}>{"⭐".repeat(l.stars)}</span>
+            </button>
+          ))}
+        </div>
+      </Shell>
+    );
+  }
+
+  /* ---------- תרגול ---------- */
+  const questionCard = (
+    <div style={{
+      background: "#fff", borderRadius: 28, padding: twoCol ? "34px 26px" : isTablet ? "28px 22px" : "24px 18px",
+      boxShadow: "0 9px 0 rgba(0,0,0,0.06)", borderTop: `7px solid ${topic.color}`,
+      display: "flex", flexDirection: "column", justifyContent: "center", flex: twoCol ? 1 : undefined, marginBottom: twoCol ? 0 : 16,
+    }}>
+      <p style={{ textAlign: "center", color: "#6b7280", fontSize: S.prompt, margin: "0 0 16px", lineHeight: 1.5 }} dir="rtl">{problem.prompt}</p>
+      <div style={{ minHeight: 56, display: "flex", justifyContent: "center", alignItems: "center", fontSize: S.expr, color: "#1f2937" }}>
+        {problem.figure ? <Figure fig={problem.figure} color={topic.color} />
+          : problem.vertical ? <Vertical data={problem.vertical} color={topic.color} big={isTablet} />
+          : <MathLine parts={problem.expr} />}
+      </div>
+      <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+        <div dir="ltr" style={{
+          minWidth: isTablet ? 190 : 150, minHeight: isTablet ? 72 : 56, padding: "8px 22px", borderRadius: 18,
+          border: `3px solid ${feedback === "ok" ? "#52c41a" : feedback === "no" ? "#ff4d4f" : "#e5e7eb"}`,
+          background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: isTablet ? 38 : 30, fontWeight: 800, color: "#1f2937", userSelect: "none",
+        }}>
+          {input === "" ? <span style={{ color: "#cbd5e1" }}>?</span> : renderInput(input, problem.kind)}
+        </div>
+      </div>
+      {feedback === "ok" && <p style={{ textAlign: "center", color: "#389e0d", fontWeight: 800, fontSize: isTablet ? 24 : 20, margin: "16px 0 0" }}>🎉 נכון מאוד! +{level.stars} ⭐</p>}
+      {feedback === "no" && <p style={{ textAlign: "center", color: "#cf1322", fontWeight: 700, fontSize: isTablet ? 19 : 17, margin: "16px 0 0" }} dir="rtl">לא בדיוק — נסי שוב, או הציצי ברמז 💡</p>}
+    </div>
+  );
+
+  const padColumn = (
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 18, flex: twoCol ? 1 : undefined }}>
+      {feedback !== "ok" && (problem.kind === "choice"
+        ? (
+          <div style={{ display: "grid", gridTemplateColumns: problem.choices.length > 2 ? "repeat(2,1fr)" : "1fr", gap: isTablet ? 14 : 10, width: "100%", maxWidth: 440, margin: "0 auto" }}>
+            {problem.choices.map((opt) => (
+              <button key={opt} onClick={() => setInput(opt)}
+                style={{ fontFamily: "inherit", cursor: "pointer", border: input === opt ? "3px solid #36cfc9" : "2px solid #e5e7eb",
+                  borderRadius: 16, height: isTablet ? 70 : 58, fontSize: isTablet ? 22 : 19, fontWeight: 800,
+                  background: input === opt ? "#e6fffb" : "#fff", color: "#1f2937", boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
+                  touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>{opt}</button>
+            ))}
+            <button onClick={check} style={{ gridColumn: "1 / -1", fontFamily: "inherit", cursor: "pointer", border: "none",
+              borderRadius: 16, height: isTablet ? 64 : 54, fontSize: isTablet ? 24 : 21, fontWeight: 800, background: "#52c41a", color: "#fff",
+              boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation" }}>✓ בדיקה</button>
+          </div>
+        )
+        : <NumPad mode={padMode} onKey={handleKey} isTablet={isTablet} landscape={landscape} />)}
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+        {feedback === "ok" ? (
+          <ActionBtn onClick={() => newProblem(topic, level)} bg={topic.color} color="#fff" isTablet={isTablet}>תרגיל הבא ←</ActionBtn>
+        ) : (
+          <>
+            <ActionBtn onClick={() => setShowHint((s) => !s)} bg="#fff7e6" color="#d46b08" isTablet={isTablet}>💡 רמז</ActionBtn>
+            <ActionBtn onClick={() => setShowSol((s) => !s)} bg="#f0f0f0" color="#595959" isTablet={isTablet}>📖 פתרון</ActionBtn>
+            <ActionBtn onClick={() => newProblem(topic, level)} bg="#fff" color="#8c8c8c" isTablet={isTablet}>↻ תרגיל אחר</ActionBtn>
+          </>
+        )}
+      </div>
+      {showHint && feedback !== "ok" && <Note bg="#fffbe6" border="#ffe58f" isTablet={isTablet}>💡 {problem.hint}</Note>}
+      {showSol && feedback !== "ok" && (
+        <div dir="rtl" style={{ background: "#f9f0ff", border: "2px solid #d3adf7", borderRadius: 16, padding: isTablet ? "16px 18px" : "14px 16px" }}>
+          <div style={{ fontWeight: 800, color: "#722ed1", marginBottom: 8, fontSize: isTablet ? 17 : 15 }}>📖 פתרון שלב אחר שלב:</div>
+          <StepLines lines={problem.explanation} big={isTablet} />
+          <div style={{ marginTop: 10, fontSize: isTablet ? 18 : 16, fontWeight: 800, display: "flex", alignItems: "center", gap: 4 }} dir="ltr"><span>תשובה:</span> {renderMathText(problem.answerText, isTablet ? 0.9 : 0.85)}</div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <Shell {...sp}>
+      <BackBtn onClick={() => setScreen("level")} isTablet={isTablet} />
+      <div style={{ textAlign: "center", marginBottom: 12 }}>
+        <span style={{ fontSize: isTablet ? 18 : 15, fontWeight: 700, color: topic.color }}>{topic.emoji} {topic.title} · {level.badge} {level.name}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: twoCol ? "row-reverse" : "column", gap: twoCol ? 24 : 0, alignItems: "stretch" }}>
+        {questionCard}
+        {padColumn}
+      </div>
+    </Shell>
+  );
+}
+
+function renderInput(input, kind) {
+  if (kind === "fraction" && input.includes("/")) {
+    const [n, d] = input.split("/");
+    return <span style={{ display: "inline-flex", alignItems: "center" }}><Frac n={n || "?"} d={d || "?"} /></span>;
+  }
+  return <span>{input}</span>;
+}
+
+/* ---------- דף טיוטה לכתיבה עם עט (S Pen) ---------- */
+const PAGE_H = 1800; // דף טיוטה ארוך לגלילה
+function ScratchPad({ isTablet, open, setOpen }) {
+  const [color, setColor] = useState("#1f2937");
+  const [erase, setErase] = useState(false);
+  const canvasRef = useRef(null);
+  const ctxRef = useRef(null);
+  const drawing = useRef(false);
+  const last = useRef(null);
+
+  const setup = useCallback(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.floor(rect.width * ratio));
+    const h = Math.max(1, Math.floor(PAGE_H * ratio));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctxRef.current = ctx;
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const id = requestAnimationFrame(setup);
+    const onR = () => setup();
+    window.addEventListener("resize", onR);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", onR); };
+  }, [open, setup]);
+
+  const pos = (e) => { const r = canvasRef.current.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  // מצב מחיקה: כפתור המחק במסך, או כפתור צד / קצה־מחק של העט אם המכשיר חושף אותם
+  const isPenErase = (e) => (e.buttons & 2) !== 0 || (e.buttons & 32) !== 0;
+  const drawSeg = (a, b, e) => {
+    const ctx = ctxRef.current; if (!ctx) return;
+    const doErase = erase || isPenErase(e);
+    ctx.globalCompositeOperation = doErase ? "destination-out" : "source-over";
+    ctx.strokeStyle = color;
+    const pr = e.pressure && e.pressure > 0 ? e.pressure : 0.5;
+    ctx.lineWidth = doErase ? 30 : (e.pointerType === "pen" ? 1.4 + pr * 4.5 : 2.8);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  };
+  const down = (e) => {
+    if (e.pointerType === "touch") return; // אצבע = גלילה
+    e.preventDefault();
+    drawing.current = true;
+    const p = pos(e); last.current = p;
+    drawSeg(p, { x: p.x + 0.01, y: p.y + 0.01 }, e); // נקודה גם בנגיעה בודדת
+    try { canvasRef.current.setPointerCapture(e.pointerId); } catch (_) {}
+  };
+  const move = (e) => {
+    if (!drawing.current || e.pointerType === "touch") return;
+    e.preventDefault();
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : null;
+    const list = evs && evs.length ? evs : [e];
+    let prev = last.current;
+    for (const ev of list) { const p = pos(ev); drawSeg(prev, p, e); prev = p; }
+    last.current = prev;
+  };
+  const up = () => { drawing.current = false; last.current = null; };
+  const clear = () => {
+    const c = canvasRef.current, ctx = ctxRef.current; if (!c || !ctx) return;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
+  };
+
+  const tbtn = { fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 10, padding: "5px 11px", fontSize: 13, fontWeight: 800, background: "#f0f0f0", color: "#595959", touchAction: "manipulation" };
+
+  if (!open) {
+    return (
+      <button onClick={() => setOpen(true)}
+        style={{ position: "fixed", bottom: 16, insetInlineStart: 16, zIndex: 60, fontFamily: "inherit", cursor: "pointer",
+          border: "none", borderRadius: 16, padding: "12px 18px", fontSize: 16, fontWeight: 800, background: "#36cfc9", color: "#fff",
+          boxShadow: "0 5px 14px rgba(0,0,0,0.2)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>
+        ✏️ דף טיוטה
+      </button>
+    );
+  }
+
+  const palette = ["#1f2937", "#0958d9", "#cf1322"];
+  const gridBg = "repeating-linear-gradient(#eef2f7 0 1px, transparent 1px 26px), repeating-linear-gradient(90deg, #eef2f7 0 1px, transparent 1px 26px)";
+  return (
+    <div dir="rtl" style={{ position: "fixed", left: 0, right: 0, bottom: 0, height: "50vh", zIndex: 60, background: "#fff",
+      borderTop: "3px solid #36cfc9", boxShadow: "0 -10px 30px rgba(0,0,0,0.15)", display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", borderBottom: "1px solid #eee", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 5 }}>
+          {palette.map((c) => (
+            <button key={c} onClick={() => { setColor(c); setErase(false); }}
+              style={{ width: 26, height: 26, borderRadius: "50%", background: c, cursor: "pointer",
+                border: (!erase && color === c) ? "3px solid #36cfc9" : "2px solid #ddd", touchAction: "manipulation" }} />
+          ))}
+        </div>
+        <button onClick={() => setErase((e) => !e)} style={{ ...tbtn, background: erase ? "#fff7e6" : "#f0f0f0", color: erase ? "#d46b08" : "#595959" }}>🧽 מחק</button>
+        <button onClick={clear} style={tbtn}>🗑️ נקה</button>
+        <button onClick={() => setOpen(false)} style={{ ...tbtn, marginInlineStart: "auto" }}>✕ סגור</button>
+      </div>
+      <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
+        <div style={{ position: "relative", width: "100%", height: PAGE_H, backgroundImage: gridBg }}>
+          <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", touchAction: "pan-y", cursor: "crosshair" }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- מעטפת ועזר ---------- */
+function Shell({ children, stars, streak, solved, isTablet, landscape, player, onSwitch }) {
+  const [padOpen, setPadOpen] = useState(false);
+  const outerPad = isTablet ? (landscape ? "20px 32px 40px" : "18px 22px 40px") : "16px 14px 50px";
+  return (
+    <div dir="rtl" style={{
+      minHeight: "100vh", fontFamily: "'Varela Round', system-ui, sans-serif", touchAction: "manipulation", WebkitTextSizeAdjust: "100%",
+      background: "radial-gradient(circle at 18% 8%, #fef3c7 0%, transparent 38%), radial-gradient(circle at 88% 26%, #dbeafe 0%, transparent 42%), linear-gradient(180deg,#f8fafc,#eef2ff)",
+    }}>
+      <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Varela+Round&display=swap" rel="stylesheet" />
+      <div style={{
+        padding: outerPad, boxSizing: "border-box",
+        ...(padOpen ? { height: "50vh", overflowY: "auto", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" } : {}),
+      }}>
+        <div style={{ maxWidth: isTablet ? (landscape ? 1180 : 760) : 560, margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: isTablet ? 14 : 10, marginBottom: 16, flexWrap: "wrap" }}>
+            {player && (
+              <button onClick={onSwitch} title="החלף שחקן" style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "#fff", borderRadius: 16, padding: isTablet ? "9px 16px" : "6px 12px", boxShadow: "0 3px 0 rgba(0,0,0,0.06)", fontSize: isTablet ? 16 : 14, fontWeight: 800, color: "#36cfc9", touchAction: "manipulation" }}>👤 {player} ⇆</button>
+            )}
+            <Stat label="כוכבים" val={`⭐ ${stars}`} isTablet={isTablet} />
+            <Stat label="רצף" val={`🔥 ${streak}`} isTablet={isTablet} />
+            <Stat label="נפתרו" val={`✅ ${solved}`} isTablet={isTablet} />
+          </div>
+          {children}
+        </div>
+      </div>
+      <ScratchPad isTablet={isTablet} open={padOpen} setOpen={setPadOpen} />
+    </div>
+  );
+}
+function Stat({ label, val, isTablet }) {
+  return (
+    <div style={{ background: "#fff", borderRadius: 16, padding: isTablet ? "9px 20px" : "6px 14px", boxShadow: "0 3px 0 rgba(0,0,0,0.06)", textAlign: "center", minWidth: isTablet ? 100 : 78 }}>
+      <div style={{ fontSize: isTablet ? 22 : 18, fontWeight: 800, color: "#1f2937" }}>{val}</div>
+      <div style={{ fontSize: isTablet ? 12 : 11, color: "#9ca3af" }}>{label}</div>
+    </div>
+  );
+}
+function BackBtn({ onClick, isTablet }) {
+  return (
+    <button onClick={onClick} style={{
+      fontFamily: "inherit", cursor: "pointer", border: "none", background: "transparent",
+      color: "#6b7280", fontSize: isTablet ? 18 : 16, fontWeight: 700, marginBottom: 6, padding: 5,
+      touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
+    }}>→ חזרה</button>
+  );
+}
+function ActionBtn({ children, onClick, bg, color, isTablet }) {
+  return (
+    <button onClick={onClick} style={{
+      fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 16,
+      padding: isTablet ? "14px 22px" : "12px 18px", fontSize: isTablet ? 18 : 16, fontWeight: 800, background: bg, color,
+      boxShadow: "0 4px 0 rgba(0,0,0,0.10)", touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
+    }}>{children}</button>
+  );
+}
+function Note({ children, bg, border, isTablet }) {
+  return (
+    <div dir="rtl" style={{ background: bg, border: `2px solid ${border}`, borderRadius: 16, padding: isTablet ? "16px 18px" : "14px 16px", fontSize: isTablet ? 18 : 16, lineHeight: 1.6, color: "#1f2937" }}>{children}</div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(React.createElement(App));
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>
