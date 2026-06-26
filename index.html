@@ -1197,7 +1197,13 @@ function writeStore(v) {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(v)); }
   catch (_) { memStore = v; }
 }
-const blankP = () => ({ stars: 0, streak: 0, solved: 0 });
+const blankP = () => ({ stars: 0, streak: 0, solved: 0, prog: {} });
+const MAXLVL = 2;          // רמות 0..2
+const NEED = 6;            // תשובות נכונות לעליית רמה
+const ADAPTIVE_COURSE = "grade2";
+const getProg = (player, topicId) => ((player && player.prog && player.prog[topicId]) || { lvl: 0, xp: 0 });
+const levelName = (lvl) => "רמה " + (lvl + 1);
+const syntheticLevel = (lvl) => ({ id: lvl, name: levelName(lvl), badge: "", stars: 1 + lvl, adaptive: true });
 
 function PlayerSelect({ players, onPick, onAdd }) {
   const [name, setName] = useState("");
@@ -1260,6 +1266,48 @@ function WorkbookSelect({ courses, onPick, onBack }) {
 /* ============================================================
    אפליקציה
    ============================================================ */
+/* ---------- שביל מסע (קונספט הרפתקה) ---------- */
+function JourneyPath({ levelIdx, color, isTablet }) {
+  const nodes = MAXLVL + 1;
+  const W = isTablet ? 340 : 290;
+  const stepH = isTablet ? 96 : 82;
+  const topPad = 70, botPad = 50;
+  const H = topPad + botPad + (nodes - 1) * stepH;
+  const cx = (i) => (i % 2 === 0 ? W * 0.30 : W * 0.70);
+  const cy = (i) => H - botPad - i * stepH;
+  const R = isTablet ? 28 : 24;
+  const done = levelIdx >= MAXLVL;
+  const segs = [];
+  for (let i = 0; i < nodes - 1; i++) {
+    const reached = (i + 1) <= levelIdx;
+    segs.push(<line key={"s" + i} x1={cx(i)} y1={cy(i)} x2={cx(i + 1)} y2={cy(i + 1)}
+      stroke={reached ? color : "#e2e8f0"} strokeWidth="8" strokeLinecap="round" strokeDasharray={reached ? "0" : "2 13"} />);
+  }
+  const tx = cx(nodes - 1);
+  const ty = cy(nodes - 1) - (isTablet ? 52 : 46);
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ maxWidth: W, display: "block", margin: "0 auto" }}>
+      {segs}
+      <g transform={`translate(${tx - (isTablet ? 17 : 15)},${ty - (isTablet ? 17 : 15)})`}>
+        <Icon name="star" size={isTablet ? 34 : 30} color={done ? "#f59e0b" : "#cbd5e1"} stroke={2} />
+      </g>
+      {Array.from({ length: nodes }).map((_, i) => {
+        const x = cx(i), y = cy(i);
+        const st = i < levelIdx ? "done" : i === levelIdx ? "cur" : "lock";
+        const fill = st === "lock" ? "#fff" : color;
+        return (
+          <g key={i}>
+            {st === "cur" && <circle cx={x} cy={y} r={R + 7} fill="none" stroke={color} strokeWidth="3" opacity="0.3" />}
+            <circle cx={x} cy={y} r={R} fill={fill} stroke={st === "lock" ? "#e2e8f0" : color} strokeWidth="3" />
+            <text x={x} y={y + (isTablet ? 7 : 6)} textAnchor="middle" fontSize={isTablet ? 21 : 18} fontWeight="800" fill={st === "lock" ? "#cbd5e1" : "#fff"}>{i + 1}</text>
+            <text x={x} y={y + R + (isTablet ? 22 : 19)} textAnchor="middle" fontSize={isTablet ? 14 : 12} fontWeight="700" fill={st === "lock" ? "#cbd5e1" : "#64748b"}>{levelName(i)}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 function App() {
   const { isTablet, landscape } = useDevice();
   const twoCol = isTablet && landscape;
@@ -1276,6 +1324,9 @@ function App() {
   const [current, setCurrent] = useState(null);
   const [course, setCourse] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [leveledUp, setLeveledUp] = useState(false);
+  const [parentOk, setParentOk] = useState(false);
+  const [pq, setPq] = useState({ a: 6, b: 7 });
 
   useEffect(() => {
     const data = readStore();
@@ -1296,22 +1347,50 @@ function App() {
     setPlayers(np); setCurrent(n); persist(np, n);
   }
   function switchPlayer() { setScreen("home"); setProblem(null); setCourse(null); setCurrent(null); persist(players, null); }
+  const adaptive = course === ADAPTIVE_COURSE;
   function applyResult(ok) {
-    setPlayers((prev) => {
-      const c = prev[current] || blankP();
-      const nx = ok ? { stars: c.stars + level.stars, streak: c.streak + 1, solved: c.solved + 1 } : { ...c, streak: 0 };
-      const np = { ...prev, [current]: nx };
-      persist(np, current);
-      return np;
-    });
+    const c = players[current] || blankP();
+    const prog = { ...(c.prog || {}) };
+    let bumped = false, lvlNow = 0;
+    if (adaptive && topic) {
+      const t = prog[topic.id] || { lvl: 0, xp: 0 };
+      let lvl = t.lvl, xp = t.xp;
+      if (ok) { xp += 1; if (xp >= NEED && lvl < MAXLVL) { lvl += 1; xp = 0; bumped = true; } }
+      else { xp = Math.max(0, xp - 1); }
+      prog[topic.id] = { lvl, xp }; lvlNow = lvl;
+    }
+    const gain = ok ? (adaptive ? 1 + lvlNow : (level ? level.stars : 1)) : 0;
+    const nx = ok ? { ...c, stars: c.stars + gain, streak: c.streak + 1, solved: c.solved + 1, prog }
+                  : { ...c, streak: 0, prog };
+    const np = { ...players, [current]: nx };
+    setPlayers(np); persist(np, current);
+    if (bumped) { setLeveledUp(true); setLevel(syntheticLevel(lvlNow)); }
   }
+  function resetQ() { setInput(""); setFeedback(null); setShowHint(false); setShowSol(false); setLeveledUp(false); }
+  function startProblem(t, lvl) { setProblem(genFresh(t, lvl)); resetQ(); }
 
-  const newProblem = useCallback((t, l) => {
-    setProblem(genFresh(t, l.id)); setInput(""); setFeedback(null); setShowHint(false); setShowSol(false);
-  }, []);
+  const newProblem = useCallback((t, l) => { setProblem(genFresh(t, l.id)); resetQ(); }, []);
+  // התרגיל הבא — ברמה הסתגלנית העדכנית (כיתה ב') או ברמה שנבחרה (אחרת)
+  function nextProblem() {
+    if (adaptive && topic) {
+      const lvl = Math.min(getProg(players[current], topic.id).lvl, MAXLVL);
+      setLevel(syntheticLevel(lvl)); startProblem(topic, lvl);
+    } else { startProblem(topic, level.id); }
+  }
   function startLevel(t, l) {
-    setTopic(t); setLevel(l); setScreen("play");
-    setProblem(genFresh(t, l.id)); setInput(""); setFeedback(null); setShowHint(false); setShowSol(false);
+    setTopic(t); setLevel(l); setScreen("play"); startProblem(t, l.id);
+  }
+  function startAdaptive(t) {
+    setTopic(t); setScreen("play");
+    const lvl = Math.min(getProg(players[current], t.id).lvl, MAXLVL);
+    setLevel(syntheticLevel(lvl)); startProblem(t, lvl);
+  }
+  function setTopicLevel(topicId, lvl) {
+    const c = players[current] || blankP();
+    const prog = { ...(c.prog || {}) };
+    prog[topicId] = { lvl: Math.max(0, Math.min(MAXLVL, lvl)), xp: 0 };
+    const np = { ...players, [current]: { ...c, prog } };
+    setPlayers(np); persist(np, current);
   }
   function handleKey(k) {
     if (k === "submit") return check();
@@ -1354,20 +1433,31 @@ function App() {
       <Shell {...sp}>
         <BackBtn onClick={backToCourses} isTablet={isTablet} />
         <h1 style={{ fontFamily: "'Rubik', sans-serif", fontSize: S.homeTitle, margin: "4px 0 4px", color: "#1f2937", textAlign: "center", display: "inline-flex", alignItems: "center", gap: 10, justifyContent: "center", width: "100%" }}><Icon name={COURSE_ICONS[courseObj.id]} size={S.homeTitle * 0.9} color={courseObj.color} /> {courseObj.title}</h1>
-        <p style={{ textAlign: "center", color: "#6b7280", margin: "0 0 26px", fontSize: isTablet ? 21 : 17 }}>בחרי נושא, ואז רמת אתגר. בהצלחה!</p>
+        <p style={{ textAlign: "center", color: "#6b7280", margin: "0 0 22px", fontSize: isTablet ? 21 : 17 }}>{adaptive ? "בחרי נושא וצאי למסע — הרמה עולה לבד ככל שמתאמנים!" : "בחרי נושא, ואז רמת אתגר. בהצלחה!"}</p>
+        {adaptive && <div style={{ textAlign: "center", marginBottom: 18 }}><button onClick={() => { setParentOk(false); setPq({ a: ri(3, 9), b: ri(3, 9) }); setInput(""); setScreen("parentgate"); }} style={{ fontFamily: "inherit", cursor: "pointer", border: "1px solid #e5e7eb", background: "#fff", borderRadius: 14, padding: "8px 16px", fontSize: isTablet ? 15 : 13, fontWeight: 700, color: "#6b7280", display: "inline-flex", alignItems: "center", gap: 6, boxShadow: "0 3px 10px rgba(2,6,23,0.05)" }}><Icon name="user" size={16} color="#9ca3af" /> אזור הורים</button></div>}
         <div style={{ display: "grid", gridTemplateColumns: S.homeCols, gap: isTablet ? 18 : 14 }}>
-          {courseTopics.map((t) => (
-            <button key={t.id} onClick={() => { setTopic(t); setScreen("level"); }}
+          {courseTopics.map((t) => {
+            const pr = adaptive ? getProg(cur, t.id) : null;
+            return (
+            <button key={t.id} onClick={() => { setTopic(t); setScreen(adaptive ? "journey" : "level"); }}
               style={{
                 fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 24,
-                padding: isTablet ? "30px 14px" : "22px 12px", background: "#fff", boxShadow: "0 10px 26px rgba(2,6,23,0.07)",
+                padding: isTablet ? "26px 14px 18px" : "20px 12px 14px", background: "#fff", boxShadow: "0 10px 26px rgba(2,6,23,0.07)",
                 borderTop: `5px solid ${t.color}`, textAlign: "center",
                 touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
               }}>
               <div style={{ display: "flex", justifyContent: "center" }}><Icon name={topicIcon(t)} size={S.emoji} color={t.color} stroke={1.8} /></div>
               <div style={{ fontSize: S.topicTitle, fontWeight: 800, marginTop: 10, color: "#1f2937" }}>{t.title}</div>
+              {pr && (
+                <div style={{ marginTop: 8 }}>
+                  <div style={{ fontSize: isTablet ? 13 : 11, fontWeight: 700, color: t.color, marginBottom: 4 }}>{levelName(pr.lvl)}</div>
+                  <div style={{ height: 6, borderRadius: 99, background: "#eef2f7", overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: `${pr.lvl >= MAXLVL ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color, borderRadius: 99 }} />
+                  </div>
+                </div>
+              )}
             </button>
-          ))}
+          ); })}
         </div>
       </Shell>
     );
@@ -1425,6 +1515,87 @@ function App() {
     );
   }
 
+  /* ---------- מסך מסע (כיתה ב' — מודל לומד) ---------- */
+  if (screen === "journey") {
+    const pr = getProg(cur, topic.id);
+    const remain = NEED - pr.xp;
+    return (
+      <Shell {...sp}>
+        <BackBtn onClick={() => setScreen("home")} isTablet={isTablet} />
+        <div style={{ textAlign: "center", marginBottom: 8 }}>
+          <div style={{ display: "flex", justifyContent: "center" }}><Icon name={topicIcon(topic)} size={isTablet ? 52 : 42} color={topic.color} stroke={1.8} /></div>
+          <h2 style={{ fontFamily: "'Rubik', sans-serif", fontSize: isTablet ? 34 : 28, margin: "6px 0 4px", color: topic.color }}>{topic.title}</h2>
+          <p style={{ color: "#6b7280", fontSize: isTablet ? 18 : 15, maxWidth: 560, margin: "6px auto 0", lineHeight: 1.6 }}>{topic.lesson}</p>
+        </div>
+        <div style={{ maxWidth: 460, margin: "0 auto", background: "#fff", borderRadius: 26, boxShadow: "0 12px 30px rgba(2,6,23,0.06)", borderTop: `4px solid ${topic.color}`, padding: isTablet ? "22px 20px 26px" : "18px 16px 22px" }}>
+          <div style={{ textAlign: "center", fontWeight: 800, fontSize: isTablet ? 18 : 16, color: topic.color, marginBottom: 6 }}>
+            {pr.lvl >= MAXLVL ? "כל הכבוד! הגעת לפסגה 🏆" : `${levelName(pr.lvl)} — עוד ${remain} ${remain === 1 ? "תשובה" : "תשובות"} לרמה הבאה`}
+          </div>
+          <JourneyPath levelIdx={pr.lvl} color={topic.color} isTablet={isTablet} />
+          <button onClick={() => startAdaptive(topic)}
+            style={{ display: "block", width: "100%", marginTop: 14, fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 18,
+              padding: isTablet ? "18px" : "15px", fontSize: isTablet ? 24 : 20, fontWeight: 800, background: topic.color, color: "#fff",
+              boxShadow: "0 6px 16px rgba(2,6,23,0.14)", touchAction: "manipulation" }}>בואי נתרגל ←</button>
+        </div>
+      </Shell>
+    );
+  }
+
+  /* ---------- שער הורים ---------- */
+  if (screen === "parentgate") {
+    const tryGate = () => { if (Number(input) === pq.a * pq.b) { setParentOk(true); setInput(""); setScreen("parent"); } else { setInput(""); } };
+    return (
+      <Shell {...sp}>
+        <BackBtn onClick={() => setScreen("home")} isTablet={isTablet} />
+        <div style={{ maxWidth: 420, margin: "40px auto 0", background: "#fff", borderRadius: 24, boxShadow: "0 12px 30px rgba(2,6,23,0.06)", padding: "28px 24px", textAlign: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}><Icon name="user" size={42} color="#9254de" /></div>
+          <h2 style={{ fontFamily: "'Rubik', sans-serif", fontSize: isTablet ? 26 : 22, margin: "0 0 6px", color: "#1f2937" }}>אזור הורים</h2>
+          <p style={{ color: "#6b7280", fontSize: isTablet ? 17 : 15, margin: "0 0 16px" }}>פתרו כדי להמשיך:</p>
+          <div dir="ltr" style={{ fontSize: isTablet ? 34 : 28, fontWeight: 800, color: "#1f2937", marginBottom: 14 }}>{pq.a} × {pq.b} = ?</div>
+          <input value={input} onChange={(e) => setInput(e.target.value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => e.key === "Enter" && tryGate()}
+            inputMode="numeric" autoFocus dir="ltr"
+            style={{ width: 120, fontFamily: "inherit", fontSize: 26, fontWeight: 800, textAlign: "center", padding: "10px", borderRadius: 14, border: "2px solid #e5e7eb", outline: "none" }} />
+          <button onClick={tryGate} style={{ display: "block", width: "100%", marginTop: 16, fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 16, padding: "14px", fontSize: 20, fontWeight: 800, background: "#9254de", color: "#fff", boxShadow: "0 6px 16px rgba(2,6,23,0.14)" }}>כניסה</button>
+        </div>
+      </Shell>
+    );
+  }
+
+  /* ---------- דשבורד הורים ---------- */
+  if (screen === "parent") {
+    if (!parentOk) { setScreen("home"); return null; }
+    return (
+      <Shell {...sp}>
+        <BackBtn onClick={() => setScreen("home")} isTablet={isTablet} />
+        <h2 style={{ fontFamily: "'Rubik', sans-serif", fontSize: isTablet ? 32 : 26, margin: "4px 0 4px", color: "#1f2937", textAlign: "center" }}>אזור הורים — {current}</h2>
+        <p style={{ textAlign: "center", color: "#6b7280", fontSize: isTablet ? 17 : 14, margin: "0 0 20px" }}>הרמה עולה אוטומטית עם התרגול. כאן אפשר לכוון ידנית כל נושא.</p>
+        <div style={{ maxWidth: 600, margin: "0 auto", display: "flex", flexDirection: "column", gap: 10 }}>
+          {courseTopics.map((t) => {
+            const pr = getProg(cur, t.id);
+            return (
+              <div key={t.id} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 4px 12px rgba(2,6,23,0.06)", padding: isTablet ? "14px 18px" : "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+                <Icon name={topicIcon(t)} size={isTablet ? 30 : 26} color={t.color} stroke={1.8} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 800, fontSize: isTablet ? 18 : 16, color: "#1f2937" }}>{t.title}</div>
+                  <div style={{ height: 6, borderRadius: 99, background: "#eef2f7", overflow: "hidden", marginTop: 5 }}>
+                    <div style={{ height: "100%", width: `${pr.lvl >= MAXLVL ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color }} />
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <button onClick={() => setTopicLevel(t.id, pr.lvl - 1)} disabled={pr.lvl <= 0}
+                    style={{ fontFamily: "inherit", cursor: pr.lvl <= 0 ? "default" : "pointer", border: "none", borderRadius: 10, width: 34, height: 34, fontSize: 22, fontWeight: 800, background: pr.lvl <= 0 ? "#f1f5f9" : "#fff1f0", color: pr.lvl <= 0 ? "#cbd5e1" : "#cf1322", boxShadow: "0 2px 6px rgba(2,6,23,0.06)" }}>−</button>
+                  <span style={{ minWidth: 58, textAlign: "center", fontWeight: 800, fontSize: isTablet ? 16 : 14, color: t.color }}>{levelName(pr.lvl)}</span>
+                  <button onClick={() => setTopicLevel(t.id, pr.lvl + 1)} disabled={pr.lvl >= MAXLVL}
+                    style={{ fontFamily: "inherit", cursor: pr.lvl >= MAXLVL ? "default" : "pointer", border: "none", borderRadius: 10, width: 34, height: 34, fontSize: 22, fontWeight: 800, background: pr.lvl >= MAXLVL ? "#f1f5f9" : "#f6ffed", color: pr.lvl >= MAXLVL ? "#cbd5e1" : "#389e0d", boxShadow: "0 2px 6px rgba(2,6,23,0.06)" }}>+</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Shell>
+    );
+  }
+
   /* ---------- תרגול ---------- */
   const questionCard = (
     <div style={{
@@ -1472,7 +1643,9 @@ function App() {
           {input === "" ? <span style={{ color: "#cbd5e1" }}>?</span> : renderInput(input, problem.kind)}
         </div>
       </div>
-      {feedback === "ok" && <p style={{ textAlign: "center", color: "#389e0d", fontWeight: 800, fontSize: isTablet ? 24 : 20, margin: "16px 0 0" }}>🎉 נכון מאוד! +{level.stars} ⭐</p>}
+      {feedback === "ok" && (leveledUp
+        ? <p style={{ textAlign: "center", color: "#722ed1", fontWeight: 800, fontSize: isTablet ? 24 : 20, margin: "16px 0 0", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%" }}><Icon name="star" size={isTablet ? 26 : 22} color="#f59e0b" stroke={2} /> עלית רמה! עכשיו {level.name}</p>
+        : <p style={{ textAlign: "center", color: "#389e0d", fontWeight: 800, fontSize: isTablet ? 24 : 20, margin: "16px 0 0", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%" }}>נכון מאוד! +{level.stars} <Icon name="star" size={isTablet ? 22 : 19} color="#f59e0b" stroke={2} /></p>)}
       {feedback === "no" && <p style={{ textAlign: "center", color: "#cf1322", fontWeight: 700, fontSize: isTablet ? 19 : 17, margin: "16px 0 0" }} dir="rtl">לא בדיוק — נסי שוב, או הציצי ברמז 💡</p>}
     </div>
   );
@@ -1512,12 +1685,12 @@ function App() {
         : <NumPad mode={padMode} onKey={handleKey} isTablet={isTablet} landscape={landscape} />)}
       <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
         {feedback === "ok" ? (
-          <ActionBtn onClick={() => newProblem(topic, level)} bg={topic.color} color="#fff" isTablet={isTablet}>תרגיל הבא ←</ActionBtn>
+          <ActionBtn onClick={() => nextProblem()} bg={topic.color} color="#fff" isTablet={isTablet}>תרגיל הבא ←</ActionBtn>
         ) : (
           <>
             <ActionBtn onClick={() => setShowHint((s) => !s)} bg="#fff7e6" color="#d46b08" isTablet={isTablet}><Icon name="bulb" size={isTablet ? 20 : 18} color="#d46b08" /> רמז</ActionBtn>
             <ActionBtn onClick={() => setShowSol((s) => !s)} bg="#f0f0f0" color="#595959" isTablet={isTablet}><Icon name="book" size={isTablet ? 20 : 18} color="#595959" /> פתרון</ActionBtn>
-            <ActionBtn onClick={() => newProblem(topic, level)} bg="#fff" color="#8c8c8c" isTablet={isTablet}><Icon name="refresh" size={isTablet ? 20 : 18} color="#8c8c8c" /> תרגיל אחר</ActionBtn>
+            <ActionBtn onClick={() => nextProblem()} bg="#fff" color="#8c8c8c" isTablet={isTablet}><Icon name="refresh" size={isTablet ? 20 : 18} color="#8c8c8c" /> תרגיל אחר</ActionBtn>
           </>
         )}
       </div>
@@ -1534,9 +1707,9 @@ function App() {
 
   return (
     <Shell {...sp}>
-      <BackBtn onClick={() => setScreen("level")} isTablet={isTablet} />
+      <BackBtn onClick={() => setScreen(adaptive ? "journey" : "level")} isTablet={isTablet} />
       <div style={{ textAlign: "center", marginBottom: 12 }}>
-        <span style={{ fontSize: isTablet ? 18 : 15, fontWeight: 700, color: topic.color, display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name={topicIcon(topic)} size={isTablet ? 20 : 17} color={topic.color} /> {topic.title} · {level.badge} {level.name}</span>
+        <span style={{ fontSize: isTablet ? 18 : 15, fontWeight: 700, color: topic.color, display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name={topicIcon(topic)} size={isTablet ? 20 : 17} color={topic.color} /> {topic.title} · {level.badge ? level.badge + " " : ""}{level.name}</span>
       </div>
       <div style={{ display: "flex", flexDirection: twoCol ? "row-reverse" : "column", gap: twoCol ? 24 : 0, alignItems: "stretch" }}>
         {questionCard}
