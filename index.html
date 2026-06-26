@@ -173,6 +173,28 @@ function Figure({ fig, color }) {
     else if (fig.name === "משושה") el = <polygon points={poly(6, -Math.PI / 2)} fill={`${color}22`} stroke={color} strokeWidth="3" strokeLinejoin="round" />;
     return <svg width="220" height="172" viewBox="0 0 220 172" style={{ maxWidth: "100%" }}>{el}</svg>;
   }
+  if (fig.type === "clock") {
+    const { h, m } = fig;
+    const cx = 92, cy = 92, R = 74;
+    const at = (deg, len) => [cx + len * Math.cos((deg - 90) * Math.PI / 180), cy + len * Math.sin((deg - 90) * Math.PI / 180)];
+    const hEnd = at(((h % 12) + m / 60) * 30, R * 0.5);
+    const mEnd = at(m * 6, R * 0.8);
+    const ticks = [];
+    for (let i = 0; i < 12; i++) { const p1 = at(i * 30, R - 7), p2 = at(i * 30, R); ticks.push(<line key={i} x1={p1[0]} y1={p1[1]} x2={p2[0]} y2={p2[1]} stroke="#9ca3af" strokeWidth={i % 3 === 0 ? 3 : 1.5} />); }
+    return (
+      <svg width="184" height="184" viewBox="0 0 184 184" style={{ maxWidth: "100%" }}>
+        <circle cx={cx} cy={cy} r={R} fill="#fff" stroke={color} strokeWidth="4" />
+        {ticks}
+        <text x={cx} y={cy - R + 22} textAnchor="middle" fontSize="17" fontWeight="800" fill="#1f2937">12</text>
+        <text x={cx + R - 15} y={cy + 6} textAnchor="middle" fontSize="17" fontWeight="800" fill="#1f2937">3</text>
+        <text x={cx} y={cy + R - 9} textAnchor="middle" fontSize="17" fontWeight="800" fill="#1f2937">6</text>
+        <text x={cx - R + 15} y={cy + 6} textAnchor="middle" fontSize="17" fontWeight="800" fill="#1f2937">9</text>
+        <line x1={cx} y1={cy} x2={hEnd[0]} y2={hEnd[1]} stroke="#1f2937" strokeWidth="5" strokeLinecap="round" />
+        <line x1={cx} y1={cy} x2={mEnd[0]} y2={mEnd[1]} stroke={color} strokeWidth="3.5" strokeLinecap="round" />
+        <circle cx={cx} cy={cy} r="4.5" fill="#1f2937" />
+      </svg>
+    );
+  }
   if (fig.type === "angle") {
     const deg = fig.deg;
     const V = [40, 134], L = 150;
@@ -676,6 +698,45 @@ function genG2Seq(level) {
     explanation: [`כל פעם ${down ? "מורידים" : "מוסיפים"} ${step}`, `${seq[len - 1]} ${down ? "−" : "+"} ${step}`, `= ${next}`] };
 }
 
+const pad2 = (n) => (n < 10 ? "0" + n : "" + n);
+function genG2Time(level) {
+  const h = ri(1, 12);
+  const mins = level === 0 ? [0, 30] : level === 1 ? [0, 15, 30, 45] : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+  const m = pick(mins);
+  const label = (hh, mm) => `${hh}:${pad2(mm)}`;
+  const correct = label(h, m);
+  const opts = new Set([correct]);
+  for (let t = 0; t < 40 && opts.size < 4; t++) {
+    const dh = pick([h, (h % 12) + 1, h === 1 ? 12 : h - 1]);
+    opts.add(label(dh, pick(mins)));
+  }
+  const mtxt = m === 0 ? "המחוג הארוך מצביע על 12 — שעה עגולה" : `המחוג הארוך מראה ${m} דקות`;
+  return { kind: "choice", figure: { type: "clock", h, m }, expr: [], choices: shuffle([...opts]),
+    prompt: "מה השעה בשעון?", check: (x) => x === correct, answerText: correct,
+    hint: "המחוג הקצר מראה את השעה, והמחוג הארוך מראה את הדקות.",
+    explanation: [`המחוג הקצר נמצא ליד ${h}`, mtxt, `השעה היא ${correct}`] };
+}
+function genG2Place(level) {
+  const n = ri(10, 99), tens = Math.floor(n / 10), units = n % 10;
+  const mode = pick(level === 0 ? ["tens", "units", "build"] : ["tens", "units", "build", "build"]);
+  if (mode === "tens") {
+    return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "כמה עשרות יש במספר?",
+      check: (x) => intEqual(x, tens), answerText: `${tens}`,
+      hint: "הספרה השמאלית היא ספרת העשרות.",
+      explanation: [`במספר ${n}, הספרה השמאלית היא ${tens}`, `כלומר ${tens} עשרות (${tens * 10})`] };
+  }
+  if (mode === "units") {
+    return { kind: "number", expr: [{ t: "v", v: `${n}` }], prompt: "כמה יחידות יש במספר?",
+      check: (x) => intEqual(x, units), answerText: `${units}`,
+      hint: "הספרה הימנית היא ספרת היחידות.",
+      explanation: [`במספר ${n}, הספרה הימנית היא ${units}`, `כלומר ${units} יחידות`] };
+  }
+  return { kind: "number", expr: [], prompt: `${tens} עשרות ו-${units} יחידות — איזה מספר זה?`,
+    check: (x) => intEqual(x, n), answerText: `${n}`,
+    hint: "עשרות כפול 10, ועוד היחידות.",
+    explanation: [`${tens} עשרות = ${tens * 10}`, `${tens * 10} + ${units}`, `= ${n}`] };
+}
+
 const TOPICS_G2 = [
   { id: "g2add", title: "חיבור וחיסור", emoji: "➕", gen: genG2AddSub, color: "#ff7a45",
     lesson: "מחברים כשמוסיפים, מחסרים כשלוקחים. אפשר לעזור לעצמך בספירה קדימה ואחורה.",
@@ -704,6 +765,12 @@ const TOPICS_G2 = [
   { id: "g2seq", title: "סדרות ודילוגים", emoji: "🪜", gen: genG2Seq, color: "#52c41a",
     lesson: "בסדרה כל מספר גדל (או קטן) בקפיצה קבועה. מוצאים את ההפרש בין המספרים, וממשיכים באותה קפיצה.",
     example: { expr: [{ t: "v", v: "2, 4, 6, 8, __" }], answer: "10", steps: ["מחשבים את ההפרש", "4 − 2 = 2", "ההפרש קבוע: 2", "8 + 2", "= 10"] } },
+  { id: "g2time", title: "שעון וזמן", emoji: "🕐", gen: genG2Time, color: "#722ed1",
+    lesson: "בשעון אנלוגי המחוג הקצר מראה את השעה, והמחוג הארוך מראה את הדקות. כשהמחוג הארוך על 12 — השעה עגולה; על 6 — חצי שעה.",
+    example: { figure: { type: "clock", h: 3, m: 0 }, expr: [], answer: "3:00", steps: ["המחוג הקצר ליד 3", "המחוג הארוך על 12", "השעה היא 3:00"] } },
+  { id: "g2place", title: "עשרות ויחידות", emoji: "🔟", gen: genG2Place, color: "#2f54eb",
+    lesson: "כל מספר דו-ספרתי בנוי מעשרות ומיחידות. למשל 47 = 4 עשרות (40) ועוד 7 יחידות.",
+    example: { expr: [{ t: "v", v: "47" }], answer: "4", steps: ["הספרה השמאלית היא העשרות", "ב-47 יש 4 עשרות", "כלומר 40"] } },
 ];
 
 const COURSES = [
