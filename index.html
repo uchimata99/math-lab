@@ -61,6 +61,20 @@ function speak(text, rate) {
     synth.speak(u);
   } catch (_) {}
 }
+/* ממיר ביטוי מתמטי לאמירה בעברית, להקראת השאלה כולה */
+function exprToSpeech(parts) {
+  if (!parts || !parts.length) return "";
+  return parts.map((p) => (p.t === "frac" ? `${p.n} חלקי ${p.d}` : p.v)).join(" ")
+    .replace(/×/g, " כפול ").replace(/\+/g, " ועוד ").replace(/[−-]/g, " פחות ")
+    .replace(/=/g, " שווה ").replace(/</g, " קטן מ ").replace(/>/g, " גדול מ ")
+    .replace(/[?▢_]/g, " ").replace(/\s+/g, " ").trim();
+}
+/* טקסט מלא להקראת שאלה: הוראה + הביטוי/מילה */
+function problemSpeech(p) {
+  if (!p) return "";
+  if (p.say != null) return [p.prompt, p.say].filter(Boolean).join(". ");
+  return [p.prompt, p.text || exprToSpeech(p.expr)].filter(Boolean).join(". ");
+}
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
 function simplify(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; }
 function parseFrac(str) {
@@ -815,6 +829,15 @@ const HE_VOWELS = [
 const SYL_CONS = ["מ", "ל", "ש", "ר", "נ", "ס", "ת", "ד", "ק", "ב", "פ", "ג", "ח", "ט", "צ"];
 const BEGED = { "ב": 1, "כ": 1, "פ": 1 };
 const mkSyl = (c, mark) => c + (BEGED[c] ? "ּ" : "") + mark; // מוסיף דגש לבכ"פ לצליל קשה
+/* רצף מצטבר: סדר הוראת אותיות (תכופות/קלות תחילה, אותיות מתבלבלות מרוחקות) */
+const LETTER_TEACH_ORDER = ["מ", "ש", "ל", "ת", "ר", "ב", "נ", "ה", "ק", "ס", "י", "ו", "ד", "ג", "פ", "ח", "א", "צ", "ע", "כ", "ט", "ז"];
+const lettersForLevel = (lvl) => {
+  const n = lvl === 0 ? 8 : lvl === 1 ? 15 : LETTER_TEACH_ORDER.length;
+  const allow = new Set(LETTER_TEACH_ORDER.slice(0, n));
+  return HE_LETTERS.filter(([l]) => allow.has(l));
+};
+const consForLevel = (lvl) => SYL_CONS.slice(0, lvl === 0 ? 6 : lvl === 1 ? 10 : SYL_CONS.length);
+const vowelsForLevel = (lvl) => (lvl === 0 ? HE_VOWELS.slice(0, 3) : HE_VOWELS);
 
 const HE_WORDS = ["אִמָּא", "אַבָּא", "יֶלֶד", "יַלְדָּה", "כֶּלֶב", "חָתוּל", "פָּרָה", "דָּג",
   "בַּיִת", "סֵפֶר", "כִּסֵּא", "מַיִם", "לֶחֶם", "חָלָב", "תַּפּוּחַ", "כַּדּוּר", "שֶׁמֶשׁ",
@@ -832,10 +855,11 @@ const HE_SENTENCES = [
 const stripNiqqud = (s) => s.replace(/[֑-ׇ]/g, "");
 
 function genReadLetters(level) {
-  const [letter, name] = pick(HE_LETTERS);
+  const pool = lettersForLevel(level);
+  const [letter, name] = pick(pool);
   if (level === 0 || (level === 1 && Math.random() < 0.5)) {
     // שומעים שם אות ובוחרים את האות
-    const others = shuffle(HE_LETTERS.filter((x) => x[0] !== letter)).slice(0, 3);
+    const others = shuffle(pool.filter((x) => x[0] !== letter)).slice(0, 3);
     const choices = shuffle([letter, ...others.map((x) => x[0])]);
     const speakMap = {}; HE_LETTERS.forEach(([l, n]) => { speakMap[l] = n; });
     return { kind: "choice", expr: [], say: name, listenLabel: "🔊 לְאֵיזוֹ אוֹת?", choices, speakChoices: true, speakMap,
@@ -843,7 +867,7 @@ function genReadLetters(level) {
       hint: "אֶפְשָׁר לִלְחֹץ עַל כָּל אוֹת כְּדֵי לִשְׁמֹעַ אֶת שְׁמָהּ.", explanation: [`הָאוֹת הִיא ${letter} — ${name}`] };
   }
   // רואים אות ובוחרים את שמהּ
-  const others = shuffle(HE_LETTERS.filter((x) => x[0] !== letter)).slice(0, 3);
+  const others = shuffle(pool.filter((x) => x[0] !== letter)).slice(0, 3);
   const choices = shuffle([name, ...others.map((x) => x[1])]);
   return { kind: "choice", text: letter, say: name, choices, speakChoices: true,
     prompt: "מָה שֵׁם הָאוֹת? (אֶפְשָׁר לִלְחֹץ עָלֶיהָ לִשְׁמִיעָה)", check: (x) => x === name, answerText: name,
@@ -851,8 +875,8 @@ function genReadLetters(level) {
 }
 
 function genReadSyllables(level) {
-  const c = pick(SYL_CONS);
-  const vset = level === 0 ? HE_VOWELS.slice(0, 3) : HE_VOWELS;
+  const c = pick(consForLevel(level));
+  const vset = vowelsForLevel(level);
   const v = pick(vset);
   const syl = mkSyl(c, v.mark);
   if (level === 0 || Math.random() < 0.6) {
@@ -897,10 +921,64 @@ function genReadSentences() {
     explanation: [item.s, `הַתְּשׁוּבָה: ${item.a}`] };
 }
 
+/* מודעות פונולוגית: בנק מילים עם צליל פותח, מספר הברות, וקבוצת חרוז */
+const PA_WORDS = [
+  { w: "דָּג", init: "ד", syl: 1, rhyme: "ag" }, { w: "גַּל", init: "ג", syl: 1, rhyme: "al" },
+  { w: "סַל", init: "ס", syl: 1, rhyme: "al" }, { w: "כַּד", init: "כ", syl: 1, rhyme: "ad" },
+  { w: "יָד", init: "י", syl: 1, rhyme: "ad" }, { w: "פֶּה", init: "פ", syl: 1, rhyme: "eh" },
+  { w: "עֵץ", init: "ע", syl: 1, rhyme: "ets" }, { w: "אֵשׁ", init: "א", syl: 1, rhyme: "esh" },
+  { w: "אִמָּא", init: "א", syl: 2, rhyme: "a" }, { w: "אַבָּא", init: "א", syl: 2, rhyme: "a" },
+  { w: "סָבָא", init: "ס", syl: 2, rhyme: "a" }, { w: "גָּמָל", init: "ג", syl: 2, rhyme: "al" },
+  { w: "חָתוּל", init: "ח", syl: 2, rhyme: "ul" }, { w: "כֶּלֶב", init: "כ", syl: 2, rhyme: "elev" },
+  { w: "פָּרָה", init: "פ", syl: 2, rhyme: "ara" }, { w: "מַיִם", init: "מ", syl: 2, rhyme: "ayim" },
+  { w: "לֶחֶם", init: "ל", syl: 2, rhyme: "echem" }, { w: "סֵפֶר", init: "ס", syl: 2, rhyme: "efer" },
+  { w: "שֶׁמֶשׁ", init: "ש", syl: 2, rhyme: "emesh" }, { w: "פֶּרַח", init: "פ", syl: 2, rhyme: "erach" },
+  { w: "תַּפּוּחַ", init: "ת", syl: 3, rhyme: "uach" }, { w: "שֻׁלְחָן", init: "ש", syl: 2, rhyme: "an" },
+];
+const INIT_PHON = { "א": "-", "ע": "-", "ה": "h", "ח": "x", "כ": "k", "ק": "k", "ת": "t", "ט": "t", "ס": "s", "צ": "ts", "ש": "sh", "ב": "b", "פ": "p", "ד": "d", "ג": "g", "ז": "z", "מ": "m", "נ": "n", "ל": "l", "ר": "r", "י": "y", "ו": "v" };
+const iph = (c) => INIT_PHON[c] || c;
+function paGroups(keyFn, min) {
+  const g = {}; PA_WORDS.forEach((w) => { const k = keyFn(w); (g[k] = g[k] || []).push(w); });
+  return { g, rich: Object.keys(g).filter((k) => g[k].length >= (min || 2)) };
+}
+function genPhonics(level) {
+  const mode = pick(level === 0 ? ["syl", "rhyme", "init"] : ["syl", "rhyme", "init", "init"]);
+  if (mode === "syl") {
+    const word = pick(PA_WORDS);
+    return { kind: "choice", expr: [], say: word.w, listenLabel: "🔊 הַקְשִׁיבִי לַמִּלָּה", choices: ["1", "2", "3"],
+      prompt: "כַּמָּה הֲבָרוֹת יֵשׁ בַּמִּלָּה? (לַחֲצִי עַל הָרַמְקוֹל)", check: (x) => x === String(word.syl), answerText: String(word.syl),
+      hint: "מוֹחֲאִים כַּף לְכָל הֲבָרָה — וְסוֹפְרִים.", explanation: [`${word.w} — ${word.syl} הֲבָרוֹת`] };
+  }
+  if (mode === "rhyme") {
+    const { g, rich } = paGroups((w) => w.rhyme);
+    const key = pick(rich); const grp = g[key];
+    const target = pick(grp); const match = pick(grp.filter((w) => w.w !== target.w));
+    const distract = shuffle(PA_WORDS.filter((w) => w.rhyme !== key)).slice(0, 2);
+    const choices = shuffle([match.w, ...distract.map((d) => d.w)]);
+    const speakMap = {}; [match, ...distract].forEach((d) => { speakMap[d.w] = d.w; });
+    return { kind: "choice", text: target.w, say: target.w, choices, speakChoices: true, speakMap,
+      prompt: `אֵיזוֹ מִלָּה מִתְחָרֶזֶת עִם «${target.w}»?`, check: (x) => x === match.w, answerText: match.w,
+      hint: "מִלִּים מִתְחָרְזוֹת נִשְׁמָעוֹת דּוֹמֶה בַּסּוֹף.", explanation: [`«${target.w}» וְ-«${match.w}» נִגְמָרוֹת בְּאוֹתוֹ צְלִיל`] };
+  }
+  // init — צליל פותח
+  const { g, rich } = paGroups((w) => w.init);
+  const key = pick(rich); const grp = g[key];
+  const target = pick(grp); const match = pick(grp.filter((w) => w.w !== target.w));
+  const distract = shuffle(PA_WORDS.filter((w) => iph(w.init) !== iph(key))).slice(0, 2);
+  const choices = shuffle([match.w, ...distract.map((d) => d.w)]);
+  const speakMap = {}; [match, ...distract].forEach((d) => { speakMap[d.w] = d.w; });
+  return { kind: "choice", text: target.w, say: target.w, choices, speakChoices: true, speakMap,
+    prompt: `אֵיזוֹ מִלָּה מַתְחִילָה בְּאוֹתוֹ צְלִיל כְּמוֹ «${target.w}»?`, check: (x) => x === match.w, answerText: match.w,
+    hint: "הַקְשִׁיבִי לַצְּלִיל הָרִאשׁוֹן שֶׁל כָּל מִלָּה.", explanation: [`«${target.w}» וְ-«${match.w}» מַתְחִילוֹת בְּאוֹתוֹ צְלִיל`] };
+}
+
 const TOPICS_READ = [
   { id: "rdletters", title: "אותיות וצלילים", emoji: "🔤", gen: genReadLetters, color: "#fa541c",
     lesson: "כל אות יש לה שם וצליל. לוחצים על הרמקול כדי לשמוע, ובוחרים את האות הנכונה. אפשר ללחוץ על כל אות כדי לשמוע אותה.",
     example: { expr: [{ t: "v", v: "מ" }], answer: "מֵם", steps: ["לוחצים על האות לשמיעה", "האות מ נקראת מֵם", "הצליל שלה הוא «m»"] } },
+  { id: "rdphon", title: "צלילים והקשבה", emoji: "🎧", gen: genPhonics, color: "#2f54eb",
+    lesson: "משחקי הקשבה לצלילים: כמה הברות יש במילה, אילו מילים מתחרזות, ואיזו מילה מתחילה באותו צליל. ההקשבה לצלילים היא הבסיס לקריאה.",
+    example: { expr: [{ t: "v", v: "חָתוּל" }], answer: "2", steps: ["מוחאים כף לכל הברה", "חָ — תוּל", "שתי הברות"] } },
   { id: "rdsyl", title: "ניקוד והברות", emoji: "🔊", gen: genReadSyllables, color: "#722ed1",
     lesson: "מחברים אות עם ניקוד ומקבלים הברה. אותה אות עם ניקוד שונה נשמעת אחרת: בַּ, בִּ, בֻּ. לוחצים על ההברה כדי לשמוע אותה.",
     example: { expr: [{ t: "v", v: "מָ" }], answer: "פַּתָּח", steps: ["האות מ עם פַּתָּח", "הצליל הוא «ma»", "כל ניקוד נותן צליל אחר"] } },
@@ -1254,7 +1332,10 @@ function App() {
       boxShadow: "0 9px 0 rgba(0,0,0,0.06)", borderTop: `7px solid ${topic.color}`,
       display: "flex", flexDirection: "column", justifyContent: "center", flex: twoCol ? 1 : undefined, marginBottom: twoCol ? 0 : 16,
     }}>
-      <p style={{ textAlign: "center", color: "#6b7280", fontSize: S.prompt, margin: "0 0 16px", lineHeight: 1.5 }} dir="rtl">{problem.prompt}</p>
+      <p onClick={() => speak(problemSpeech(problem))} title="לחצי להקראת השאלה"
+        style={{ textAlign: "center", color: "#6b7280", fontSize: S.prompt, margin: "0 0 16px", lineHeight: 1.5, cursor: "pointer" }} dir="rtl">
+        <span style={{ fontSize: isTablet ? 18 : 16, marginInlineEnd: 6 }}>🔊</span>{problem.prompt}
+      </p>
       <div style={{ minHeight: 56, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 14, fontSize: S.expr, color: "#1f2937" }}>
         {problem.text != null ? (
           <button onClick={() => speak(problem.say || problem.text)} title="לחצי לשמיעה"
