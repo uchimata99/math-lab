@@ -827,25 +827,29 @@ const TOPICS_G2 = [
 /* ============================================================
    חוברת קריאה בעברית — אותיות, הברות, מילים ומשפטים (עם הקראה)
    ============================================================ */
-/* סדר הוראת תנועות מבוסס-מחקר: קמץ/פתח (a) → חיריק (i) → חולם (o) → סגול/צירה (e) → קובוץ/שורוק (u) */
-const HE_VOWELS = [
-  { mark: "ַ", name: "פַּתָּח", sound: "a" },
-  { mark: "ִ", name: "חִירִיק", sound: "i" },
-  { mark: "ֹ", name: "חוֹלָם", sound: "o" },
-  { mark: "ֶ", name: "סֶגוֹל", sound: "e" },
-  { mark: "ֻ", name: "קֻבּוּץ", sound: "u" },
-];
 const SYL_CONS = ["מ", "ל", "ש", "ר", "נ", "ס", "ת", "ד", "ק", "ב", "פ", "ג", "ח", "ט", "צ"];
 const BEGED = { "ב": 1, "כ": 1, "פ": 1 };
-const mkSyl = (c, mark) => c + (BEGED[c] ? "ּ" : "") + mark; // מוסיף דגש לבכ"פ לצליל קשה
+const dgsh = (c) => c + (BEGED[c] ? "ּ" : ""); // דגש לבכ"פ לצליל קשה
+/* תנועות לפי שלבים:
+   שלב 1 — קמץ/פתח (a), צירה/סגול (e)
+   שלב 2 — חיריק מלא (בִּי), חולם מלא (בּוֹ), שורוק (בּוּ), קובוץ
+   שלב 3 — הכול יחד, כולל חולם חסר (בּוֹ→בֹּ) וחיריק חסר */
+const HE_VOWELS = [
+  { name: "קָמַץ", sound: "a", stage: 1, b: (c) => dgsh(c) + "ָ" },
+  { name: "פַּתָּח", sound: "a", stage: 1, b: (c) => dgsh(c) + "ַ" },
+  { name: "צֵירֶה", sound: "e", stage: 1, b: (c) => dgsh(c) + "ֵ" },
+  { name: "סֶגּוֹל", sound: "e", stage: 1, b: (c) => dgsh(c) + "ֶ" },
+  { name: "חִירִיק מָלֵא", sound: "i", stage: 2, b: (c) => dgsh(c) + "ִי" },
+  { name: "חוֹלָם מָלֵא", sound: "o", stage: 2, b: (c) => dgsh(c) + "וֹ" },
+  { name: "שׁוּרוּק", sound: "u", stage: 2, b: (c) => dgsh(c) + "וּ" },
+  { name: "קֻבּוּץ", sound: "u", stage: 2, b: (c) => dgsh(c) + "ֻ" },
+  { name: "חוֹלָם חָסֵר", sound: "o", stage: 3, b: (c) => dgsh(c) + "ֹ" },
+  { name: "חִירִיק חָסֵר", sound: "i", stage: 3, b: (c) => dgsh(c) + "ִ" },
+];
 /* רצף מצטבר: עיצורים נפתחים בהדרגה לפי רמה (קלים/תכופים תחילה) */
 const consForLevel = (lvl) => SYL_CONS.slice(0, lvl === 0 ? 8 : lvl === 1 ? 12 : SYL_CONS.length);
-/* תנועות לפי רמה — חולם חסר רק ברמה המתקדמת */
-const vowelsForLevel = (lvl) => {
-  if (lvl === 0) return HE_VOWELS.filter((v) => v.sound === "a" || v.sound === "i" || v.sound === "e"); // פתח, חיריק, סגול
-  if (lvl === 1) return HE_VOWELS.filter((v) => v.sound !== "o"); // כולל קובוץ, בלי חולם
-  return HE_VOWELS; // מתקדם: כולל חולם חסר
-};
+/* תנועות לפי רמה: רמה 0 = שלב 1, רמה 1 = שלב 2, רמה 2 = הכול */
+const vowelsForLevel = (lvl) => HE_VOWELS.filter((v) => (lvl === 0 ? v.stage === 1 : lvl === 1 ? v.stage === 2 : true));
 
 const HE_WORDS = ["אִמָּא", "אַבָּא", "יֶלֶד", "יַלְדָּה", "כֶּלֶב", "חָתוּל", "פָּרָה", "דָּג",
   "בַּיִת", "סֵפֶר", "כִּסֵּא", "מַיִם", "לֶחֶם", "חָלָב", "תַּפּוּחַ", "כַּדּוּר", "שֶׁמֶשׁ",
@@ -871,27 +875,28 @@ function genReadSyllables(level) {
   lastSylCons = c;
   const vset = vowelsForLevel(level);
   let v = pick(vset);
-  for (let t = 0; t < 25 && v.mark === lastSylVowel && vset.length > 2; t++) v = pick(vset); // לגוון גם את הניקוד
-  lastSylVowel = v.mark;
-  const syl = mkSyl(c, v.mark);
+  for (let t = 0; t < 25 && v.name === lastSylVowel && vset.length > 2; t++) v = pick(vset); // לגוון גם את הניקוד
+  lastSylVowel = v.name;
+  const syl = v.b(c);
   if (level === 0 || Math.random() < 0.6) {
-    // שומעים הברה ובוחרים את הכתובה (אותה אות, ניקוד שונה)
-    const opts = shuffle(vset).slice(0, 4);
-    if (!opts.includes(v)) { opts[0] = v; }
-    const choices = shuffle(opts.map((vv) => mkSyl(c, vv.mark)));
+    // שומעים הברה ובוחרים את הכתובה — אפשרויות בעלות צליל שונה (אי-אפשר להבחין בין קמץ לפתח באוזן)
+    const otherSounds = shuffle([...new Set(vset.filter((x) => x.sound !== v.sound).map((x) => x.sound))]);
+    const optV = [v];
+    for (const s of otherSounds) { if (optV.length >= 4) break; optV.push(pick(vset.filter((x) => x.sound === s))); }
+    const choices = shuffle(optV.map((vv) => vv.b(c)));
     const speakMap = {}; choices.forEach((s) => { speakMap[s] = s; });
     return { kind: "choice", expr: [], say: syl, listenLabel: "🔊 אֵיזוֹ הֲבָרָה?", choices, speakChoices: true, speakMap,
       prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הַהֲבָרָה שֶׁשָּׁמַעְתְּ:", check: (x) => x === syl, answerText: syl,
-      hint: "כָּל הָאוֹתִיּוֹת זֵהוֹת — שִׂימִי לֵב לַנִּקּוּד! אֶפְשָׁר לִלְחֹץ עַל כָּל הֲבָרָה לִשְׁמִיעָה.",
+      hint: "אוֹתָהּ אוֹת, נִקּוּד שׁוֹנֶה — הַקְשִׁיבִי לַצְּלִיל! אֶפְשָׁר לִלְחֹץ עַל כָּל הֲבָרָה לִשְׁמִיעָה.",
       explanation: [`הַהֲבָרָה הִיא ${syl}`, `הַנִּקּוּד ${v.name} נוֹתֵן אֶת הַצְּלִיל "${v.sound}"`] };
   }
-  // רואים הברה ובוחרים את שם הניקוד / הצליל
+  // רואים הברה ובוחרים את שם הניקוד
   const opts = shuffle(vset).slice(0, 4);
   if (!opts.includes(v)) opts[0] = v;
   const choices = shuffle(opts.map((vv) => vv.name));
   return { kind: "choice", text: syl, say: syl, choices, speakChoices: false,
     prompt: "אֵיזֶה נִקּוּד יֵשׁ בַּהֲבָרָה? (לַחֲצִי עָלֶיהָ לִשְׁמִיעָה)", check: (x) => x === v.name, answerText: v.name,
-    hint: "הַקְשִׁיבִי לַצְּלִיל שֶׁל הַהֲבָרָה.", explanation: [`${syl} — הַנִּקּוּד הוּא ${v.name} (הַצְּלִיל "${v.sound}")`] };
+    hint: "הִסְתַּכְּלִי עַל סִימָן הַנִּקּוּד שֶׁמִּתַּחַת אוֹ לְיַד הָאוֹת.", explanation: [`${syl} — הַנִּקּוּד הוּא ${v.name} (הַצְּלִיל "${v.sound}")`] };
 }
 
 function genReadWords(level) {
@@ -972,8 +977,8 @@ const TOPICS_READ = [
     lesson: "משחקי הקשבה לצלילים: כמה הברות יש במילה, אילו מילים מתחרזות, ואיזו מילה מתחילה באותו צליל. ההקשבה לצלילים היא הבסיס לקריאה.",
     example: { expr: [{ t: "v", v: "חָתוּל" }], answer: "2", steps: ["מוחאים כף לכל הברה", "חָ — תוּל", "שתי הברות"] } },
   { id: "rdsyl", title: "ניקוד והברות", emoji: "🔊", gen: genReadSyllables, color: "#722ed1",
-    lesson: "מחברים אות עם ניקוד ומקבלים הברה. אותה אות עם ניקוד שונה נשמעת אחרת: בַּ, בִּ, בֻּ. לוחצים על ההברה כדי לשמוע אותה.",
-    example: { expr: [{ t: "v", v: "מָ" }], answer: "פַּתָּח", steps: ["האות מ עם פַּתָּח", "הצליל הוא «ma»", "כל ניקוד נותן צליל אחר"] } },
+    lesson: "מחברים אות עם ניקוד ומקבלים הברה. אותה אות עם ניקוד שונה נשמעת אחרת: בָּ, בִּי, בּוֹ, בּוּ. לוחצים על ההברה כדי לשמוע אותה.",
+    example: { expr: [{ t: "v", v: "מָ" }], answer: "קָמַץ", steps: ["האות מ עם קָמַץ", "הצליל הוא «ma»", "כל ניקוד נותן צליל אחר"] } },
   { id: "rdwords", title: "קריאת מילים", emoji: "📕", gen: genReadWords, color: "#13c2c2",
     lesson: "קוראים מילה שלמה הברה־הברה. שומעים את המילה ובוחרים את הכתובה הנכונה. אפשר ללחוץ על כל מילה כדי לשמוע אותה.",
     example: { expr: [{ t: "v", v: "כֶּלֶב" }], answer: "כֶּלֶב", steps: ["מחברים הברות: כֶּ + לֶב", "קוראים: כֶּלֶב", "מאזינים ובודקים"] } },
