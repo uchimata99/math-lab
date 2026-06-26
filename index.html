@@ -39,6 +39,28 @@ const { useState, useEffect, useCallback, useRef } = React;
 const ri = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+/* הקראה בעברית (Web Speech) — להשמעת אותיות, הברות, מילים ומשפטים */
+let heVoice = null;
+function pickHeVoice() {
+  try { const vs = window.speechSynthesis ? window.speechSynthesis.getVoices() : []; heVoice = vs.find((v) => /he|iw/i.test(v.lang)) || heVoice; } catch (_) {}
+}
+if (typeof window !== "undefined" && window.speechSynthesis) {
+  pickHeVoice();
+  window.speechSynthesis.onvoiceschanged = pickHeVoice;
+}
+function speak(text, rate) {
+  try {
+    const synth = window.speechSynthesis;
+    if (!synth || !text) return;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "he-IL";
+    u.rate = rate || 0.8;
+    if (!heVoice) pickHeVoice();
+    if (heVoice) u.voice = heVoice;
+    synth.speak(u);
+  } catch (_) {}
+}
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
 function simplify(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; }
 function parseFrac(str) {
@@ -773,8 +795,126 @@ const TOPICS_G2 = [
     example: { expr: [{ t: "v", v: "47" }], answer: "4", steps: ["הספרה השמאלית היא העשרות", "ב-47 יש 4 עשרות", "כלומר 40"] } },
 ];
 
+/* ============================================================
+   חוברת קריאה בעברית — אותיות, הברות, מילים ומשפטים (עם הקראה)
+   ============================================================ */
+const HE_LETTERS = [
+  ["א", "אָלֶף"], ["ב", "בֵּית"], ["ג", "גִּימֶל"], ["ד", "דָּלֶת"], ["ה", "הֵא"], ["ו", "וָו"],
+  ["ז", "זַיִן"], ["ח", "חֵית"], ["ט", "טֵית"], ["י", "יוֹד"], ["כ", "כָּף"], ["ל", "לָמֶד"],
+  ["מ", "מֵם"], ["נ", "נוּן"], ["ס", "סָמֶךְ"], ["ע", "עַיִן"], ["פ", "פֵּא"], ["צ", "צָדִי"],
+  ["ק", "קוֹף"], ["ר", "רֵישׁ"], ["ש", "שִׁין"], ["ת", "תָּו"],
+];
+/* סדר הוראת תנועות מבוסס-מחקר: קמץ/פתח (a) → חיריק (i) → חולם (o) → סגול/צירה (e) → קובוץ/שורוק (u) */
+const HE_VOWELS = [
+  { mark: "ַ", name: "פַּתָּח", sound: "a" },
+  { mark: "ִ", name: "חִירִיק", sound: "i" },
+  { mark: "ֹ", name: "חוֹלָם", sound: "o" },
+  { mark: "ֶ", name: "סֶגוֹל", sound: "e" },
+  { mark: "ֻ", name: "קֻבּוּץ", sound: "u" },
+];
+const SYL_CONS = ["מ", "ל", "ש", "ר", "נ", "ס", "ת", "ד", "ק", "ב", "פ", "ג", "ח", "ט", "צ"];
+const BEGED = { "ב": 1, "כ": 1, "פ": 1 };
+const mkSyl = (c, mark) => c + (BEGED[c] ? "ּ" : "") + mark; // מוסיף דגש לבכ"פ לצליל קשה
+
+const HE_WORDS = ["אִמָּא", "אַבָּא", "יֶלֶד", "יַלְדָּה", "כֶּלֶב", "חָתוּל", "פָּרָה", "דָּג",
+  "בַּיִת", "סֵפֶר", "כִּסֵּא", "מַיִם", "לֶחֶם", "חָלָב", "תַּפּוּחַ", "כַּדּוּר", "שֶׁמֶשׁ",
+  "פֶּרַח", "עֵץ", "גַּן", "יָד", "רֶגֶל", "עַיִן", "פֶּה", "דֶּלֶת", "חַלּוֹן", "שֻׁלְחָן", "אֹזֶן"];
+const HE_SENTENCES = [
+  { s: "הֶחָתוּל יָשֵׁן עַל הַכִּסֵּא.", q: "מִי יָשֵׁן?", a: "חָתוּל", d: ["כֶּלֶב", "דָּג"] },
+  { s: "הַיֶּלֶד אוֹכֵל תַּפּוּחַ.", q: "מָה הַיֶּלֶד אוֹכֵל?", a: "תַּפּוּחַ", d: ["לֶחֶם", "עוּגָה"] },
+  { s: "אִמָּא שׁוֹתָה מַיִם.", q: "מָה אִמָּא שׁוֹתָה?", a: "מַיִם", d: ["חָלָב", "מִיץ"] },
+  { s: "הַכֶּלֶב רָץ בַּגַּן.", q: "אֵיפֹה הַכֶּלֶב רָץ?", a: "גַּן", d: ["בַּיִת", "חוֹף"] },
+  { s: "הַיַּלְדָּה קוֹרֵאת סֵפֶר.", q: "מָה הַיַּלְדָּה קוֹרֵאת?", a: "סֵפֶר", d: ["עִתּוֹן", "מִכְתָּב"] },
+  { s: "הַשֶּׁמֶשׁ זוֹרַחַת בַּשָּׁמַיִם.", q: "מָה זוֹרַחַת?", a: "שֶׁמֶשׁ", d: ["יָרֵחַ", "כּוֹכָב"] },
+  { s: "אַבָּא נוֹסֵעַ בַּמְּכוֹנִית.", q: "בְּמָה אַבָּא נוֹסֵעַ?", a: "מְכוֹנִית", d: ["אוֹפַנַּיִם", "רַכֶּבֶת"] },
+  { s: "הַפָּרָה אוֹכֶלֶת עֵשֶׂב.", q: "מָה הַפָּרָה אוֹכֶלֶת?", a: "עֵשֶׂב", d: ["לֶחֶם", "דָּג"] },
+];
+const stripNiqqud = (s) => s.replace(/[֑-ׇ]/g, "");
+
+function genReadLetters(level) {
+  const [letter, name] = pick(HE_LETTERS);
+  if (level === 0 || (level === 1 && Math.random() < 0.5)) {
+    // שומעים שם אות ובוחרים את האות
+    const others = shuffle(HE_LETTERS.filter((x) => x[0] !== letter)).slice(0, 3);
+    const choices = shuffle([letter, ...others.map((x) => x[0])]);
+    const speakMap = {}; HE_LETTERS.forEach(([l, n]) => { speakMap[l] = n; });
+    return { kind: "choice", expr: [], say: name, listenLabel: "🔊 לְאֵיזוֹ אוֹת?", choices, speakChoices: true, speakMap,
+      prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הָאוֹת שֶׁשָּׁמַעְתְּ:", check: (x) => x === letter, answerText: letter,
+      hint: "אֶפְשָׁר לִלְחֹץ עַל כָּל אוֹת כְּדֵי לִשְׁמֹעַ אֶת שְׁמָהּ.", explanation: [`הָאוֹת הִיא ${letter} — ${name}`] };
+  }
+  // רואים אות ובוחרים את שמהּ
+  const others = shuffle(HE_LETTERS.filter((x) => x[0] !== letter)).slice(0, 3);
+  const choices = shuffle([name, ...others.map((x) => x[1])]);
+  return { kind: "choice", text: letter, say: name, choices, speakChoices: true,
+    prompt: "מָה שֵׁם הָאוֹת? (אֶפְשָׁר לִלְחֹץ עָלֶיהָ לִשְׁמִיעָה)", check: (x) => x === name, answerText: name,
+    hint: "לַחֲצִי עַל הָאוֹת כְּדֵי לִשְׁמֹעַ אֶת שְׁמָהּ.", explanation: [`${letter} נִקְרֵאת ${name}`] };
+}
+
+function genReadSyllables(level) {
+  const c = pick(SYL_CONS);
+  const vset = level === 0 ? HE_VOWELS.slice(0, 3) : HE_VOWELS;
+  const v = pick(vset);
+  const syl = mkSyl(c, v.mark);
+  if (level === 0 || Math.random() < 0.6) {
+    // שומעים הברה ובוחרים את הכתובה (אותה אות, ניקוד שונה)
+    const opts = shuffle(vset).slice(0, 4);
+    if (!opts.includes(v)) { opts[0] = v; }
+    const choices = shuffle(opts.map((vv) => mkSyl(c, vv.mark)));
+    const speakMap = {}; choices.forEach((s) => { speakMap[s] = s; });
+    return { kind: "choice", expr: [], say: syl, listenLabel: "🔊 אֵיזוֹ הֲבָרָה?", choices, speakChoices: true, speakMap,
+      prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הַהֲבָרָה שֶׁשָּׁמַעְתְּ:", check: (x) => x === syl, answerText: syl,
+      hint: "כָּל הָאוֹתִיּוֹת זֵהוֹת — שִׂימִי לֵב לַנִּקּוּד! אֶפְשָׁר לִלְחֹץ עַל כָּל הֲבָרָה לִשְׁמִיעָה.",
+      explanation: [`הַהֲבָרָה הִיא ${syl}`, `הַנִּקּוּד ${v.name} נוֹתֵן אֶת הַצְּלִיל "${v.sound}"`] };
+  }
+  // רואים הברה ובוחרים את שם הניקוד / הצליל
+  const opts = shuffle(HE_VOWELS).slice(0, 4);
+  if (!opts.includes(v)) opts[0] = v;
+  const choices = shuffle(opts.map((vv) => vv.name));
+  return { kind: "choice", text: syl, say: syl, choices, speakChoices: false,
+    prompt: "אֵיזֶה נִקּוּד יֵשׁ בַּהֲבָרָה? (לַחֲצִי עָלֶיהָ לִשְׁמִיעָה)", check: (x) => x === v.name, answerText: v.name,
+    hint: "הַקְשִׁיבִי לַצְּלִיל שֶׁל הַהֲבָרָה.", explanation: [`${syl} — הַנִּקּוּד הוּא ${v.name} (הַצְּלִיל "${v.sound}")`] };
+}
+
+function genReadWords(level) {
+  const word = pick(HE_WORDS);
+  const others = shuffle(HE_WORDS.filter((w) => w !== word)).slice(0, level === 0 ? 2 : 3);
+  const choices = shuffle([word, ...others]);
+  const speakMap = {}; choices.forEach((w) => { speakMap[w] = w; });
+  return { kind: "choice", expr: [], say: word, listenLabel: "🔊 אֵיזוֹ מִלָּה?", choices, speakChoices: true, speakMap,
+    prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הַמִּלָּה שֶׁשָּׁמַעְתְּ:", check: (x) => x === word, answerText: word,
+    hint: "קִרְאִי כָּל מִלָּה לְאַט, אוֹת אַחַר אוֹת. אֶפְשָׁר לִלְחֹץ עַל מִלָּה לִשְׁמִיעָה.",
+    explanation: [`הַמִּלָּה הִיא ${word}`] };
+}
+
+function genReadSentences() {
+  const item = pick(HE_SENTENCES);
+  const choices = shuffle([item.a, ...item.d]);
+  const speakMap = {}; choices.forEach((w) => { speakMap[w] = w; });
+  return { kind: "choice", text: item.s, say: item.s, choices, speakChoices: true, speakMap,
+    prompt: `קִרְאִי אֶת הַמִּשְׁפָּט (אֶפְשָׁר לִלְחֹץ עָלָיו לִשְׁמִיעָה). ${item.q}`,
+    check: (x) => x === item.a, answerText: item.a,
+    hint: "קִרְאִי אֶת הַמִּשְׁפָּט שׁוּב, וְחַפְּשִׂי אֶת הַתְּשׁוּבָה בְּתוֹכוֹ.",
+    explanation: [item.s, `הַתְּשׁוּבָה: ${item.a}`] };
+}
+
+const TOPICS_READ = [
+  { id: "rdletters", title: "אותיות וצלילים", emoji: "🔤", gen: genReadLetters, color: "#fa541c",
+    lesson: "כל אות יש לה שם וצליל. לוחצים על הרמקול כדי לשמוע, ובוחרים את האות הנכונה. אפשר ללחוץ על כל אות כדי לשמוע אותה.",
+    example: { expr: [{ t: "v", v: "מ" }], answer: "מֵם", steps: ["לוחצים על האות לשמיעה", "האות מ נקראת מֵם", "הצליל שלה הוא «m»"] } },
+  { id: "rdsyl", title: "ניקוד והברות", emoji: "🔊", gen: genReadSyllables, color: "#722ed1",
+    lesson: "מחברים אות עם ניקוד ומקבלים הברה. אותה אות עם ניקוד שונה נשמעת אחרת: בַּ, בִּ, בֻּ. לוחצים על ההברה כדי לשמוע אותה.",
+    example: { expr: [{ t: "v", v: "מָ" }], answer: "פַּתָּח", steps: ["האות מ עם פַּתָּח", "הצליל הוא «ma»", "כל ניקוד נותן צליל אחר"] } },
+  { id: "rdwords", title: "קריאת מילים", emoji: "📕", gen: genReadWords, color: "#13c2c2",
+    lesson: "קוראים מילה שלמה הברה־הברה. שומעים את המילה ובוחרים את הכתובה הנכונה. אפשר ללחוץ על כל מילה כדי לשמוע אותה.",
+    example: { expr: [{ t: "v", v: "כֶּלֶב" }], answer: "כֶּלֶב", steps: ["מחברים הברות: כֶּ + לֶב", "קוראים: כֶּלֶב", "מאזינים ובודקים"] } },
+  { id: "rdsent", title: "משפטים פשוטים", emoji: "📖", gen: genReadSentences, color: "#52c41a",
+    lesson: "קוראים משפט שלם ומבינים מה כתוב בו. לוחצים על המשפט כדי לשמוע אותו, ועונים על השאלה.",
+    example: { expr: [{ t: "v", v: "הַכֶּלֶב רָץ בַּגַּן." }], answer: "גַּן", steps: ["קוראים את המשפט", "השאלה: איפה הכלב רץ?", "התשובה נמצאת במשפט: בַּגַּן"] } },
+];
+
 const COURSES = [
   { id: "grade2", title: "מתמטיקה כיתה ב'", emoji: "🧮", subtitle: "כיתה ב'", color: "#36cfc9", topics: TOPICS_G2 },
+  { id: "reading", title: "קריאה בעברית", emoji: "🔤", subtitle: "אותיות · הברות · מילים", color: "#fa541c", topics: TOPICS_READ },
   { id: "gifted", title: "מעבדת המספרים", emoji: "🔬", subtitle: "כיתה ד' · אתגר", color: "#9254de", topics: TOPICS_GIFTED },
 ];
 
@@ -790,7 +930,7 @@ function genFresh(t, levelId) {
   let p;
   for (let i = 0; i < 15; i++) {
     p = t.gen(levelId);
-    const sig = (p.prompt || "") + "|" + JSON.stringify(p.expr) + "|" + (p.figure ? JSON.stringify(p.figure) : "");
+    const sig = [p.prompt || "", JSON.stringify(p.expr || []), p.text || "", p.say || "", JSON.stringify(p.choices || []), p.figure ? JSON.stringify(p.figure) : ""].join("|");
     if (sig !== lastSig) { lastSig = sig; return p; }
   }
   return p;
@@ -1115,10 +1255,26 @@ function App() {
       display: "flex", flexDirection: "column", justifyContent: "center", flex: twoCol ? 1 : undefined, marginBottom: twoCol ? 0 : 16,
     }}>
       <p style={{ textAlign: "center", color: "#6b7280", fontSize: S.prompt, margin: "0 0 16px", lineHeight: 1.5 }} dir="rtl">{problem.prompt}</p>
-      <div style={{ minHeight: 56, display: "flex", justifyContent: "center", alignItems: "center", fontSize: S.expr, color: "#1f2937" }}>
-        {problem.figure ? <Figure fig={problem.figure} color={topic.color} />
+      <div style={{ minHeight: 56, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 14, fontSize: S.expr, color: "#1f2937" }}>
+        {problem.text != null ? (
+          <button onClick={() => speak(problem.say || problem.text)} title="לחצי לשמיעה"
+            style={{ fontFamily: "inherit", cursor: "pointer", border: `2px dashed ${topic.color}55`, background: "#fafafa",
+              borderRadius: 18, padding: isTablet ? "12px 26px" : "10px 18px", color: "#1f2937", fontWeight: 800,
+              fontSize: problem.text.length > 12 ? (isTablet ? 30 : 24) : (isTablet ? 58 : 46), lineHeight: 1.4,
+              direction: "rtl", touchAction: "manipulation", WebkitTapHighlightColor: "transparent", maxWidth: "100%" }}>
+            {problem.text} <span style={{ fontSize: isTablet ? 24 : 20 }}>🔊</span>
+          </button>
+        ) : problem.figure ? <Figure fig={problem.figure} color={topic.color} />
           : problem.vertical ? <Vertical data={problem.vertical} color={topic.color} big={isTablet} />
-          : <MathLine parts={problem.expr} />}
+          : (problem.expr && problem.expr.length > 0) ? <MathLine parts={problem.expr} /> : null}
+        {problem.say != null && problem.text == null && (
+          <button onClick={() => speak(problem.say)}
+            style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: topic.color, color: "#fff",
+              borderRadius: 18, padding: isTablet ? "16px 34px" : "13px 26px", fontWeight: 800, fontSize: isTablet ? 24 : 20,
+              boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>
+            {problem.listenLabel || "🔊 שמיעה"}
+          </button>
+        )}
       </div>
       <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
         <div dir="ltr" style={{
@@ -1141,11 +1297,11 @@ function App() {
         ? (
           <div style={{ display: "grid", gridTemplateColumns: problem.choices.length > 2 ? "repeat(2,1fr)" : "1fr", gap: isTablet ? 14 : 10, width: "100%", maxWidth: 440, margin: "0 auto" }}>
             {problem.choices.map((opt) => (
-              <button key={opt} onClick={() => setInput(opt)}
+              <button key={opt} onClick={() => { setInput(opt); if (problem.speakChoices) speak(problem.speakMap ? problem.speakMap[opt] : opt); }}
                 style={{ fontFamily: "inherit", cursor: "pointer", border: input === opt ? "3px solid #36cfc9" : "2px solid #e5e7eb",
                   borderRadius: 16, height: isTablet ? 70 : 58, fontSize: isTablet ? 22 : 19, fontWeight: 800,
                   background: input === opt ? "#e6fffb" : "#fff", color: "#1f2937", boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
-                  touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>{opt}</button>
+                  direction: "rtl", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>{opt}</button>
             ))}
             <button onClick={check} style={{ gridColumn: "1 / -1", fontFamily: "inherit", cursor: "pointer", border: "none",
               borderRadius: 16, height: isTablet ? 64 : 54, fontSize: isTablet ? 24 : 21, fontWeight: 800, background: "#52c41a", color: "#fff",
