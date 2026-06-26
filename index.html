@@ -116,6 +116,7 @@ const ICONS = {
   swap: <g><path d="M7 8h12l-3-3M17 16H5l3 3" /></g>,
   plus: <g><path d="M12 5v14M5 12h14" /></g>,
   eraser: <g><path d="M8 20h12" /><path d="M14.5 5.5l4 4-7.5 7.5H7l-2.5-2.5z" /><path d="M10 9l5 5" /></g>,
+  mic: <g><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0012 0" /><path d="M12 17v3M9 20h6" /></g>,
 };
 function Icon({ name, size = 28, color = "currentColor", stroke = 1.9 }) {
   const p = ICONS[name];
@@ -131,7 +132,7 @@ const TOPIC_ICONS = {
   g2add: "plusminus", g2line: "numberline", g2mul: "multiply", g2t5: "grid",
   g2word: "book", g2shape: "shapes", g2cmp: "compare", g2eo: "parity",
   g2miss: "question", g2seq: "steps", g2time: "clock", g2place: "place",
-  rdphon: "headphones", rdsyl: "speaker", rdwords: "page", rdsent: "bubble",
+  rdphon: "headphones", rdsyl: "speaker", rdwords: "page", rdsent: "bubble", rdspeak: "mic",
   arith: "calculator", frac: "fraction", eq: "scale", logic: "bulb",
   geo: "protractor", pow: "bolt", prime: "bricks",
 };
@@ -1046,6 +1047,46 @@ function genPhonics(level) {
     hint: "הַקְשִׁיבִי לַצְּלִיל הָרִאשׁוֹן שֶׁל כָּל מִלָּה.", explanation: [`«${target.w}» וְ-«${match.w}» מַתְחִילוֹת בְּאוֹתוֹ צְלִיל`] };
 }
 
+/* ---------- הקראת מילים בקול (זיהוי דיבור) ---------- */
+const finalMap = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
+const heNorm = (s) => ("" + s).replace(/[֑-ׇ]/g, "").replace(/[^א-ת]/g, "").replace(/[ךםןףץ]/g, (c) => finalMap[c]);
+function levDist(a, b) {
+  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+function speakMatch(transcript, target) {
+  const g = heNorm(target); if (!g) return false;
+  const words = [];
+  const all = heNorm(transcript); if (all) words.push(all);
+  ("" + transcript).split(/\s+/).forEach((w) => { const n = heNorm(w); if (n) words.push(n); });
+  const tol = g.length <= 3 ? 1 : 2; // סלחנות לכתיב מלא/חסר וטעות קטנה
+  return words.some((w) => w === g || w.includes(g) || g.includes(w) || levDist(w, g) <= tol);
+}
+const SPEAK_WORDS = {
+  1: ["דָּג", "גַּל", "סוּס", "יָד", "פֶּה", "אֵשׁ", "כַּד", "עֵץ", "פִּיל", "חוֹל", "אוֹר", "יָם", "טַל", "נֵר"],
+  2: ["אִמָּא", "אַבָּא", "כֶּלֶב", "חָתוּל", "פָּרָה", "סֵפֶר", "שֶׁמֶשׁ", "פֶּרַח", "יֶלֶד", "בַּיִת", "מַיִם", "לֶחֶם", "סָבָא", "גָּמָל", "דֶּלֶת", "כִּסֵּא", "רֶגֶל", "כּוֹבַע"],
+  3: ["תַּפּוּחַ", "מְכוֹנִית", "עֲנָבִים", "בַּנָּנָה", "שׁוֹקוֹלָד", "טֵלֵפוֹן", "פַּרְפָּרִים", "מַחְבֶּרֶת", "מִשְׁפָּחָה", "עִפָּרוֹן", "אֲרוּחָה", "צַעֲצוּעַ"],
+  4: ["אוֹפַנַּיִם", "מְלָפְפוֹן", "טֶלֶוִיזְיָה", "כַּדּוּרֶגֶל", "חֲנֻכִּיָּה", "אֲבַטִּיחַ", "מַחְשֵׁבוֹן", "אֲנָשִׁים"],
+};
+let lastSpeakWord = "";
+function genSpeakWord(level) {
+  const pool = level === 0 ? [...SPEAK_WORDS[1], ...SPEAK_WORDS[2]] : level === 1 ? SPEAK_WORDS[3] : SPEAK_WORDS[4];
+  let w = pick(pool);
+  for (let t = 0; t < 20 && w === lastSpeakWord && pool.length > 1; t++) w = pick(pool);
+  lastSpeakWord = w;
+  return { kind: "speak", text: w, say: w, target: w,
+    prompt: "לַחֲצִי עַל הַמִּיקְרוֹפוֹן וְהַקְרִיאִי אֶת הַמִּלָּה בְּקוֹל:",
+    check: (x) => speakMatch(x, w), answerText: w,
+    hint: "אֶפְשָׁר לִלְחֹץ עַל הַמִּלָּה כְּדֵי לִשְׁמֹעַ אוֹתָהּ קֹדֶם.",
+    explanation: [`הַמִּלָּה הִיא ${w}`] };
+}
+
 const TOPICS_READ = [
   { id: "rdphon", title: "צלילים והקשבה", emoji: "🎧", gen: genPhonics, color: "#2f54eb",
     lesson: "משחקי הקשבה לצלילים: כמה הברות יש במילה, אילו מילים מתחרזות, ואיזו מילה מתחילה באותו צליל. ההקשבה לצלילים היא הבסיס לקריאה.",
@@ -1056,6 +1097,9 @@ const TOPICS_READ = [
   { id: "rdwords", title: "קריאת מילים", emoji: "📕", gen: genReadWords, color: "#13c2c2",
     lesson: "קוראים מילה שלמה הברה־הברה. שומעים את המילה ובוחרים את הכתובה הנכונה. אפשר ללחוץ על כל מילה כדי לשמוע אותה.",
     example: { expr: [{ t: "v", v: "כֶּלֶב" }], answer: "כֶּלֶב", steps: ["מחברים הברות: כֶּ + לֶב", "קוראים: כֶּלֶב", "מאזינים ובודקים"] } },
+  { id: "rdspeak", title: "קוראים בקול", emoji: "🎤", gen: genSpeakWord, color: "#eb2f96",
+    lesson: "קוראים את המילה בקול רם! לוחצים על המיקרופון, מקריאים, והאפליקציה בודקת. מתחילים במילים קצרות (הברה־שתיים) וממשיכים למילים ארוכות יותר.",
+    example: { expr: [{ t: "v", v: "פָּרָה" }], answer: "פָּרָה", steps: ["קוראים את המילה לאט", "פָּ — רָה", "לוחצים על 🎤 ומקריאים בקול"] } },
   { id: "rdsent", title: "משפטים פשוטים", emoji: "📖", gen: genReadSentences, color: "#52c41a",
     lesson: "קוראים משפט שלם ומבינים מה כתוב בו. לוחצים על המשפט כדי לשמוע אותו, ועונים על השאלה.",
     example: { expr: [{ t: "v", v: "הַכֶּלֶב רָץ בַּגַּן." }], answer: "גַּן", steps: ["קוראים את המשפט", "השאלה: איפה הכלב רץ?", "התשובה נמצאת במשפט: בַּגַּן"] } },
@@ -1321,6 +1365,59 @@ function JourneyPath({ levelIdx, color, isTablet, max = MAXLVL }) {
   );
 }
 
+/* ---------- הקראה בקול: זיהוי דיבור ---------- */
+function SpeakCheck({ target, onDone, color, isTablet }) {
+  const [state, setState] = useState("idle"); // idle | listening | denied | error
+  const [heard, setHeard] = useState("");
+  const recRef = useRef(null);
+  const SR = (typeof window !== "undefined") && (window.SpeechRecognition || window.webkitSpeechRecognition);
+  useEffect(() => () => { try { recRef.current && recRef.current.abort(); } catch (_) {} }, []);
+  const listen = () => {
+    if (!SR) return;
+    try {
+      const r = new SR(); recRef.current = r;
+      r.lang = "he-IL"; r.interimResults = false; r.maxAlternatives = 4;
+      setHeard(""); setState("listening");
+      r.onresult = (e) => {
+        const res = e.results[0]; const alts = [];
+        for (let i = 0; i < res.length; i++) alts.push(res[i].transcript);
+        const best = alts[0] || ""; setHeard(best); setState("idle");
+        onDone(alts.some((a) => speakMatch(a, target)), best);
+      };
+      r.onerror = (ev) => { setState(ev.error === "not-allowed" || ev.error === "service-not-allowed" ? "denied" : "error"); };
+      r.onend = () => { setState((s) => (s === "listening" ? "idle" : s)); };
+      r.start();
+    } catch (_) { setState("error"); }
+  };
+  const bigBtn = { fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 16, padding: isTablet ? "16px 30px" : "13px 24px", fontSize: isTablet ? 22 : 19, fontWeight: 800, color: "#fff", background: color, boxShadow: "0 6px 16px rgba(2,6,23,0.14)", touchAction: "manipulation" };
+  if (!SR) {
+    return (
+      <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+        <p style={{ color: "#6b7280", fontSize: isTablet ? 17 : 15, maxWidth: 380, lineHeight: 1.5 }}>הַמַּכְשִׁיר לֹא תּוֹמֵךְ בְּזִיהוּי קוֹל. קִרְאִי אֶת הַמִּלָּה בְּקוֹל, וְאָז לַחֲצִי "קָרָאתִי!".</p>
+        <button onClick={() => onDone(true, "")} style={bigBtn}>✓ קָרָאתִי!</button>
+      </div>
+    );
+  }
+  const listening = state === "listening";
+  return (
+    <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+      <button onClick={listen} disabled={listening} aria-label="הקראה בקול"
+        style={{ fontFamily: "inherit", cursor: listening ? "default" : "pointer", border: "none", borderRadius: "50%",
+          width: isTablet ? 96 : 84, height: isTablet ? 96 : 84, background: listening ? "#ff4d4f" : color,
+          boxShadow: listening ? "0 0 0 8px rgba(255,77,79,0.18)" : "0 8px 20px rgba(2,6,23,0.18)",
+          display: "flex", alignItems: "center", justifyContent: "center", touchAction: "manipulation", transition: "box-shadow .15s" }}>
+        <Icon name="mic" size={isTablet ? 44 : 38} color="#fff" stroke={2} />
+      </button>
+      <div style={{ fontWeight: 800, color: listening ? "#ff4d4f" : color, fontSize: isTablet ? 18 : 16 }}>
+        {listening ? "מַקְשִׁיבָה… דַּבְּרִי עַכְשָׁיו" : "לַחֲצִי וְהַקְרִיאִי בְּקוֹל"}
+      </div>
+      {heard && !listening && <div dir="rtl" style={{ color: "#6b7280", fontSize: isTablet ? 16 : 14 }}>שָׁמַעְתִּי: «{heard}»</div>}
+      {state === "denied" && <div style={{ color: "#cf1322", fontSize: isTablet ? 15 : 13 }}>צָרִיךְ לְאַשֵּׁר גִּישָׁה לַמִּיקְרוֹפוֹן בַּדַּפְדְּפָן.</div>}
+      {state === "error" && <div style={{ color: "#cf1322", fontSize: isTablet ? 15 : 13 }}>לֹא הִצְלַחְתִּי לִשְׁמֹעַ — נַסִּי שׁוּב.</div>}
+    </div>
+  );
+}
+
 function App() {
   const { isTablet, landscape } = useDevice();
   const twoCol = isTablet && landscape;
@@ -1340,6 +1437,15 @@ function App() {
   const [leveledUp, setLeveledUp] = useState(false);
   const [parentOk, setParentOk] = useState(false);
   const [pq, setPq] = useState({ a: 6, b: 7 });
+  const [voiceMiss, setVoiceMiss] = useState(false);
+
+  useEffect(() => {
+    const s = typeof window !== "undefined" && window.speechSynthesis;
+    if (!s) return;
+    const check = () => { const vs = s.getVoices(); if (vs && vs.length) setVoiceMiss(!vs.some((v) => /he|iw/i.test(v.lang))); };
+    check();
+    if (s.addEventListener) { s.addEventListener("voiceschanged", check); return () => s.removeEventListener("voiceschanged", check); }
+  }, []);
 
   useEffect(() => {
     const data = readStore();
@@ -1447,6 +1553,11 @@ function App() {
         <BackBtn onClick={backToCourses} isTablet={isTablet} />
         <h1 style={{ fontFamily: "'Rubik', sans-serif", fontSize: S.homeTitle, margin: "4px 0 4px", color: "#1f2937", textAlign: "center", display: "inline-flex", alignItems: "center", gap: 10, justifyContent: "center", width: "100%" }}><Icon name={COURSE_ICONS[courseObj.id]} size={S.homeTitle * 0.9} color={courseObj.color} /> {courseObj.title}</h1>
         <p style={{ textAlign: "center", color: "#6b7280", margin: "0 0 22px", fontSize: isTablet ? 21 : 17 }}>{adaptive ? "בחרי נושא וצאי למסע — הרמה עולה לבד ככל שמתאמנים!" : "בחרי נושא, ואז רמת אתגר. בהצלחה!"}</p>
+        {course === "reading" && voiceMiss && (
+          <div style={{ maxWidth: 580, margin: "0 auto 18px", background: "#fffbe6", border: "1px solid #ffe58f", borderRadius: 14, padding: "10px 16px", fontSize: isTablet ? 15 : 13, color: "#8c6d1f", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, lineHeight: 1.5 }}>
+            <Icon name="bulb" size={18} color="#d4a017" /><span>לא נמצא קול עברי במכשיר. כדי לשמוע את ההקראה, הפעילו קול עברית בהגדרות המכשיר (נגישות → טקסט לדיבור).</span>
+          </div>
+        )}
         {adaptive && <div style={{ textAlign: "center", marginBottom: 18 }}><button onClick={() => { setParentOk(false); setPq({ a: ri(3, 9), b: ri(3, 9) }); setInput(""); setScreen("parentgate"); }} style={{ fontFamily: "inherit", cursor: "pointer", border: "1px solid #e5e7eb", background: "#fff", borderRadius: 14, padding: "8px 16px", fontSize: isTablet ? 15 : 13, fontWeight: 700, color: "#6b7280", display: "inline-flex", alignItems: "center", gap: 6, boxShadow: "0 3px 10px rgba(2,6,23,0.05)" }}><Icon name="user" size={16} color="#9ca3af" /> אזור הורים</button></div>}
         <div style={{ display: "grid", gridTemplateColumns: S.homeCols, gap: isTablet ? 18 : 14 }}>
           {courseTopics.map((t) => {
@@ -1695,6 +1806,9 @@ function App() {
               boxShadow: "0 6px 16px rgba(2,6,23,0.10)", touchAction: "manipulation" }}>✓ בדיקה</button>
           </div>
         )
+        : problem.kind === "speak"
+        ? <SpeakCheck target={problem.target} color={topic.color} isTablet={isTablet}
+            onDone={(ok, hr) => { setInput(hr || (ok ? problem.target : " ")); setFeedback(ok ? "ok" : "no"); applyResult(ok); }} />
         : <NumPad mode={padMode} onKey={handleKey} isTablet={isTablet} landscape={landscape} />)}
       <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
         {feedback === "ok" ? (
