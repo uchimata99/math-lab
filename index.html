@@ -666,11 +666,12 @@ const TOPICS_GIFTED = [
    חוברת כיתה ב' — מחוללי תרגילים
    ============================================================ */
 function genG2AddSub(level) {
-  const cap = level === 0 ? 20 : level === 1 ? 50 : 100;
+  // התחלה קלה: תוצאות עד 10 → עד 20 → עד 30
+  const cap = level === 0 ? 10 : level === 1 ? 20 : 30;
   const op = pick(["+", "−"]);
   let a, b, val;
-  if (op === "+") { a = ri(2, cap - 2); b = ri(1, cap - a); val = a + b; }
-  else { a = ri(3, cap); b = ri(1, a - 1); val = a - b; }
+  if (op === "+") { a = ri(1, cap - 1); b = ri(1, cap - a); val = a + b; }
+  else { a = ri(2, cap); b = ri(1, a - 1); val = a - b; }
   return { kind: "number", expr: [{ t: "v", v: `${a} ${op} ${b} =` }],
     prompt: op === "+" ? "כמה זה ביחד?" : "כמה נשאר?",
     check: (v) => intEqual(v, val), answerText: `${val}`,
@@ -1199,7 +1200,7 @@ function writeStore(v) {
 }
 const blankP = () => ({ stars: 0, streak: 0, solved: 0, prog: {} });
 const MAXLVL = 2;          // רמות 0..2
-const NEED = 6;            // תשובות נכונות לעליית רמה
+const NEED = 10;           // תשובות נכונות לעליית רמה (יותר תרגול בכל רמה)
 const ADAPTIVE_COURSE = "grade2";
 const getProg = (player, topicId) => ((player && player.prog && player.prog[topicId]) || { lvl: 0, xp: 0 });
 const levelName = (lvl) => "רמה " + (lvl + 1);
