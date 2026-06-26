@@ -1075,8 +1075,8 @@ function NumPad({ mode, onKey, isTablet, landscape }) {
   const H = big ? 92 : isTablet ? 76 : 62;
   const FS = big ? 38 : isTablet ? 32 : 26;
   const press = (e, down) => {
-    e.currentTarget.style.transform = down ? "translateY(3px)" : "";
-    e.currentTarget.style.boxShadow = down ? "0 2px 0 rgba(0,0,0,0.13)" : "0 5px 0 rgba(0,0,0,0.13)";
+    e.currentTarget.style.transform = down ? "translateY(2px)" : "";
+    e.currentTarget.style.boxShadow = down ? "0 2px 8px rgba(2,6,23,0.12)" : "0 6px 16px rgba(2,6,23,0.10)";
   };
   const btn = (label, val, opts = {}) => (
     <button key={label} onClick={() => onKey(val)}
@@ -1084,7 +1084,7 @@ function NumPad({ mode, onKey, isTablet, landscape }) {
       style={{
         fontFamily: "inherit", fontSize: opts.fs || FS, fontWeight: 800, border: "none", borderRadius: 18,
         height: H, cursor: "pointer", color: opts.color || "#1f2937", background: opts.bg || "#fff",
-        boxShadow: "0 5px 0 rgba(0,0,0,0.13)", transition: "transform .05s, box-shadow .05s",
+        boxShadow: "0 6px 16px rgba(2,6,23,0.10)", transition: "transform .05s, box-shadow .05s",
         touchAction: "manipulation", userSelect: "none", WebkitUserSelect: "none", WebkitTapHighlightColor: "transparent",
         gridColumn: opts.span ? `span ${opts.span}` : undefined,
       }}>{label}</button>
@@ -1143,7 +1143,7 @@ function PlayerSelect({ players, onPick, onAdd }) {
   const add = () => { const n = name.trim(); if (n) { onAdd(n); setName(""); } };
   return (
     <div dir="rtl" style={{ minHeight: "100vh", fontFamily: "'Varela Round', system-ui, sans-serif",
-      background: "radial-gradient(circle at 18% 8%, #fef3c7 0%, transparent 38%), radial-gradient(circle at 88% 26%, #dbeafe 0%, transparent 42%), linear-gradient(180deg,#f8fafc,#eef2ff)",
+      background: "radial-gradient(circle at 12% 0%, #e9f4f1 0%, transparent 46%), radial-gradient(circle at 92% 10%, #eaeefb 0%, transparent 46%), linear-gradient(180deg,#fbfdfe,#f2f5fb)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", boxSizing: "border-box" }}>
       <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Varela+Round&display=swap" rel="stylesheet" />
       <div style={{ width: "100%", maxWidth: 480, textAlign: "center" }}>
@@ -1152,7 +1152,7 @@ function PlayerSelect({ players, onPick, onAdd }) {
         <p style={{ color: "#6b7280", fontSize: 18, marginBottom: 22 }}>מי משחק?</p>
         <div style={{ display: "grid", gap: 12, marginBottom: 18 }}>
           {names.map((n) => (
-            <button key={n} onClick={() => onPick(n)} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 18, padding: "16px 20px", background: "#fff", boxShadow: "0 5px 0 rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "space-between", touchAction: "manipulation" }}>
+            <button key={n} onClick={() => onPick(n)} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 18, padding: "16px 20px", background: "#fff", boxShadow: "0 6px 16px rgba(2,6,23,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", touchAction: "manipulation" }}>
               <span style={{ fontSize: 22, fontWeight: 800, color: "#1f2937" }}>👤 {n}</span>
               <span style={{ fontSize: 15, color: "#9ca3af" }}>⭐ {(players[n] || {}).stars || 0}</span>
             </button>
@@ -1172,7 +1172,7 @@ function PlayerSelect({ players, onPick, onAdd }) {
 function WorkbookSelect({ courses, onPick, onBack }) {
   return (
     <div dir="rtl" style={{ minHeight: "100vh", fontFamily: "'Varela Round', system-ui, sans-serif",
-      background: "radial-gradient(circle at 18% 8%, #fef3c7 0%, transparent 38%), radial-gradient(circle at 88% 26%, #dbeafe 0%, transparent 42%), linear-gradient(180deg,#f8fafc,#eef2ff)",
+      background: "radial-gradient(circle at 12% 0%, #e9f4f1 0%, transparent 46%), radial-gradient(circle at 92% 10%, #eaeefb 0%, transparent 46%), linear-gradient(180deg,#fbfdfe,#f2f5fb)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", boxSizing: "border-box" }}>
       <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Varela+Round&display=swap" rel="stylesheet" />
       <div style={{ width: "100%", maxWidth: 520, textAlign: "center" }}>
@@ -1183,7 +1183,7 @@ function WorkbookSelect({ courses, onPick, onBack }) {
           {courses.map((c) => (
             <button key={c.id} onClick={() => onPick(c.id)}
               style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 22, padding: "24px 18px", background: "#fff",
-                boxShadow: "0 7px 0 rgba(0,0,0,0.08)", borderTop: `7px solid ${c.color}`, touchAction: "manipulation" }}>
+                boxShadow: "0 10px 26px rgba(2,6,23,0.07)", borderTop: `5px solid ${c.color}`, touchAction: "manipulation" }}>
               <div style={{ fontSize: 46 }}>{c.emoji}</div>
               <div style={{ fontSize: 23, fontWeight: 800, color: "#1f2937", marginTop: 6 }}>{c.title}</div>
               <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{c.subtitle}</div>
@@ -1298,8 +1298,8 @@ function App() {
             <button key={t.id} onClick={() => { setTopic(t); setScreen("level"); }}
               style={{
                 fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 24,
-                padding: isTablet ? "30px 14px" : "22px 12px", background: "#fff", boxShadow: "0 7px 0 rgba(0,0,0,0.08)",
-                borderTop: `7px solid ${t.color}`, textAlign: "center",
+                padding: isTablet ? "30px 14px" : "22px 12px", background: "#fff", boxShadow: "0 10px 26px rgba(2,6,23,0.07)",
+                borderTop: `5px solid ${t.color}`, textAlign: "center",
                 touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
               }}>
               <div style={{ fontSize: S.emoji }}>{t.emoji}</div>
@@ -1350,7 +1350,7 @@ function App() {
             <button key={l.id} onClick={() => startLevel(topic, l)}
               style={{
                 fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 20,
-                padding: isTablet ? "24px 20px" : "18px 20px", background: "#fff", boxShadow: "0 5px 0 rgba(0,0,0,0.08)",
+                padding: isTablet ? "24px 20px" : "18px 20px", background: "#fff", boxShadow: "0 6px 16px rgba(2,6,23,0.07)",
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
               }}>
@@ -1367,7 +1367,7 @@ function App() {
   const questionCard = (
     <div style={{
       background: "#fff", borderRadius: 28, padding: twoCol ? "34px 26px" : isTablet ? "28px 22px" : "24px 18px",
-      boxShadow: "0 9px 0 rgba(0,0,0,0.06)", borderTop: `7px solid ${topic.color}`,
+      boxShadow: "0 12px 30px rgba(2,6,23,0.06)", borderTop: `4px solid ${topic.color}`,
       display: "flex", flexDirection: "column", justifyContent: "center", flex: twoCol ? 1 : undefined, marginBottom: twoCol ? 0 : 16,
     }}>
       <p onClick={() => speak(problemSpeech(problem))} title="לחצי להקראת השאלה"
@@ -1394,7 +1394,7 @@ function App() {
           <button onClick={() => speak(problem.say)}
             style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: topic.color, color: "#fff",
               borderRadius: 18, padding: isTablet ? "16px 34px" : "13px 26px", fontWeight: 800, fontSize: isTablet ? 24 : 20,
-              boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>
+              boxShadow: "0 6px 16px rgba(2,6,23,0.10)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>
             {problem.listenLabel || "🔊 שמיעה"}
           </button>
         )}
@@ -1428,12 +1428,12 @@ function App() {
               <button key={opt} onClick={() => { setInput(opt); if (problem.speakChoices) speak(problem.speakMap ? problem.speakMap[opt] : opt); }}
                 style={{ fontFamily: "inherit", cursor: "pointer", border: input === opt ? "3px solid #36cfc9" : "2px solid #e5e7eb",
                   borderRadius: 16, height: ch, fontSize: cfs, fontWeight: 800, lineHeight: 1.5,
-                  background: input === opt ? "#e6fffb" : "#fff", color: "#1f2937", boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
+                  background: input === opt ? "#e6fffb" : "#fff", color: "#1f2937", boxShadow: "0 4px 12px rgba(2,6,23,0.06)",
                   direction: "rtl", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>{opt}</button>
             ))}
             <button onClick={check} style={{ gridColumn: "1 / -1", fontFamily: "inherit", cursor: "pointer", border: "none",
               borderRadius: 16, height: isTablet ? 64 : 54, fontSize: isTablet ? 24 : 21, fontWeight: 800, background: "#52c41a", color: "#fff",
-              boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation" }}>✓ בדיקה</button>
+              boxShadow: "0 6px 16px rgba(2,6,23,0.10)", touchAction: "manipulation" }}>✓ בדיקה</button>
           </div>
           );
         })()
@@ -1443,7 +1443,7 @@ function App() {
             <NumberLine max={problem.numMax} value={input} setValue={(v) => setInput(String(v))} color={topic.color} isTablet={isTablet} />
             <button onClick={check} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", width: "100%", maxWidth: 440,
               borderRadius: 16, height: isTablet ? 64 : 54, fontSize: isTablet ? 24 : 21, fontWeight: 800, background: "#52c41a", color: "#fff",
-              boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation" }}>✓ בדיקה</button>
+              boxShadow: "0 6px 16px rgba(2,6,23,0.10)", touchAction: "manipulation" }}>✓ בדיקה</button>
           </div>
         )
         : <NumPad mode={padMode} onKey={handleKey} isTablet={isTablet} landscape={landscape} />)}
@@ -1625,7 +1625,7 @@ function Shell({ children, stars, streak, solved, isTablet, landscape, player, o
   return (
     <div dir="rtl" style={{
       minHeight: "100vh", fontFamily: "'Varela Round', system-ui, sans-serif", touchAction: "manipulation", WebkitTextSizeAdjust: "100%",
-      background: "radial-gradient(circle at 18% 8%, #fef3c7 0%, transparent 38%), radial-gradient(circle at 88% 26%, #dbeafe 0%, transparent 42%), linear-gradient(180deg,#f8fafc,#eef2ff)",
+      background: "radial-gradient(circle at 12% 0%, #e9f4f1 0%, transparent 46%), radial-gradient(circle at 92% 10%, #eaeefb 0%, transparent 46%), linear-gradient(180deg,#fbfdfe,#f2f5fb)",
     }}>
       <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Varela+Round&display=swap" rel="stylesheet" />
       <div style={{
@@ -1635,7 +1635,7 @@ function Shell({ children, stars, streak, solved, isTablet, landscape, player, o
         <div style={{ maxWidth: isTablet ? (landscape ? 1180 : 760) : 560, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: isTablet ? 14 : 10, marginBottom: 16, flexWrap: "wrap" }}>
             {player && (
-              <button onClick={onSwitch} title="החלף שחקן" style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "#fff", borderRadius: 16, padding: isTablet ? "9px 16px" : "6px 12px", boxShadow: "0 3px 0 rgba(0,0,0,0.06)", fontSize: isTablet ? 16 : 14, fontWeight: 800, color: "#36cfc9", touchAction: "manipulation" }}>👤 {player} ⇆</button>
+              <button onClick={onSwitch} title="החלף שחקן" style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "#fff", borderRadius: 16, padding: isTablet ? "9px 16px" : "6px 12px", boxShadow: "0 3px 10px rgba(2,6,23,0.06)", fontSize: isTablet ? 16 : 14, fontWeight: 800, color: "#36cfc9", touchAction: "manipulation" }}>👤 {player} ⇆</button>
             )}
             <Stat label="כוכבים" val={`⭐ ${stars}`} isTablet={isTablet} />
             <Stat label="רצף" val={`🔥 ${streak}`} isTablet={isTablet} />
@@ -1650,7 +1650,7 @@ function Shell({ children, stars, streak, solved, isTablet, landscape, player, o
 }
 function Stat({ label, val, isTablet }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 16, padding: isTablet ? "9px 20px" : "6px 14px", boxShadow: "0 3px 0 rgba(0,0,0,0.06)", textAlign: "center", minWidth: isTablet ? 100 : 78 }}>
+    <div style={{ background: "#fff", borderRadius: 16, padding: isTablet ? "9px 20px" : "6px 14px", boxShadow: "0 3px 10px rgba(2,6,23,0.06)", textAlign: "center", minWidth: isTablet ? 100 : 78 }}>
       <div style={{ fontSize: isTablet ? 22 : 18, fontWeight: 800, color: "#1f2937" }}>{val}</div>
       <div style={{ fontSize: isTablet ? 12 : 11, color: "#9ca3af" }}>{label}</div>
     </div>
@@ -1670,7 +1670,7 @@ function ActionBtn({ children, onClick, bg, color, isTablet }) {
     <button onClick={onClick} style={{
       fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 16,
       padding: isTablet ? "14px 22px" : "12px 18px", fontSize: isTablet ? 18 : 16, fontWeight: 800, background: bg, color,
-      boxShadow: "0 4px 0 rgba(0,0,0,0.10)", touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
+      boxShadow: "0 4px 12px rgba(2,6,23,0.08)", touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
     }}>{children}</button>
   );
 }
