@@ -734,6 +734,18 @@ function genG2Seq(level) {
     explanation: [`כל פעם ${down ? "מורידים" : "מוסיפים"} ${step}`, `${seq[len - 1]} ${down ? "−" : "+"} ${step}`, `= ${next}`] };
 }
 
+function genNumLine(level) {
+  const max = level === 0 ? 10 : 20;
+  const op = level === 0 ? "+" : pick(["+", "−"]);
+  let a, b, val;
+  if (op === "+") { a = ri(1, max - 1); b = ri(1, max - a); val = a + b; }
+  else { a = ri(2, max); b = ri(1, a - 1); val = a - b; }
+  return { kind: "numline", numMax: max, expr: [{ t: "v", v: `${a} ${op} ${b} =` }],
+    prompt: op === "+" ? "גָּרְרִי אֶת הַסַּמָּן לַתְּשׁוּבָה (קוֹפְצִים קָדִימָה):" : "גָּרְרִי אֶת הַסַּמָּן לַתְּשׁוּבָה (קוֹפְצִים אֲחוֹרָה):",
+    check: (x) => intEqual(x, val), answerText: `${val}`,
+    hint: op === "+" ? `מַתְחִילִים מ-${a} וְקוֹפְצִים ${b} צְעָדִים קָדִימָה.` : `מַתְחִילִים מ-${a} וְקוֹפְצִים ${b} צְעָדִים אֲחוֹרָה.`,
+    explanation: [`${a} ${op} ${b}`, `= ${val}`, `מוֹצְאִים אֶת ${val} עַל הַקַּו`] };
+}
 const pad2 = (n) => (n < 10 ? "0" + n : "" + n);
 function genG2Time(level) {
   const h = ri(1, 12);
@@ -777,6 +789,9 @@ const TOPICS_G2 = [
   { id: "g2add", title: "חיבור וחיסור", emoji: "➕", gen: genG2AddSub, color: "#ff7a45",
     lesson: "מחברים כשמוסיפים, מחסרים כשלוקחים. אפשר לעזור לעצמך בספירה קדימה ואחורה.",
     example: { expr: [{ t: "v", v: "7 + 5 =" }], answer: "12", steps: ["מחברים את שני המספרים", "7 + 5", "= 12"] } },
+  { id: "g2line", title: "קו המספרים", emoji: "📏", gen: genNumLine, color: "#08979c",
+    lesson: "קו המספרים עוזר לחבר ולחסר: מתחילים ממספר וקופצים קדימה (חיבור) או אחורה (חיסור). גוררים את הסמן אל המספר הנכון.",
+    example: { expr: [{ t: "v", v: "4 + 3 =" }], answer: "7", steps: ["מתחילים ב-4", "קופצים 3 צעדים קדימה", "נוחתים על 7"] } },
   { id: "g2mul", title: "כפל בסיסי", emoji: "✖️", gen: genG2Mul, color: "#9254de",
     lesson: "כפל הוא חיבור חוזר: 3 × 4 זה שלוש פעמים 4.",
     example: { expr: [{ t: "v", v: "3 × 4 =" }], answer: "12", steps: ["3 × 4 זה 3 פעמים 4", "4 + 4 + 4", "= 12"] } },
@@ -1029,6 +1044,47 @@ function useDevice() {
     return () => { window.removeEventListener("resize", on); window.removeEventListener("orientationchange", on); };
   }, []);
   return d;
+}
+
+/* ---------- קו מספרים נגרר (המחשה מוחשית: גרירה עדיפה על הקשה) ---------- */
+function NumberLine({ max, value, setValue, color, isTablet }) {
+  const ref = useRef(null);
+  const drag = useRef(false);
+  const W = isTablet ? 560 : 330, H = 96, padX = 26, baseY = 60;
+  const innerW = W - padX * 2;
+  const labelStep = max <= 20 ? (max <= 10 ? 1 : 2) : 5;
+  const toX = (v) => padX + (v / max) * innerW;
+  const fromEvt = (e) => {
+    const r = ref.current.getBoundingClientRect();
+    const xv = (e.clientX - r.left) / r.width * W;
+    return Math.max(0, Math.min(max, Math.round(((xv - padX) / innerW) * max)));
+  };
+  const set = (e) => { e.preventDefault(); setValue(fromEvt(e)); };
+  const ticks = [];
+  for (let v = 0; v <= max; v++) {
+    const x = toX(v); const major = v % labelStep === 0;
+    ticks.push(<line key={"t" + v} x1={x} y1={baseY - (major ? 9 : 5)} x2={x} y2={baseY + (major ? 9 : 5)} stroke="#cbd5e1" strokeWidth={major ? 2 : 1} />);
+    if (major) ticks.push(<text key={"n" + v} x={x} y={baseY + 27} textAnchor="middle" fontSize="13" fontWeight="700" fill="#64748b">{v}</text>);
+  }
+  const has = value != null && value !== "";
+  const mx = toX(has ? Number(value) : 0);
+  return (
+    <svg ref={ref} width="100%" viewBox={`0 0 ${W} ${H}`} style={{ touchAction: "none", cursor: "pointer", maxWidth: W, userSelect: "none" }}
+      onPointerDown={(e) => { drag.current = true; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} set(e); }}
+      onPointerMove={(e) => { if (drag.current) set(e); }}
+      onPointerUp={() => { drag.current = false; }} onPointerCancel={() => { drag.current = false; }}>
+      <line x1={padX} y1={baseY} x2={W - padX} y2={baseY} stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
+      {ticks}
+      {has && (
+        <g>
+          <line x1={mx} y1={baseY} x2={mx} y2={26} stroke={color} strokeWidth="3" />
+          <rect x={mx - 20} y={4} width="40" height="24" rx="7" fill={color} />
+          <text x={mx} y={21} textAnchor="middle" fontSize="16" fontWeight="800" fill="#fff">{value}</text>
+          <circle cx={mx} cy={baseY} r="12" fill={color} stroke="#fff" strokeWidth="3" />
+        </g>
+      )}
+    </svg>
+  );
 }
 
 /* ---------- מקלדת מותאמת מגע ו־S Pen ---------- */
@@ -1385,6 +1441,15 @@ function App() {
                   direction: "rtl", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>{opt}</button>
             ))}
             <button onClick={check} style={{ gridColumn: "1 / -1", fontFamily: "inherit", cursor: "pointer", border: "none",
+              borderRadius: 16, height: isTablet ? 64 : 54, fontSize: isTablet ? 24 : 21, fontWeight: 800, background: "#52c41a", color: "#fff",
+              boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation" }}>✓ בדיקה</button>
+          </div>
+        )
+        : problem.kind === "numline"
+        ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
+            <NumberLine max={problem.numMax} value={input} setValue={(v) => setInput(String(v))} color={topic.color} isTablet={isTablet} />
+            <button onClick={check} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", width: "100%", maxWidth: 440,
               borderRadius: 16, height: isTablet ? 64 : 54, fontSize: isTablet ? 24 : 21, fontWeight: 800, background: "#52c41a", color: "#fff",
               boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation" }}>✓ בדיקה</button>
           </div>
