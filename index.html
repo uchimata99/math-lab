@@ -666,8 +666,19 @@ const TOPICS_GIFTED = [
    חוברת כיתה ב' — מחוללי תרגילים
    ============================================================ */
 function genG2AddSub(level) {
-  // התחלה קלה: תוצאות עד 10 → עד 20 → עד 30
-  const cap = level === 0 ? 10 : level === 1 ? 20 : 30;
+  // עלייה מדורגת: תוצאות עד 10 → 20 → 30 → 50 → 100
+  const cap = [10, 20, 30, 50, 100][Math.min(level, 4)];
+  // גיוון: ברמות הגבוהות לפעמים חיבור של שלושה מספרים
+  if (level >= 2 && Math.random() < 0.25) {
+    const a = ri(1, Math.max(2, Math.floor(cap / 3)));
+    const b = ri(1, Math.max(2, Math.floor(cap / 3)));
+    const c = ri(1, Math.max(1, cap - a - b));
+    const val = a + b + c;
+    return { kind: "number", expr: [{ t: "v", v: `${a} + ${b} + ${c} =` }], prompt: "כמה זה ביחד?",
+      check: (v) => intEqual(v, val), answerText: `${val}`,
+      hint: "מחברים שניים, ואז מוסיפים את השלישי.",
+      explanation: [`${a} + ${b} = ${a + b}`, `${a + b} + ${c}`, `= ${val}`] };
+  }
   const op = pick(["+", "−"]);
   let a, b, val;
   if (op === "+") { a = ri(1, cap - 1); b = ri(1, cap - a); val = a + b; }
@@ -849,7 +860,7 @@ function genG2Place(level) {
 }
 
 const TOPICS_G2 = [
-  { id: "g2add", title: "חיבור וחיסור", emoji: "➕", gen: genG2AddSub, color: "#ff7a45",
+  { id: "g2add", title: "חיבור וחיסור", emoji: "➕", gen: genG2AddSub, color: "#ff7a45", levels: 5,
     lesson: "מחברים כשמוסיפים, מחסרים כשלוקחים. אפשר לעזור לעצמך בספירה קדימה ואחורה.",
     example: { expr: [{ t: "v", v: "7 + 5 =" }], answer: "12", steps: ["מחברים את שני המספרים", "7 + 5", "= 12"] } },
   { id: "g2line", title: "קו המספרים", emoji: "📏", gen: genNumLine, color: "#08979c",
@@ -1199,7 +1210,8 @@ function writeStore(v) {
   catch (_) { memStore = v; }
 }
 const blankP = () => ({ stars: 0, streak: 0, solved: 0, prog: {} });
-const MAXLVL = 2;          // רמות 0..2
+const MAXLVL = 2;          // ברירת מחדל: רמות 0..2
+const maxLvlOf = (t) => ((t && t.levels ? t.levels : 3) - 1); // מספר רמות לכל נושא
 const NEED = 10;           // תשובות נכונות לעליית רמה (יותר תרגול בכל רמה)
 const ADAPTIVE_COURSE = "grade2";
 const getProg = (player, topicId) => ((player && player.prog && player.prog[topicId]) || { lvl: 0, xp: 0 });
@@ -1268,16 +1280,16 @@ function WorkbookSelect({ courses, onPick, onBack }) {
    אפליקציה
    ============================================================ */
 /* ---------- שביל מסע (קונספט הרפתקה) ---------- */
-function JourneyPath({ levelIdx, color, isTablet }) {
-  const nodes = MAXLVL + 1;
+function JourneyPath({ levelIdx, color, isTablet, max = MAXLVL }) {
+  const nodes = max + 1;
   const W = isTablet ? 340 : 290;
-  const stepH = isTablet ? 96 : 82;
+  const stepH = (isTablet ? 96 : 82) * (nodes > 3 ? 0.78 : 1);
   const topPad = 70, botPad = 50;
   const H = topPad + botPad + (nodes - 1) * stepH;
   const cx = (i) => (i % 2 === 0 ? W * 0.30 : W * 0.70);
   const cy = (i) => H - botPad - i * stepH;
   const R = isTablet ? 28 : 24;
-  const done = levelIdx >= MAXLVL;
+  const done = levelIdx >= max;
   const segs = [];
   for (let i = 0; i < nodes - 1; i++) {
     const reached = (i + 1) <= levelIdx;
@@ -1356,7 +1368,7 @@ function App() {
     if (adaptive && topic) {
       const t = prog[topic.id] || { lvl: 0, xp: 0 };
       let lvl = t.lvl, xp = t.xp;
-      if (ok) { xp += 1; if (xp >= NEED && lvl < MAXLVL) { lvl += 1; xp = 0; bumped = true; } }
+      if (ok) { xp += 1; if (xp >= NEED && lvl < maxLvlOf(topic)) { lvl += 1; xp = 0; bumped = true; } }
       else { xp = Math.max(0, xp - 1); }
       prog[topic.id] = { lvl, xp }; lvlNow = lvl;
     }
@@ -1374,7 +1386,7 @@ function App() {
   // התרגיל הבא — ברמה הסתגלנית העדכנית (כיתה ב') או ברמה שנבחרה (אחרת)
   function nextProblem() {
     if (adaptive && topic) {
-      const lvl = Math.min(getProg(players[current], topic.id).lvl, MAXLVL);
+      const lvl = Math.min(getProg(players[current], topic.id).lvl, maxLvlOf(topic));
       setLevel(syntheticLevel(lvl)); startProblem(topic, lvl);
     } else { startProblem(topic, level.id); }
   }
@@ -1383,13 +1395,13 @@ function App() {
   }
   function startAdaptive(t) {
     setTopic(t); setScreen("play");
-    const lvl = Math.min(getProg(players[current], t.id).lvl, MAXLVL);
+    const lvl = Math.min(getProg(players[current], t.id).lvl, maxLvlOf(t));
     setLevel(syntheticLevel(lvl)); startProblem(t, lvl);
   }
-  function setTopicLevel(topicId, lvl) {
+  function setTopicLevel(topicId, lvl, max) {
     const c = players[current] || blankP();
     const prog = { ...(c.prog || {}) };
-    prog[topicId] = { lvl: Math.max(0, Math.min(MAXLVL, lvl)), xp: 0 };
+    prog[topicId] = { lvl: Math.max(0, Math.min(max == null ? MAXLVL : max, lvl)), xp: 0 };
     const np = { ...players, [current]: { ...c, prog } };
     setPlayers(np); persist(np, current);
   }
@@ -1453,7 +1465,7 @@ function App() {
                 <div style={{ marginTop: 8 }}>
                   <div style={{ fontSize: isTablet ? 13 : 11, fontWeight: 700, color: t.color, marginBottom: 4 }}>{levelName(pr.lvl)}</div>
                   <div style={{ height: 6, borderRadius: 99, background: "#eef2f7", overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${pr.lvl >= MAXLVL ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color, borderRadius: 99 }} />
+                    <div style={{ height: "100%", width: `${pr.lvl >= maxLvlOf(t) ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color, borderRadius: 99 }} />
                   </div>
                 </div>
               )}
@@ -1530,9 +1542,9 @@ function App() {
         </div>
         <div style={{ maxWidth: 460, margin: "0 auto", background: "#fff", borderRadius: 26, boxShadow: "0 12px 30px rgba(2,6,23,0.06)", borderTop: `4px solid ${topic.color}`, padding: isTablet ? "22px 20px 26px" : "18px 16px 22px" }}>
           <div style={{ textAlign: "center", fontWeight: 800, fontSize: isTablet ? 18 : 16, color: topic.color, marginBottom: 6 }}>
-            {pr.lvl >= MAXLVL ? "כל הכבוד! הגעת לפסגה 🏆" : `${levelName(pr.lvl)} — עוד ${remain} ${remain === 1 ? "תשובה" : "תשובות"} לרמה הבאה`}
+            {pr.lvl >= maxLvlOf(topic) ? "כל הכבוד! הגעת לפסגה 🏆" : `${levelName(pr.lvl)} — עוד ${remain} ${remain === 1 ? "תשובה" : "תשובות"} לרמה הבאה`}
           </div>
-          <JourneyPath levelIdx={pr.lvl} color={topic.color} isTablet={isTablet} />
+          <JourneyPath levelIdx={pr.lvl} color={topic.color} isTablet={isTablet} max={maxLvlOf(topic)} />
           <button onClick={() => startAdaptive(topic)}
             style={{ display: "block", width: "100%", marginTop: 14, fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 18,
               padding: isTablet ? "18px" : "15px", fontSize: isTablet ? 24 : 20, fontWeight: 800, background: topic.color, color: "#fff",
@@ -1579,15 +1591,15 @@ function App() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 800, fontSize: isTablet ? 18 : 16, color: "#1f2937" }}>{t.title}</div>
                   <div style={{ height: 6, borderRadius: 99, background: "#eef2f7", overflow: "hidden", marginTop: 5 }}>
-                    <div style={{ height: "100%", width: `${pr.lvl >= MAXLVL ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color }} />
+                    <div style={{ height: "100%", width: `${pr.lvl >= maxLvlOf(t) ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color }} />
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <button onClick={() => setTopicLevel(t.id, pr.lvl - 1)} disabled={pr.lvl <= 0}
+                  <button onClick={() => setTopicLevel(t.id, pr.lvl - 1, maxLvlOf(t))} disabled={pr.lvl <= 0}
                     style={{ fontFamily: "inherit", cursor: pr.lvl <= 0 ? "default" : "pointer", border: "none", borderRadius: 10, width: 34, height: 34, fontSize: 22, fontWeight: 800, background: pr.lvl <= 0 ? "#f1f5f9" : "#fff1f0", color: pr.lvl <= 0 ? "#cbd5e1" : "#cf1322", boxShadow: "0 2px 6px rgba(2,6,23,0.06)" }}>−</button>
                   <span style={{ minWidth: 58, textAlign: "center", fontWeight: 800, fontSize: isTablet ? 16 : 14, color: t.color }}>{levelName(pr.lvl)}</span>
-                  <button onClick={() => setTopicLevel(t.id, pr.lvl + 1)} disabled={pr.lvl >= MAXLVL}
-                    style={{ fontFamily: "inherit", cursor: pr.lvl >= MAXLVL ? "default" : "pointer", border: "none", borderRadius: 10, width: 34, height: 34, fontSize: 22, fontWeight: 800, background: pr.lvl >= MAXLVL ? "#f1f5f9" : "#f6ffed", color: pr.lvl >= MAXLVL ? "#cbd5e1" : "#389e0d", boxShadow: "0 2px 6px rgba(2,6,23,0.06)" }}>+</button>
+                  <button onClick={() => setTopicLevel(t.id, pr.lvl + 1, maxLvlOf(t))} disabled={pr.lvl >= maxLvlOf(t)}
+                    style={{ fontFamily: "inherit", cursor: pr.lvl >= maxLvlOf(t) ? "default" : "pointer", border: "none", borderRadius: 10, width: 34, height: 34, fontSize: 22, fontWeight: 800, background: pr.lvl >= maxLvlOf(t) ? "#f1f5f9" : "#f6ffed", color: pr.lvl >= maxLvlOf(t) ? "#cbd5e1" : "#389e0d", boxShadow: "0 2px 6px rgba(2,6,23,0.06)" }}>+</button>
                 </div>
               </div>
             );
