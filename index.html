@@ -1358,15 +1358,19 @@ function App() {
         <span style={{ fontSize: isTablet ? 18 : 16, marginInlineEnd: 6 }}>🔊</span>{problem.prompt}
       </p>
       <div style={{ minHeight: 56, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 14, fontSize: S.expr, color: "#1f2937" }}>
-        {problem.text != null ? (
+        {problem.text != null ? (() => {
+          const tlen = stripNiqqud(problem.text).length;
+          const tfs = tlen > 14 ? (isTablet ? 40 : 30) : tlen > 6 ? (isTablet ? 64 : 48) : (isTablet ? 92 : 72);
+          return (
           <button onClick={() => speak(problem.say || problem.text)} title="לחצי לשמיעה"
             style={{ fontFamily: "inherit", cursor: "pointer", border: `2px dashed ${topic.color}55`, background: "#fafafa",
-              borderRadius: 18, padding: isTablet ? "12px 26px" : "10px 18px", color: "#1f2937", fontWeight: 800,
-              fontSize: problem.text.length > 12 ? (isTablet ? 30 : 24) : (isTablet ? 58 : 46), lineHeight: 1.4,
+              borderRadius: 18, padding: isTablet ? "14px 28px" : "12px 20px", color: "#1f2937", fontWeight: 800,
+              fontSize: tfs, lineHeight: 1.6,
               direction: "rtl", touchAction: "manipulation", WebkitTapHighlightColor: "transparent", maxWidth: "100%" }}>
-            {problem.text} <span style={{ fontSize: isTablet ? 24 : 20 }}>🔊</span>
+            {problem.text} <span style={{ fontSize: isTablet ? 26 : 22 }}>🔊</span>
           </button>
-        ) : problem.figure ? <Figure fig={problem.figure} color={topic.color} />
+          );
+        })() : problem.figure ? <Figure fig={problem.figure} color={topic.color} />
           : problem.vertical ? <Vertical data={problem.vertical} color={topic.color} big={isTablet} />
           : (problem.expr && problem.expr.length > 0) ? <MathLine parts={problem.expr} /> : null}
         {problem.say != null && problem.text == null && (
@@ -1396,12 +1400,17 @@ function App() {
   const padColumn = (
     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 18, flex: twoCol ? 1 : undefined }}>
       {feedback !== "ok" && (problem.kind === "choice"
-        ? (
+        ? (() => {
+          const isReading = topic.id && topic.id.indexOf("rd") === 0;
+          const longest = Math.max(...problem.choices.map((c) => stripNiqqud("" + c).length));
+          const cfs = isReading ? (longest <= 2 ? (isTablet ? 50 : 40) : longest <= 6 ? (isTablet ? 36 : 30) : (isTablet ? 26 : 22)) : (isTablet ? 22 : 19);
+          const ch = isReading ? (longest <= 6 ? (isTablet ? 92 : 76) : (isTablet ? 78 : 64)) : (isTablet ? 70 : 58);
+          return (
           <div style={{ display: "grid", gridTemplateColumns: problem.choices.length > 2 ? "repeat(2,1fr)" : "1fr", gap: isTablet ? 14 : 10, width: "100%", maxWidth: 440, margin: "0 auto" }}>
             {problem.choices.map((opt) => (
               <button key={opt} onClick={() => { setInput(opt); if (problem.speakChoices) speak(problem.speakMap ? problem.speakMap[opt] : opt); }}
                 style={{ fontFamily: "inherit", cursor: "pointer", border: input === opt ? "3px solid #36cfc9" : "2px solid #e5e7eb",
-                  borderRadius: 16, height: isTablet ? 70 : 58, fontSize: isTablet ? 22 : 19, fontWeight: 800,
+                  borderRadius: 16, height: ch, fontSize: cfs, fontWeight: 800, lineHeight: 1.5,
                   background: input === opt ? "#e6fffb" : "#fff", color: "#1f2937", boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
                   direction: "rtl", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>{opt}</button>
             ))}
@@ -1409,7 +1418,8 @@ function App() {
               borderRadius: 16, height: isTablet ? 64 : 54, fontSize: isTablet ? 24 : 21, fontWeight: 800, background: "#52c41a", color: "#fff",
               boxShadow: "0 5px 0 rgba(0,0,0,0.13)", touchAction: "manipulation" }}>✓ בדיקה</button>
           </div>
-        )
+          );
+        })()
         : problem.kind === "numline"
         ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
