@@ -75,6 +75,64 @@ function problemSpeech(p) {
   if (p.say != null) return [p.prompt, p.say].filter(Boolean).join(". ");
   return [p.prompt, p.text || exprToSpeech(p.expr)].filter(Boolean).join(". ");
 }
+
+/* ---------- ערכת אייקונים אחידה (קווי, מעוגל) ---------- */
+const ICONS = {
+  plusminus: <g><path d="M4 7h6" /><path d="M7 4v6" /><path d="M14 17h6" /></g>,
+  numberline: <g><path d="M3 15h18" /><path d="M6 15v2.5M10 15v2.5M14 15v2.5M18 15v2.5" /><path d="M9 10.5l2-2 2 2" /><path d="M11 8.5v6.5" /></g>,
+  multiply: <g><circle cx="7" cy="7.5" r="1.3" /><circle cx="12" cy="7.5" r="1.3" /><circle cx="17" cy="7.5" r="1.3" /><circle cx="7" cy="13" r="1.3" /><circle cx="12" cy="13" r="1.3" /><circle cx="17" cy="13" r="1.3" /></g>,
+  grid: <g><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M4 10h16M4 15h16M10 4v16M15 4v16" /></g>,
+  book: <g><path d="M12 6c-1.8-1.2-4.6-1.2-6.6 0V19c2-1.2 4.8-1.2 6.6 0 1.8-1.2 4.6-1.2 6.6 0V6c-2-1.2-4.8-1.2-6.6 0z" /><path d="M12 6v13" /></g>,
+  shapes: <g><circle cx="8" cy="9" r="4" /><path d="M16 12.5l4 7.5h-8z" /></g>,
+  compare: <g><path d="M13.5 7l4 5-4 5" /><path d="M9 7l-4 5 4 5" /></g>,
+  parity: <g><circle cx="8.5" cy="8.5" r="1.8" /><circle cx="8.5" cy="14.5" r="1.8" /><circle cx="14.5" cy="8.5" r="1.8" /><circle cx="14.5" cy="14.5" r="1.8" /></g>,
+  question: <g><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M9.5 9.5a2.5 2.5 0 113.5 2.3c-.8.4-1 1-1 1.8" /><circle cx="12" cy="16.4" r="0.6" fill="currentColor" stroke="none" /></g>,
+  steps: <g><path d="M4 18.5h4v-4h4v-4h4v-4h4" /></g>,
+  clock: <g><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></g>,
+  place: <g><rect x="5" y="6" width="5" height="13" rx="1" /><rect x="13" y="12" width="5" height="7" rx="1" /></g>,
+  headphones: <g><path d="M5 13.5v-1.5a7 7 0 0114 0v1.5" /><rect x="3.5" y="13" width="3.5" height="6" rx="1.6" /><rect x="17" y="13" width="3.5" height="6" rx="1.6" /></g>,
+  speaker: <g><path d="M4 9.5v5h3.3L12 18V6L7.3 9.5z" /><path d="M15.5 9.2a4 4 0 010 5.6" /><path d="M18 7a7 7 0 010 10" /></g>,
+  page: <g><rect x="5" y="3.5" width="14" height="17" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></g>,
+  bubble: <g><path d="M5 5h14a2 2 0 012 2v7a2 2 0 01-2 2H10l-4 3v-3H5a2 2 0 01-2-2V7a2 2 0 012-2z" /><path d="M8 9.5h8M8 13h5" /></g>,
+  calculator: <g><rect x="5" y="3" width="14" height="18" rx="2" /><rect x="8" y="6" width="8" height="3" rx="0.6" /><path d="M9 13h.01M12 13h.01M15 13h.01M9 17h.01M12 17h.01M15 17h.01" /></g>,
+  fraction: <g><circle cx="12" cy="12" r="8" /><path d="M12 12V4M12 12l7 4" /></g>,
+  scale: <g><path d="M12 5v14" /><path d="M6 19h12" /><path d="M5 8h14" /><path d="M5 8l-2.5 4.5h5z" /><path d="M19 8l-2.5 4.5h5z" /></g>,
+  bulb: <g><path d="M9.5 18h5" /><path d="M10 21h4" /><path d="M12 3a6 6 0 00-3.5 10.9c.6.5.9 1.2.9 2.1h5.2c0-.9.3-1.6.9-2.1A6 6 0 0012 3z" /></g>,
+  protractor: <g><path d="M4 16a8 8 0 0116 0z" /><path d="M4 16h16" /><path d="M12 16v-6" /></g>,
+  bolt: <g><path d="M13 3L5 13.5h5l-1 7.5 8-11h-5z" /></g>,
+  bricks: <g><rect x="4" y="5" width="16" height="5.5" rx="1" /><rect x="4" y="13" width="16" height="5.5" rx="1" /><path d="M12 5v5.5M8 13v5.5M16 13v5.5" /></g>,
+  flask: <g><path d="M9 3h6" /><path d="M10 3v6l-4.5 8.5A2 2 0 007.3 21h9.4a2 2 0 001.8-3.5L14 9V3" /><path d="M7.5 15h9" /></g>,
+  refresh: <g><path d="M4 11a8 8 0 0114-5l2 2" /><path d="M20 4v4h-4" /><path d="M20 13a8 8 0 01-14 5l-2-2" /><path d="M4 20v-4h4" /></g>,
+  pencil: <g><path d="M4 20l1-4L16 5l3 3L8 19z" /><path d="M14 7l3 3" /></g>,
+  checkc: <g><circle cx="12" cy="12" r="8" /><path d="M8.5 12.5l2.3 2.3 4.7-5.3" /></g>,
+  flame: <g><path d="M12 3c2.5 3.5 4.5 5.5 4.5 8.5a4.5 4.5 0 01-9 0c0-1.3.4-2.4 1.2-3.3.4 1 .9 1.5 1.8 1.8C9.5 7.5 10.5 5.5 12 3z" /></g>,
+  star: <g><path d="M12 4l2.3 4.7 5.2.8-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1L4.5 9.5l5.2-.8z" /></g>,
+  user: <g><circle cx="12" cy="8" r="3.6" /><path d="M5.5 20a6.5 6.5 0 0113 0" /></g>,
+  trash: <g><path d="M5 7h14" /><path d="M9 7V5h6v2" /><path d="M7 7l1 13h8l1-13" /><path d="M10 11v6M14 11v6" /></g>,
+  swap: <g><path d="M7 8h12l-3-3M17 16H5l3 3" /></g>,
+  plus: <g><path d="M12 5v14M5 12h14" /></g>,
+  eraser: <g><path d="M8 20h12" /><path d="M14.5 5.5l4 4-7.5 7.5H7l-2.5-2.5z" /><path d="M10 9l5 5" /></g>,
+};
+function Icon({ name, size = 28, color = "currentColor", stroke = 1.9 }) {
+  const p = ICONS[name];
+  if (!p) return null;
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+      strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", flex: "none" }}>
+      {p}
+    </svg>
+  );
+}
+const TOPIC_ICONS = {
+  g2add: "plusminus", g2line: "numberline", g2mul: "multiply", g2t5: "grid",
+  g2word: "book", g2shape: "shapes", g2cmp: "compare", g2eo: "parity",
+  g2miss: "question", g2seq: "steps", g2time: "clock", g2place: "place",
+  rdphon: "headphones", rdsyl: "speaker", rdwords: "page", rdsent: "bubble",
+  arith: "calculator", frac: "fraction", eq: "scale", logic: "bulb",
+  geo: "protractor", pow: "bolt", prime: "bricks",
+};
+const COURSE_ICONS = { grade2: "calculator", reading: "book", gifted: "flask" };
+const topicIcon = (t) => TOPIC_ICONS[t && t.id] || "star";
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
 function simplify(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; }
 function parseFrac(str) {
@@ -885,7 +943,7 @@ function genReadSyllables(level) {
     for (const s of otherSounds) { if (optV.length >= 4) break; optV.push(pick(vset.filter((x) => x.sound === s))); }
     const choices = shuffle(optV.map((vv) => vv.b(c)));
     const speakMap = {}; choices.forEach((s) => { speakMap[s] = s; });
-    return { kind: "choice", expr: [], say: syl, listenLabel: "🔊 אֵיזוֹ הֲבָרָה?", choices, speakChoices: true, speakMap,
+    return { kind: "choice", expr: [], say: syl, listenLabel: "אֵיזוֹ הֲבָרָה?", choices, speakChoices: true, speakMap,
       prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הַהֲבָרָה שֶׁשָּׁמַעְתְּ:", check: (x) => x === syl, answerText: syl,
       hint: "אוֹתָהּ אוֹת, נִקּוּד שׁוֹנֶה — הַקְשִׁיבִי לַצְּלִיל! אֶפְשָׁר לִלְחֹץ עַל כָּל הֲבָרָה לִשְׁמִיעָה.",
       explanation: [`הַהֲבָרָה הִיא ${syl}`, `הַנִּקּוּד ${v.name} נוֹתֵן אֶת הַצְּלִיל "${v.sound}"`] };
@@ -904,7 +962,7 @@ function genReadWords(level) {
   const others = shuffle(HE_WORDS.filter((w) => w !== word)).slice(0, level === 0 ? 2 : 3);
   const choices = shuffle([word, ...others]);
   const speakMap = {}; choices.forEach((w) => { speakMap[w] = w; });
-  return { kind: "choice", expr: [], say: word, listenLabel: "🔊 אֵיזוֹ מִלָּה?", choices, speakChoices: true, speakMap,
+  return { kind: "choice", expr: [], say: word, listenLabel: "אֵיזוֹ מִלָּה?", choices, speakChoices: true, speakMap,
     prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הַמִּלָּה שֶׁשָּׁמַעְתְּ:", check: (x) => x === word, answerText: word,
     hint: "קִרְאִי כָּל מִלָּה לְאַט, אוֹת אַחַר אוֹת. אֶפְשָׁר לִלְחֹץ עַל מִלָּה לִשְׁמִיעָה.",
     explanation: [`הַמִּלָּה הִיא ${word}`] };
@@ -945,7 +1003,7 @@ function genPhonics(level) {
   const mode = pick(level === 0 ? ["syl", "rhyme", "init"] : ["syl", "rhyme", "init", "init"]);
   if (mode === "syl") {
     const word = pick(PA_WORDS);
-    return { kind: "choice", expr: [], say: word.w, listenLabel: "🔊 הַקְשִׁיבִי לַמִּלָּה", choices: ["1", "2", "3"],
+    return { kind: "choice", expr: [], say: word.w, listenLabel: "הַקְשִׁיבִי לַמִּלָּה", choices: ["1", "2", "3"],
       prompt: "כַּמָּה הֲבָרוֹת יֵשׁ בַּמִּלָּה? (לַחֲצִי עַל הָרַמְקוֹל)", check: (x) => x === String(word.syl), answerText: String(word.syl),
       hint: "מוֹחֲאִים כַּף לְכָל הֲבָרָה — וְסוֹפְרִים.", explanation: [`${word.w} — ${word.syl} הֲבָרוֹת`] };
   }
@@ -1147,14 +1205,14 @@ function PlayerSelect({ players, onPick, onAdd }) {
       display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", boxSizing: "border-box" }}>
       <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Varela+Round&display=swap" rel="stylesheet" />
       <div style={{ width: "100%", maxWidth: 480, textAlign: "center" }}>
-        <div style={{ fontSize: 56 }}>🔬</div>
+        <div style={{ display: "flex", justifyContent: "center" }}><Icon name="flask" size={54} color="#9254de" stroke={1.8} /></div>
         <h1 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: 34, margin: "4px 0 6px", color: "#1f2937" }}>מעבדת המספרים</h1>
         <p style={{ color: "#6b7280", fontSize: 18, marginBottom: 22 }}>מי משחק?</p>
         <div style={{ display: "grid", gap: 12, marginBottom: 18 }}>
           {names.map((n) => (
             <button key={n} onClick={() => onPick(n)} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 18, padding: "16px 20px", background: "#fff", boxShadow: "0 6px 16px rgba(2,6,23,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", touchAction: "manipulation" }}>
-              <span style={{ fontSize: 22, fontWeight: 800, color: "#1f2937" }}>👤 {n}</span>
-              <span style={{ fontSize: 15, color: "#9ca3af" }}>⭐ {(players[n] || {}).stars || 0}</span>
+              <span style={{ fontSize: 22, fontWeight: 800, color: "#1f2937", display: "inline-flex", alignItems: "center", gap: 8 }}><Icon name="user" size={22} color="#94a3b8" /> {n}</span>
+              <span style={{ fontSize: 15, color: "#9ca3af", display: "inline-flex", alignItems: "center", gap: 5 }}><Icon name="star" size={15} color="#f59e0b" stroke={2} /> {(players[n] || {}).stars || 0}</span>
             </button>
           ))}
           {names.length === 0 && <div style={{ color: "#9ca3af", fontSize: 15 }}>עדיין אין שחקנים — הוסיפו שם כדי להתחיל</div>}
@@ -1162,7 +1220,7 @@ function PlayerSelect({ players, onPick, onAdd }) {
         <div style={{ display: "flex", gap: 8 }}>
           <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") add(); }} placeholder="שם חדש…" maxLength={12}
             style={{ flex: 1, fontFamily: "inherit", fontSize: 18, padding: "12px 14px", borderRadius: 14, border: "2px solid #e5e7eb", outline: "none", textAlign: "right" }} />
-          <button onClick={add} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 14, padding: "12px 20px", fontSize: 18, fontWeight: 800, background: "#36cfc9", color: "#fff", touchAction: "manipulation" }}>➕ הוסף</button>
+          <button onClick={add} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 14, padding: "12px 20px", fontSize: 18, fontWeight: 800, background: "#36cfc9", color: "#fff", touchAction: "manipulation", display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name="plus" size={18} color="#fff" /> הוסף</button>
         </div>
       </div>
     </div>
@@ -1184,8 +1242,8 @@ function WorkbookSelect({ courses, onPick, onBack }) {
             <button key={c.id} onClick={() => onPick(c.id)}
               style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 22, padding: "24px 18px", background: "#fff",
                 boxShadow: "0 10px 26px rgba(2,6,23,0.07)", borderTop: `5px solid ${c.color}`, touchAction: "manipulation" }}>
-              <div style={{ fontSize: 46 }}>{c.emoji}</div>
-              <div style={{ fontSize: 23, fontWeight: 800, color: "#1f2937", marginTop: 6 }}>{c.title}</div>
+              <div style={{ display: "flex", justifyContent: "center" }}><Icon name={COURSE_ICONS[c.id]} size={44} color={c.color} stroke={1.8} /></div>
+              <div style={{ fontSize: 23, fontWeight: 800, color: "#1f2937", marginTop: 10 }}>{c.title}</div>
               <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{c.subtitle}</div>
             </button>
           ))}
@@ -1291,7 +1349,7 @@ function App() {
     return (
       <Shell {...sp}>
         <BackBtn onClick={backToCourses} isTablet={isTablet} />
-        <h1 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: S.homeTitle, margin: "4px 0 4px", color: "#1f2937", textAlign: "center" }}>{courseObj.emoji} {courseObj.title}</h1>
+        <h1 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: S.homeTitle, margin: "4px 0 4px", color: "#1f2937", textAlign: "center", display: "inline-flex", alignItems: "center", gap: 10, justifyContent: "center", width: "100%" }}><Icon name={COURSE_ICONS[courseObj.id]} size={S.homeTitle * 0.9} color={courseObj.color} /> {courseObj.title}</h1>
         <p style={{ textAlign: "center", color: "#6b7280", margin: "0 0 26px", fontSize: isTablet ? 21 : 17 }}>בחרי נושא, ואז רמת אתגר. בהצלחה!</p>
         <div style={{ display: "grid", gridTemplateColumns: S.homeCols, gap: isTablet ? 18 : 14 }}>
           {courseTopics.map((t) => (
@@ -1302,8 +1360,8 @@ function App() {
                 borderTop: `5px solid ${t.color}`, textAlign: "center",
                 touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
               }}>
-              <div style={{ fontSize: S.emoji }}>{t.emoji}</div>
-              <div style={{ fontSize: S.topicTitle, fontWeight: 800, marginTop: 8, color: "#1f2937" }}>{t.title}</div>
+              <div style={{ display: "flex", justifyContent: "center" }}><Icon name={topicIcon(t)} size={S.emoji} color={t.color} stroke={1.8} /></div>
+              <div style={{ fontSize: S.topicTitle, fontWeight: 800, marginTop: 10, color: "#1f2937" }}>{t.title}</div>
             </button>
           ))}
         </div>
@@ -1318,8 +1376,8 @@ function App() {
       <Shell {...sp}>
         <BackBtn onClick={() => setScreen("home")} isTablet={isTablet} />
         <div style={{ textAlign: "center", marginBottom: 18 }}>
-          <div style={{ fontSize: isTablet ? 60 : 46 }}>{topic.emoji}</div>
-          <h2 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: isTablet ? 38 : 30, margin: "4px 0", color: topic.color }}>{topic.title}</h2>
+          <div style={{ display: "flex", justifyContent: "center" }}><Icon name={topicIcon(topic)} size={isTablet ? 58 : 46} color={topic.color} stroke={1.8} /></div>
+          <h2 style={{ fontFamily: "'Fredoka', sans-serif", fontSize: isTablet ? 38 : 30, margin: "8px 0 4px", color: topic.color }}>{topic.title}</h2>
           <p style={{ color: "#6b7280", fontSize: isTablet ? 19 : 16, maxWidth: 620, margin: "8px auto 0", lineHeight: 1.6 }}>{topic.lesson}</p>
         </div>
 
@@ -1328,7 +1386,7 @@ function App() {
           maxWidth: 600, margin: "0 auto 22px", background: "#fff", borderRadius: 22,
           border: `2px dashed ${topic.color}`, padding: isTablet ? "22px 26px" : "18px 18px",
         }}>
-          <div style={{ fontSize: isTablet ? 17 : 15, fontWeight: 800, color: topic.color, marginBottom: 12, textAlign: "center" }}>✏️ דוגמה פתורה — שלב אחר שלב</div>
+          <div style={{ fontSize: isTablet ? 17 : 15, fontWeight: 800, color: topic.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}><Icon name="pencil" size={isTablet ? 18 : 16} color={topic.color} /> דוגמה פתורה — שלב אחר שלב</div>
           {ex.figure && <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><Figure fig={ex.figure} color={topic.color} /></div>}
           {ex.expr && ex.expr.length > 0 && (
             <div dir="ltr" style={{ fontSize: isTablet ? 30 : 26, fontWeight: 800, color: "#1f2937", display: "flex", justifyContent: "center", marginBottom: 14 }}>
@@ -1355,7 +1413,7 @@ function App() {
                 touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
               }}>
               <span style={{ fontSize: isTablet ? 25 : 22, fontWeight: 800, color: "#1f2937" }}>{l.badge} {l.name}</span>
-              <span style={{ fontSize: isTablet ? 17 : 15, color: "#9ca3af" }}>{"⭐".repeat(l.stars)}</span>
+              <span style={{ display: "inline-flex", gap: 2 }}>{Array.from({ length: l.stars }).map((_, i) => <Icon key={i} name="star" size={isTablet ? 18 : 16} color="#fbbf24" stroke={2} />)}</span>
             </button>
           ))}
         </div>
@@ -1371,8 +1429,8 @@ function App() {
       display: "flex", flexDirection: "column", justifyContent: "center", flex: twoCol ? 1 : undefined, marginBottom: twoCol ? 0 : 16,
     }}>
       <p onClick={() => speak(problemSpeech(problem))} title="לחצי להקראת השאלה"
-        style={{ textAlign: "center", color: "#6b7280", fontSize: S.prompt, margin: "0 0 16px", lineHeight: 1.5, cursor: "pointer" }} dir="rtl">
-        <span style={{ fontSize: isTablet ? 18 : 16, marginInlineEnd: 6 }}>🔊</span>{problem.prompt}
+        style={{ textAlign: "center", color: "#6b7280", fontSize: S.prompt, margin: "0 0 16px", lineHeight: 1.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }} dir="rtl">
+        <Icon name="speaker" size={isTablet ? 20 : 17} color="#9aa3b2" /><span>{problem.prompt}</span>
       </p>
       <div style={{ minHeight: 56, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 14, fontSize: S.expr, color: "#1f2937" }}>
         {problem.text != null ? (() => {
@@ -1384,7 +1442,7 @@ function App() {
               borderRadius: 18, padding: isTablet ? "14px 28px" : "12px 20px", color: "#1f2937", fontWeight: 800,
               fontSize: tfs, lineHeight: 1.6,
               direction: "rtl", touchAction: "manipulation", WebkitTapHighlightColor: "transparent", maxWidth: "100%" }}>
-            {problem.text} <span style={{ fontSize: isTablet ? 26 : 22 }}>🔊</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>{problem.text} <Icon name="speaker" size={isTablet ? 26 : 22} color={topic.color} /></span>
           </button>
           );
         })() : problem.figure ? <Figure fig={problem.figure} color={topic.color} />
@@ -1394,8 +1452,9 @@ function App() {
           <button onClick={() => speak(problem.say)}
             style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: topic.color, color: "#fff",
               borderRadius: 18, padding: isTablet ? "16px 34px" : "13px 26px", fontWeight: 800, fontSize: isTablet ? 24 : 20,
-              boxShadow: "0 6px 16px rgba(2,6,23,0.10)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>
-            {problem.listenLabel || "🔊 שמיעה"}
+              boxShadow: "0 6px 16px rgba(2,6,23,0.10)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent",
+              display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <Icon name="speaker" size={isTablet ? 26 : 22} color="#fff" /><span>{problem.listenLabel || "שמיעה"}</span>
           </button>
         )}
       </div>
@@ -1452,16 +1511,16 @@ function App() {
           <ActionBtn onClick={() => newProblem(topic, level)} bg={topic.color} color="#fff" isTablet={isTablet}>תרגיל הבא ←</ActionBtn>
         ) : (
           <>
-            <ActionBtn onClick={() => setShowHint((s) => !s)} bg="#fff7e6" color="#d46b08" isTablet={isTablet}>💡 רמז</ActionBtn>
-            <ActionBtn onClick={() => setShowSol((s) => !s)} bg="#f0f0f0" color="#595959" isTablet={isTablet}>📖 פתרון</ActionBtn>
-            <ActionBtn onClick={() => newProblem(topic, level)} bg="#fff" color="#8c8c8c" isTablet={isTablet}>↻ תרגיל אחר</ActionBtn>
+            <ActionBtn onClick={() => setShowHint((s) => !s)} bg="#fff7e6" color="#d46b08" isTablet={isTablet}><Icon name="bulb" size={isTablet ? 20 : 18} color="#d46b08" /> רמז</ActionBtn>
+            <ActionBtn onClick={() => setShowSol((s) => !s)} bg="#f0f0f0" color="#595959" isTablet={isTablet}><Icon name="book" size={isTablet ? 20 : 18} color="#595959" /> פתרון</ActionBtn>
+            <ActionBtn onClick={() => newProblem(topic, level)} bg="#fff" color="#8c8c8c" isTablet={isTablet}><Icon name="refresh" size={isTablet ? 20 : 18} color="#8c8c8c" /> תרגיל אחר</ActionBtn>
           </>
         )}
       </div>
-      {showHint && feedback !== "ok" && <Note bg="#fffbe6" border="#ffe58f" isTablet={isTablet}>💡 {problem.hint}</Note>}
+      {showHint && feedback !== "ok" && <Note bg="#fffbe6" border="#ffe58f" isTablet={isTablet}><span style={{ display: "inline-flex", alignItems: "flex-start", gap: 8 }}><span style={{ flex: "none", marginTop: 2 }}><Icon name="bulb" size={isTablet ? 19 : 17} color="#d4a017" /></span><span>{problem.hint}</span></span></Note>}
       {showSol && feedback !== "ok" && (
         <div dir="rtl" style={{ background: "#f9f0ff", border: "2px solid #d3adf7", borderRadius: 16, padding: isTablet ? "16px 18px" : "14px 16px" }}>
-          <div style={{ fontWeight: 800, color: "#722ed1", marginBottom: 8, fontSize: isTablet ? 17 : 15 }}>📖 פתרון שלב אחר שלב:</div>
+          <div style={{ fontWeight: 800, color: "#722ed1", marginBottom: 8, fontSize: isTablet ? 17 : 15, display: "flex", alignItems: "center", gap: 7 }}><Icon name="book" size={isTablet ? 18 : 16} color="#722ed1" /> פתרון שלב אחר שלב:</div>
           <StepLines lines={problem.explanation} big={isTablet} />
           <div style={{ marginTop: 10, fontSize: isTablet ? 18 : 16, fontWeight: 800, display: "flex", alignItems: "center", gap: 4 }} dir="ltr"><span>תשובה:</span> {renderMathText(problem.answerText, isTablet ? 0.9 : 0.85)}</div>
         </div>
@@ -1473,7 +1532,7 @@ function App() {
     <Shell {...sp}>
       <BackBtn onClick={() => setScreen("level")} isTablet={isTablet} />
       <div style={{ textAlign: "center", marginBottom: 12 }}>
-        <span style={{ fontSize: isTablet ? 18 : 15, fontWeight: 700, color: topic.color }}>{topic.emoji} {topic.title} · {level.badge} {level.name}</span>
+        <span style={{ fontSize: isTablet ? 18 : 15, fontWeight: 700, color: topic.color, display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name={topicIcon(topic)} size={isTablet ? 20 : 17} color={topic.color} /> {topic.title} · {level.badge} {level.name}</span>
       </div>
       <div style={{ display: "flex", flexDirection: twoCol ? "row-reverse" : "column", gap: twoCol ? 24 : 0, alignItems: "stretch" }}>
         {questionCard}
@@ -1582,8 +1641,9 @@ function ScratchPad({ isTablet, open, setOpen }) {
       <button onClick={() => setOpen(true)}
         style={{ position: "fixed", bottom: 16, insetInlineStart: 16, zIndex: 60, fontFamily: "inherit", cursor: "pointer",
           border: "none", borderRadius: 16, padding: "12px 18px", fontSize: 16, fontWeight: 800, background: "#36cfc9", color: "#fff",
-          boxShadow: "0 5px 14px rgba(0,0,0,0.2)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>
-        ✏️ דף טיוטה
+          boxShadow: "0 5px 14px rgba(0,0,0,0.2)", touchAction: "manipulation", WebkitTapHighlightColor: "transparent",
+          display: "inline-flex", alignItems: "center", gap: 8 }}>
+        <Icon name="pencil" size={18} color="#fff" /> דף טיוטה
       </button>
     );
   }
@@ -1601,13 +1661,13 @@ function ScratchPad({ isTablet, open, setOpen }) {
                 border: (!erase && color === c) ? "3px solid #36cfc9" : "2px solid #ddd", touchAction: "manipulation" }} />
           ))}
         </div>
-        <button onClick={() => setErase((e) => !e)} style={{ ...tbtn, background: erase ? "#fff7e6" : "#f0f0f0", color: erase ? "#d46b08" : "#595959" }}>🧽</button>
-        <button onClick={clearPage} style={tbtn}>🗑️</button>
+        <button onClick={() => setErase((e) => !e)} style={{ ...tbtn, background: erase ? "#fff7e6" : "#f0f0f0", color: erase ? "#d46b08" : "#595959" }}><Icon name="eraser" size={20} color={erase ? "#d46b08" : "#595959"} /></button>
+        <button onClick={clearPage} style={tbtn}><Icon name="trash" size={20} color="#595959" /></button>
         <span style={{ width: 1, height: 22, background: "#eee" }} />
         <button onClick={prevPage} style={navbtn(pageIndex === 0)}>‹</button>
         <span style={{ fontSize: 13, fontWeight: 800, color: "#595959", minWidth: 56, textAlign: "center" }}>דף {pageIndex + 1}/{pageCount}</span>
         <button onClick={nextPage} style={navbtn(pageIndex === pageCount - 1)}>›</button>
-        <button onClick={newPage} style={{ ...tbtn, background: "#e6fffb", color: "#08979c" }}>➕ דף</button>
+        <button onClick={newPage} style={{ ...tbtn, background: "#e6fffb", color: "#08979c", display: "inline-flex", alignItems: "center", gap: 5 }}><Icon name="plus" size={16} color="#08979c" /> דף</button>
         <button onClick={() => setOpen(false)} style={{ ...tbtn, marginInlineStart: "auto" }}>✕ סגור</button>
       </div>
       <div style={{ flex: 1, position: "relative", backgroundImage: gridBg, overflow: "hidden" }}>
@@ -1635,11 +1695,11 @@ function Shell({ children, stars, streak, solved, isTablet, landscape, player, o
         <div style={{ maxWidth: isTablet ? (landscape ? 1180 : 760) : 560, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: isTablet ? 14 : 10, marginBottom: 16, flexWrap: "wrap" }}>
             {player && (
-              <button onClick={onSwitch} title="החלף שחקן" style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "#fff", borderRadius: 16, padding: isTablet ? "9px 16px" : "6px 12px", boxShadow: "0 3px 10px rgba(2,6,23,0.06)", fontSize: isTablet ? 16 : 14, fontWeight: 800, color: "#36cfc9", touchAction: "manipulation" }}>👤 {player} ⇆</button>
+              <button onClick={onSwitch} title="החלף שחקן" style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "#fff", borderRadius: 16, padding: isTablet ? "9px 16px" : "6px 12px", boxShadow: "0 3px 10px rgba(2,6,23,0.06)", fontSize: isTablet ? 16 : 14, fontWeight: 800, color: "#36cfc9", touchAction: "manipulation", display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name="user" size={isTablet ? 17 : 15} color="#36cfc9" /> {player} <Icon name="swap" size={isTablet ? 16 : 14} color="#36cfc9" /></button>
             )}
-            <Stat label="כוכבים" val={`⭐ ${stars}`} isTablet={isTablet} />
-            <Stat label="רצף" val={`🔥 ${streak}`} isTablet={isTablet} />
-            <Stat label="נפתרו" val={`✅ ${solved}`} isTablet={isTablet} />
+            <Stat label="כוכבים" val={stars} icon="star" iconColor="#f59e0b" isTablet={isTablet} />
+            <Stat label="רצף" val={streak} icon="flame" iconColor="#ef4444" isTablet={isTablet} />
+            <Stat label="נפתרו" val={solved} icon="checkc" iconColor="#22c55e" isTablet={isTablet} />
           </div>
           {children}
         </div>
@@ -1648,10 +1708,12 @@ function Shell({ children, stars, streak, solved, isTablet, landscape, player, o
     </div>
   );
 }
-function Stat({ label, val, isTablet }) {
+function Stat({ label, val, icon, iconColor, isTablet }) {
   return (
     <div style={{ background: "#fff", borderRadius: 16, padding: isTablet ? "9px 20px" : "6px 14px", boxShadow: "0 3px 10px rgba(2,6,23,0.06)", textAlign: "center", minWidth: isTablet ? 100 : 78 }}>
-      <div style={{ fontSize: isTablet ? 22 : 18, fontWeight: 800, color: "#1f2937" }}>{val}</div>
+      <div style={{ fontSize: isTablet ? 22 : 18, fontWeight: 800, color: "#1f2937", display: "inline-flex", alignItems: "center", gap: 6 }}>
+        {icon && <Icon name={icon} size={isTablet ? 20 : 16} color={iconColor} stroke={2} />}{val}
+      </div>
       <div style={{ fontSize: isTablet ? 12 : 11, color: "#9ca3af" }}>{label}</div>
     </div>
   );
@@ -1671,6 +1733,7 @@ function ActionBtn({ children, onClick, bg, color, isTablet }) {
       fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 16,
       padding: isTablet ? "14px 22px" : "12px 18px", fontSize: isTablet ? 18 : 16, fontWeight: 800, background: bg, color,
       boxShadow: "0 4px 12px rgba(2,6,23,0.08)", touchAction: "manipulation", userSelect: "none", WebkitTapHighlightColor: "transparent",
+      display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
     }}>{children}</button>
   );
 }
