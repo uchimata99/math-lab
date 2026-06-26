@@ -827,12 +827,6 @@ const TOPICS_G2 = [
 /* ============================================================
    חוברת קריאה בעברית — אותיות, הברות, מילים ומשפטים (עם הקראה)
    ============================================================ */
-const HE_LETTERS = [
-  ["א", "אָלֶף"], ["ב", "בֵּית"], ["ג", "גִּימֶל"], ["ד", "דָּלֶת"], ["ה", "הֵא"], ["ו", "וָו"],
-  ["ז", "זַיִן"], ["ח", "חֵית"], ["ט", "טֵית"], ["י", "יוֹד"], ["כ", "כָּף"], ["ל", "לָמֶד"],
-  ["מ", "מֵם"], ["נ", "נוּן"], ["ס", "סָמֶךְ"], ["ע", "עַיִן"], ["פ", "פֵּא"], ["צ", "צָדִי"],
-  ["ק", "קוֹף"], ["ר", "רֵישׁ"], ["ש", "שִׁין"], ["ת", "תָּו"],
-];
 /* סדר הוראת תנועות מבוסס-מחקר: קמץ/פתח (a) → חיריק (i) → חולם (o) → סגול/צירה (e) → קובוץ/שורוק (u) */
 const HE_VOWELS = [
   { mark: "ַ", name: "פַּתָּח", sound: "a" },
@@ -844,13 +838,7 @@ const HE_VOWELS = [
 const SYL_CONS = ["מ", "ל", "ש", "ר", "נ", "ס", "ת", "ד", "ק", "ב", "פ", "ג", "ח", "ט", "צ"];
 const BEGED = { "ב": 1, "כ": 1, "פ": 1 };
 const mkSyl = (c, mark) => c + (BEGED[c] ? "ּ" : "") + mark; // מוסיף דגש לבכ"פ לצליל קשה
-/* רצף מצטבר: סדר הוראת אותיות (תכופות/קלות תחילה, אותיות מתבלבלות מרוחקות) */
-const LETTER_TEACH_ORDER = ["מ", "ש", "ל", "ת", "ר", "ב", "נ", "ה", "ק", "ס", "י", "ו", "ד", "ג", "פ", "ח", "א", "צ", "ע", "כ", "ט", "ז"];
-const lettersForLevel = (lvl) => {
-  const n = lvl === 0 ? 8 : lvl === 1 ? 15 : LETTER_TEACH_ORDER.length;
-  const allow = new Set(LETTER_TEACH_ORDER.slice(0, n));
-  return HE_LETTERS.filter(([l]) => allow.has(l));
-};
+/* רצף מצטבר: עיצורים נפתחים בהדרגה לפי רמה (קלים/תכופים תחילה) */
 const consForLevel = (lvl) => SYL_CONS.slice(0, lvl === 0 ? 6 : lvl === 1 ? 10 : SYL_CONS.length);
 const vowelsForLevel = (lvl) => (lvl === 0 ? HE_VOWELS.slice(0, 3) : HE_VOWELS);
 
@@ -868,26 +856,6 @@ const HE_SENTENCES = [
   { s: "הַפָּרָה אוֹכֶלֶת עֵשֶׂב.", q: "מָה הַפָּרָה אוֹכֶלֶת?", a: "עֵשֶׂב", d: ["לֶחֶם", "דָּג"] },
 ];
 const stripNiqqud = (s) => s.replace(/[֑-ׇ]/g, "");
-
-function genReadLetters(level) {
-  const pool = lettersForLevel(level);
-  const [letter, name] = pick(pool);
-  if (level === 0 || (level === 1 && Math.random() < 0.5)) {
-    // שומעים שם אות ובוחרים את האות
-    const others = shuffle(pool.filter((x) => x[0] !== letter)).slice(0, 3);
-    const choices = shuffle([letter, ...others.map((x) => x[0])]);
-    const speakMap = {}; HE_LETTERS.forEach(([l, n]) => { speakMap[l] = n; });
-    return { kind: "choice", expr: [], say: name, listenLabel: "🔊 לְאֵיזוֹ אוֹת?", choices, speakChoices: true, speakMap,
-      prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הָאוֹת שֶׁשָּׁמַעְתְּ:", check: (x) => x === letter, answerText: letter,
-      hint: "אֶפְשָׁר לִלְחֹץ עַל כָּל אוֹת כְּדֵי לִשְׁמֹעַ אֶת שְׁמָהּ.", explanation: [`הָאוֹת הִיא ${letter} — ${name}`] };
-  }
-  // רואים אות ובוחרים את שמהּ
-  const others = shuffle(pool.filter((x) => x[0] !== letter)).slice(0, 3);
-  const choices = shuffle([name, ...others.map((x) => x[1])]);
-  return { kind: "choice", text: letter, say: name, choices, speakChoices: true,
-    prompt: "מָה שֵׁם הָאוֹת? (אֶפְשָׁר לִלְחֹץ עָלֶיהָ לִשְׁמִיעָה)", check: (x) => x === name, answerText: name,
-    hint: "לַחֲצִי עַל הָאוֹת כְּדֵי לִשְׁמֹעַ אֶת שְׁמָהּ.", explanation: [`${letter} נִקְרֵאת ${name}`] };
-}
 
 function genReadSyllables(level) {
   const c = pick(consForLevel(level));
@@ -988,9 +956,6 @@ function genPhonics(level) {
 }
 
 const TOPICS_READ = [
-  { id: "rdletters", title: "אותיות וצלילים", emoji: "🔤", gen: genReadLetters, color: "#fa541c",
-    lesson: "כל אות יש לה שם וצליל. לוחצים על הרמקול כדי לשמוע, ובוחרים את האות הנכונה. אפשר ללחוץ על כל אות כדי לשמוע אותה.",
-    example: { expr: [{ t: "v", v: "מ" }], answer: "מֵם", steps: ["לוחצים על האות לשמיעה", "האות מ נקראת מֵם", "הצליל שלה הוא «m»"] } },
   { id: "rdphon", title: "צלילים והקשבה", emoji: "🎧", gen: genPhonics, color: "#2f54eb",
     lesson: "משחקי הקשבה לצלילים: כמה הברות יש במילה, אילו מילים מתחרזות, ואיזו מילה מתחילה באותו צליל. ההקשבה לצלילים היא הבסיס לקריאה.",
     example: { expr: [{ t: "v", v: "חָתוּל" }], answer: "2", steps: ["מוחאים כף לכל הברה", "חָ — תוּל", "שתי הברות"] } },
@@ -1007,7 +972,7 @@ const TOPICS_READ = [
 
 const COURSES = [
   { id: "grade2", title: "מתמטיקה כיתה ב'", emoji: "🧮", subtitle: "כיתה ב'", color: "#36cfc9", topics: TOPICS_G2 },
-  { id: "reading", title: "קריאה בעברית", emoji: "🔤", subtitle: "אותיות · הברות · מילים", color: "#fa541c", topics: TOPICS_READ },
+  { id: "reading", title: "קריאה בעברית", emoji: "🔤", subtitle: "צלילים · הברות · מילים", color: "#fa541c", topics: TOPICS_READ },
   { id: "gifted", title: "מעבדת המספרים", emoji: "🔬", subtitle: "כיתה ד' · אתגר", color: "#9254de", topics: TOPICS_GIFTED },
 ];
 
