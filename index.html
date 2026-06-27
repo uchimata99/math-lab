@@ -384,24 +384,22 @@ function genVColMul(level) {
     hint: "מכפילים ספרה־ספרה מימין לשמאל, מעבירים נשא, ואז מחברים את השורות.",
     explanation: ["מכפילים ספרה אחר ספרה ומחברים", `${a} × ${b}`, `= ${prod}`] };
 }
-/* חיבור וחיסור במאונך — מתקשה עם הרמה */
+/* חיבור וחיסור במאונך — סדר ספרתי: דו±דו → תלת±דו → תלת±תלת */
 function genVColAddSub(level) {
+  const lo = Math.min(level, 2);
+  const top = [[10, 99], [100, 999], [100, 999]][lo];
+  const bot = [[10, 99], [10, 99], [100, 999]][lo];
   const op = pick(["+", "−"]);
   if (op === "+") {
-    let rows;
-    if (level === 0) rows = [ri(11, 89), ri(11, 89)];
-    else if (level === 1) rows = [ri(120, 899), ri(120, 899)];
-    else rows = [ri(140, 899), ri(140, 899), ri(120, 899)];
-    const sum = rows.reduce((a, b) => a + b, 0);
-    return { kind: "number", vertical: { op: "+", rows }, expr: [], prompt: "חברי במאונך:",
+    const a = ri(top[0], top[1]), b = ri(bot[0], bot[1]);
+    const sum = a + b;
+    return { kind: "number", vertical: { op: "+", rows: [a, b] }, expr: [], prompt: "חברי במאונך:",
       check: (v) => intEqual(v, sum), answerText: `${sum}`,
       hint: "חברי טור אחר טור מימין לשמאל, והעבירי 1 לטור הבא כשצריך.",
-      explanation: ["מחברים טור אחר טור, מימין לשמאל", `${rows.join(" + ")}`, `= ${sum}`] };
+      explanation: ["מחברים טור אחר טור, מימין לשמאל", `${a} + ${b}`, `= ${sum}`] };
   }
-  let a, b;
-  if (level === 0) { a = ri(21, 99); b = ri(11, a - 1); }
-  else if (level === 1) { a = ri(150, 899); b = ri(40, a - 1); }
-  else { a = ri(300, 999); b = ri(120, a - 1); }
+  const a = ri(Math.max(top[0], bot[0] + 1, 21), top[1]);
+  const b = ri(bot[0], Math.min(bot[1], a - 1));
   const val = a - b;
   return { kind: "number", vertical: { op: "−", rows: [a, b] }, expr: [], prompt: "חסרי במאונך:",
     check: (v) => intEqual(v, val), answerText: `${val}`,
@@ -699,8 +697,9 @@ const TOPICS_GIFTED = [
   { id: "prime", title: "גורמים ראשוניים", emoji: "🧱", gen: genPrime, color: "#531dab",
     lesson: "מספר ראשוני מתחלק רק ב-1 ובעצמו. בפירוק לגורמים ראשוניים כותבים את המספר כמכפלת ראשוניים בלבד, עם הסימן × ביניהם (למשל 12 = 2×2×3).",
     example: { expr: [], answer: "2 × 2 × 3", steps: ["מפרקים את 12 שלב אחר שלב", "12 = 2 × 6", "6 = 2 × 3", "12 = 2 × 2 × 3"] } },
-  { id: "vcoladd", title: "חיבור וחיסור במאונך", emoji: "➕", gen: genVColAddSub, color: "#fa8c16",
-    lesson: "כותבים את המספרים זה מתחת לזה, יישור לימין, ומחשבים טור אחר טור מימין לשמאל. בחיבור מעבירים 1 לטור הבא; בחיסור פורטים מהטור הבא. ככל שעולים ברמה המספרים גדולים יותר.",
+  { id: "vcoladd", title: "חיבור וחיסור במאונך", emoji: "➕", gen: genVColAddSub, color: "#fa8c16", levels: 3,
+    levelNames: ["דו-ספרתי", "תלת ודו-ספרתי", "תלת ותלת-ספרתי"],
+    lesson: "כותבים את המספרים זה מתחת לזה, יישור לימין, ומחשבים טור אחר טור מימין לשמאל. בחיבור מעבירים 1 לטור הבא; בחיסור פורטים מהטור הבא. הסדר עולה: דו-ספרתי, אחר כך תלת ודו, ואז תלת ותלת.",
     example: { expr: [{ t: "v", v: "47 + 25 =" }], answer: "72", steps: ["יחידות: 7 + 5 = 12, כותבים 2 ומעבירים 1", "עשרות: 4 + 2 + 1 = 7", "= 72"] } },
   { id: "vcolmul", title: "כפל במאונך", emoji: "✖️", gen: genVColMul, color: "#eb2f96", levels: 4,
     levelNames: ["חד × דו-ספרתי", "חד × תלת-ספרתי", "דו × דו-ספרתי", "דו × תלת-ספרתי"],
