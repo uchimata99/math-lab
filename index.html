@@ -946,6 +946,21 @@ let lastSylCons = "";
 let lastSylVowel = "";
 function genReadSyllables(level) {
   const cons = consForLevel(level);
+  const vsetAll = vowelsForLevel(level);
+  // מצב התאמה בגרירה: הברה אל הצליל (התנועה) שלה
+  const distinctSounds = [...new Set(vsetAll.map((v) => v.sound))];
+  if (distinctSounds.length >= 3 && Math.random() < 0.3) {
+    const sounds = shuffle(distinctSounds).slice(0, 3);
+    const pairs = sounds.map((snd, i) => {
+      const v = pick(vsetAll.filter((x) => x.sound === snd));
+      const c = pick(cons);
+      return { id: "p" + i, sign: v.b(c), say: v.b(c), name: v.b(ALEPH) };
+    });
+    return { kind: "match", pairs, prompt: "גָּרְרִי כָּל הֲבָרָה אֶל הַצְּלִיל שֶׁלָּהּ (הַתְּנוּעָה עַל א):",
+      answerText: pairs.map((p) => `${p.sign}=${p.name}`).join(", "),
+      hint: "אֶפְשָׁר לִלְחֹץ עַל הַהֲבָרָה כְּדֵי לִשְׁמֹעַ — וּלְמָצוֹא אֶת אוֹתוֹ צְלִיל עַל הָאוֹת א.",
+      explanation: pairs.map((p) => `${p.sign} → ${p.name}`) };
+  }
   let c = pick(cons);
   for (let t = 0; t < 25 && c === lastSylCons && cons.length > 1; t++) c = pick(cons); // לא אותה אות פעמיים ברצף
   lastSylCons = c;
@@ -1496,7 +1511,7 @@ function DragMatch({ pairs, onDone, color, isTablet }) {
   const order = useRef(null);
   if (!order.current) order.current = shuffle(pairs.map((p) => p.id));
   const byId = {}; pairs.forEach((p) => { byId[p.id] = p; });
-  const start = (e, p) => { if (placed[p.id]) return; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} setDrag({ id: p.id, x: e.clientX, y: e.clientY }); };
+  const start = (e, p) => { if (placed[p.id]) return; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} if (p.say) speak(p.say); setDrag({ id: p.id, x: e.clientX, y: e.clientY }); };
   const move = (e) => { if (drag) setDrag((d) => ({ ...d, x: e.clientX, y: e.clientY })); };
   const end = (e) => {
     if (!drag) return;
