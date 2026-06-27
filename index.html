@@ -135,7 +135,7 @@ const TOPIC_ICONS = {
   g2miss: "question", g2seq: "steps", g2time: "clock", g2place: "place",
   rdniq: "niqqud", rdphon: "headphones", rdsyl: "speaker", rdwords: "page", rdsent: "bubble", rdspeak: "mic",
   arith: "calculator", frac: "fraction", eq: "scale", logic: "bulb",
-  geo: "protractor", pow: "bolt", prime: "bricks",
+  geo: "protractor", pow: "bolt", prime: "bricks", vcoladd: "plusminus", vcolmul: "multiply",
 };
 const COURSE_ICONS = { grade2: "calculator", reading: "book", gifted: "flask" };
 const topicIcon = (t) => TOPIC_ICONS[t && t.id] || "star";
@@ -370,6 +370,30 @@ function genVMul(level) {
     check: (v) => intEqual(v, prod), answerText: `${prod}`,
     hint: "הכפילי ספרה־ספרה, ואז חברי את התוצאות.",
     explanation: ["מכפילים ספרה אחר ספרה ומחברים", `${a} × ${b}`, `= ${prod}`] };
+}
+/* חיבור וחיסור במאונך — מתקשה עם הרמה */
+function genVColAddSub(level) {
+  const op = pick(["+", "−"]);
+  if (op === "+") {
+    let rows;
+    if (level === 0) rows = [ri(11, 89), ri(11, 89)];
+    else if (level === 1) rows = [ri(120, 899), ri(120, 899)];
+    else rows = [ri(140, 899), ri(140, 899), ri(120, 899)];
+    const sum = rows.reduce((a, b) => a + b, 0);
+    return { kind: "number", vertical: { op: "+", rows }, expr: [], prompt: "חברי במאונך:",
+      check: (v) => intEqual(v, sum), answerText: `${sum}`,
+      hint: "חברי טור אחר טור מימין לשמאל, והעבירי 1 לטור הבא כשצריך.",
+      explanation: ["מחברים טור אחר טור, מימין לשמאל", `${rows.join(" + ")}`, `= ${sum}`] };
+  }
+  let a, b;
+  if (level === 0) { a = ri(21, 99); b = ri(11, a - 1); }
+  else if (level === 1) { a = ri(150, 899); b = ri(40, a - 1); }
+  else { a = ri(300, 999); b = ri(120, a - 1); }
+  const val = a - b;
+  return { kind: "number", vertical: { op: "−", rows: [a, b] }, expr: [], prompt: "חסרי במאונך:",
+    check: (v) => intEqual(v, val), answerText: `${val}`,
+    hint: "מחסרים טור אחר טור מימין לשמאל, ופורטים מהטור הבא כשצריך.",
+    explanation: ["מחסרים טור אחר טור, מימין לשמאל", `${a} − ${b}`, `= ${val}`] };
 }
 function genArithmetic(level) {
   const r = Math.random();
@@ -662,6 +686,12 @@ const TOPICS_GIFTED = [
   { id: "prime", title: "גורמים ראשוניים", emoji: "🧱", gen: genPrime, color: "#531dab",
     lesson: "מספר ראשוני מתחלק רק ב-1 ובעצמו. בפירוק לגורמים ראשוניים כותבים את המספר כמכפלת ראשוניים בלבד, עם הסימן × ביניהם (למשל 12 = 2×2×3).",
     example: { expr: [], answer: "2 × 2 × 3", steps: ["מפרקים את 12 שלב אחר שלב", "12 = 2 × 6", "6 = 2 × 3", "12 = 2 × 2 × 3"] } },
+  { id: "vcoladd", title: "חיבור וחיסור במאונך", emoji: "➕", gen: genVColAddSub, color: "#fa8c16",
+    lesson: "כותבים את המספרים זה מתחת לזה, יישור לימין, ומחשבים טור אחר טור מימין לשמאל. בחיבור מעבירים 1 לטור הבא; בחיסור פורטים מהטור הבא. ככל שעולים ברמה המספרים גדולים יותר.",
+    example: { expr: [{ t: "v", v: "47 + 25 =" }], answer: "72", steps: ["יחידות: 7 + 5 = 12, כותבים 2 ומעבירים 1", "עשרות: 4 + 2 + 1 = 7", "= 72"] } },
+  { id: "vcolmul", title: "כפל במאונך", emoji: "✖️", gen: genVMul, color: "#eb2f96",
+    lesson: "כופלים ספרה אחר ספרה ומחברים את התוצאות לפי הטורים. ככל שעולים ברמה הכופל גדל (עד דו-ספרתי).",
+    example: { expr: [{ t: "v", v: "23 × 4 =" }], answer: "92", steps: ["4 × 3 = 12, כותבים 2 ומעבירים 1", "4 × 2 = 8, ועוד 1 = 9", "= 92"] } },
 ];
 
 /* ============================================================
@@ -1385,7 +1415,7 @@ const MAXLVL = 2;          // ברירת מחדל: רמות 0..2
 const maxLvlOf = (t) => ((t && t.levels ? t.levels : 3) - 1); // מספר רמות לכל נושא
 const PER_LEVEL = 20;      // מספר תרגילים מינימלי ברמה
 const RUN_NEEDED = 6;      // רצף תשובות נכונות לעליית רמה
-const ADAPTIVE_COURSE = "grade2";
+const ADAPTIVE_COURSES = ["grade2", "gifted"];
 const getProg = (player, topicId) => {
   const p = (player && player.prog && player.prog[topicId]) || {};
   return { lvl: p.lvl || 0, seen: p.seen || 0, run: p.run || 0 };
@@ -1687,6 +1717,18 @@ function App() {
     if (s.addEventListener) { s.addEventListener("voiceschanged", check); return () => s.removeEventListener("voiceschanged", check); }
   }, []);
 
+  // מיקום נוכחי עבור מנגנון ההערות החי
+  useEffect(() => {
+    const parts = [];
+    const co = COURSES.find((c) => c.id === course);
+    if (co) parts.push(co.title);
+    if (topic) parts.push(topic.title);
+    const scr = { home: "בחירת נושא", level: "בחירת רמה", journey: "מסע", parent: "אזור הורים", parentgate: "שער הורים" };
+    if (screen === "play" && level) parts.push(level.name);
+    else if (scr[screen]) parts.push(scr[screen]);
+    if (typeof window !== "undefined") window.__mlLoc = parts.join(" · ") || "מעבדת המספרים";
+  }, [course, screen, topic, level]);
+
   useEffect(() => {
     const data = readStore();
     if (data && data.players) {
@@ -1706,7 +1748,7 @@ function App() {
     setPlayers(np); setCurrent(n); persist(np, n);
   }
   function switchPlayer() { setScreen("home"); setProblem(null); setCourse(null); setCurrent(null); persist(players, null); }
-  const adaptive = course === ADAPTIVE_COURSE;
+  const adaptive = ADAPTIVE_COURSES.indexOf(course) >= 0;
   function applyResult(ok) {
     const c = players[current] || blankP();
     const prog = { ...(c.prog || {}) };
@@ -2306,5 +2348,8 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
 }
 </script>
+<!-- מנגנון הערות חי (live-notes): רדום כברירת מחדל; הפעלה במכשירך עם ?notes=1 -->
+<script>window.LIVE_NOTES_CONFIG = { repo: 'uchimata99/math-lab', accent: '#36cfc9', title: 'הערות', dir: 'rtl', locationFn: function(){ return window.__mlLoc || document.title; } };</script>
+<script src="https://uchimata99.github.io/live-notes/live-notes.js"></script>
 </body>
 </html>
