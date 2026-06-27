@@ -667,6 +667,16 @@ const TOPICS_GIFTED = [
 /* ============================================================
    חוברת כיתה ב' — מחוללי תרגילים
    ============================================================ */
+function decompSteps(a, b) {
+  const aT = Math.floor(a / 10) * 10, aU = a % 10, bT = Math.floor(b / 10) * 10, bU = b % 10;
+  const lines = [];
+  if (a >= 10) lines.push(`${a} = ${aT} + ${aU}`);
+  if (b >= 10) lines.push(`${b} = ${bT} + ${bU}`);
+  lines.push(`עֶשְׂרוֹת: ${aT} + ${bT} = ${aT + bT}`);
+  lines.push(`יְחִידוֹת: ${aU} + ${bU} = ${aU + bU}`);
+  lines.push(`בְּיַחַד: ${aT + bT} + ${aU + bU} = ${a + b}`);
+  return lines;
+}
 function genG2AddSub(level) {
   // עלייה מדורגת: תוצאות עד 10 → 20 → 30 → 50 → 100
   const cap = [10, 20, 30, 50, 100][Math.min(level, 4)];
@@ -681,15 +691,42 @@ function genG2AddSub(level) {
       hint: "מחברים שניים, ואז מוסיפים את השלישי.",
       explanation: [`${a} + ${b} = ${a + b}`, `${a + b} + ${c}`, `= ${val}`] };
   }
+  // ברמות הגבוהות: תרגיל אינטראקטיבי של פירוק לעשרות ויחידות (חיבור, בלי נשיאה ביחידות)
+  if (level >= 3 && Math.random() < 0.3) {
+    let a = 10, b = 10;
+    for (let t = 0; t < 200; t++) {
+      const aU = ri(0, 8), bU = ri(0, 9 - aU);
+      const aT = ri(1, Math.floor(cap / 10) - 1), bT = ri(1, Math.floor(cap / 10) - 1);
+      a = aT * 10 + aU; b = bT * 10 + bU;
+      if (a + b <= cap && a >= 10 && b >= 10) break;
+    }
+    return { kind: "decomp", a, b, expr: [{ t: "v", v: `${a} + ${b} =` }],
+      prompt: "נְפָרֵק לְעֶשְׂרוֹת וִיחִידוֹת וּנְחַבֵּר שָׁלָב-שָׁלָב:",
+      check: (v) => intEqual(v, a + b), answerText: `${a + b}`,
+      hint: "מְחַבְּרִים קֹדֶם אֶת הָעֶשְׂרוֹת, אַחַר כָּךְ אֶת הַיְּחִידוֹת, וְאָז מְחַבְּרִים יַחַד.",
+      explanation: decompSteps(a, b) };
+  }
   const op = pick(["+", "−"]);
   let a, b, val;
   if (op === "+") { a = ri(1, cap - 1); b = ri(1, cap - a); val = a + b; }
   else { a = ri(2, cap); b = ri(1, a - 1); val = a - b; }
+  // הסבר לפי שיטת הפרדת עשרות כשהמספרים דו-ספרתיים
+  let explanation;
+  if (op === "+" && (a >= 10 || b >= 10)) {
+    explanation = decompSteps(a, b);
+  } else if (op === "−" && a >= 10) {
+    const bT = Math.floor(b / 10) * 10, bU = b % 10;
+    explanation = bT > 0
+      ? [`מְפָרְקִים אֶת ${b} ל-${bT} וְ-${bU}`, `${a} − ${bT} = ${a - bT}`, `${a - bT} − ${bU} = ${val}`]
+      : [`${a} − ${b}`, `= ${val}`];
+  } else {
+    explanation = [op === "+" ? "מחברים את שני המספרים" : "מחסרים מהמספר הגדול", `${a} ${op} ${b}`, `= ${val}`];
+  }
   return { kind: "number", expr: [{ t: "v", v: `${a} ${op} ${b} =` }],
     prompt: op === "+" ? "כמה זה ביחד?" : "כמה נשאר?",
     check: (v) => intEqual(v, val), answerText: `${val}`,
-    hint: op === "+" ? "אפשר לספור קדימה מהמספר הגדול." : "אפשר לספור אחורה.",
-    explanation: [op === "+" ? "מחברים את שני המספרים" : "מחסרים מהמספר הגדול", `${a} ${op} ${b}`, `= ${val}`] };
+    hint: op === "+" ? (a >= 10 || b >= 10 ? "אפשר לחבר קודם את העשרות ואז את היחידות." : "אפשר לספור קדימה מהמספר הגדול.") : "אפשר לספור אחורה, או להוריד קודם את העשרות.",
+    explanation };
 }
 function genG2Mul(level) {
   const a = level === 0 ? ri(2, 4) : level === 1 ? ri(2, 5) : ri(2, 6);
@@ -1502,6 +1539,57 @@ function SpeakCheck({ target, onDone, color, isTablet }) {
   );
 }
 
+/* ---------- פירוק לעשרות ויחידות (חיבור מודרך) ---------- */
+function DecompExercise({ a, b, color, isTablet, landscape, onDone }) {
+  const aT = Math.floor(a / 10) * 10, aU = a % 10, bT = Math.floor(b / 10) * 10, bU = b % 10;
+  const steps = [
+    { label: `עֶשְׂרוֹת:  ${aT} + ${bT} =`, ans: aT + bT },
+    { label: `יְחִידוֹת:  ${aU} + ${bU} =`, ans: aU + bU },
+    { label: `בְּיַחַד:  ${aT + bT} + ${aU + bU} =`, ans: a + b },
+  ];
+  const [si, setSi] = useState(0);
+  const [val, setVal] = useState("");
+  const [vals, setVals] = useState([]);
+  const [bad, setBad] = useState(false);
+  const cur = steps[si];
+  const submit = () => {
+    if (val === "") return;
+    if (Number(val) === cur.ans) {
+      const nv = [...vals, val]; setVals(nv); setVal(""); setBad(false);
+      if (si + 1 >= steps.length) setTimeout(() => onDone(true), 300); else setSi(si + 1);
+    } else { setBad(true); setVal(""); }
+  };
+  const key = (k) => {
+    if (k === "submit") return submit();
+    if (k === "clear") return setVal("");
+    if (k === "back") return setVal((s) => s.slice(0, -1));
+    if (/^[0-9]$/.test(k)) setVal((s) => (s.length < 3 ? s + k : s));
+  };
+  const row = (i) => {
+    const active = i === si, doneRow = i < si;
+    return (
+      <div key={i} dir="rtl" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+        opacity: i <= si ? 1 : 0.35, background: active ? `${color}11` : "transparent", borderRadius: 12, padding: "6px 12px" }}>
+        <span style={{ fontWeight: 800, fontSize: isTablet ? 22 : 18, color: "#1f2937" }}>{steps[i].label}</span>
+        <span dir="ltr" style={{ minWidth: 60, textAlign: "center", fontSize: isTablet ? 26 : 22, fontWeight: 800,
+          color: doneRow ? "#389e0d" : active && bad ? "#cf1322" : "#1f2937",
+          borderBottom: active ? `3px solid ${color}` : "none", padding: "0 6px" }}>
+          {doneRow ? vals[i] : active ? (val || "?") : ""}
+        </span>
+      </div>
+    );
+  };
+  return (
+    <div style={{ width: "100%", maxWidth: 440, margin: "0 auto", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div dir="rtl" style={{ textAlign: "center", color: "#6b7280", fontSize: isTablet ? 17 : 15, fontWeight: 700 }}>
+        {a} = {aT} + {aU} &nbsp;·&nbsp; {b} = {bT} + {bU}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>{steps.map((_, i) => row(i))}</div>
+      <NumPad mode="number" onKey={key} isTablet={isTablet} landscape={landscape} />
+    </div>
+  );
+}
+
 /* ---------- התאמה בגרירה ---------- */
 function DragMatch({ pairs, onDone, color, isTablet }) {
   const [placed, setPlaced] = useState({});
@@ -1899,7 +1987,7 @@ function App() {
           </button>
         )}
       </div>
-      {problem.kind !== "match" && <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+      {problem.kind !== "match" && problem.kind !== "decomp" && <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
         <div dir="ltr" style={{
           minWidth: isTablet ? 190 : 150, minHeight: isTablet ? 72 : 56, padding: "8px 22px", borderRadius: 18,
           border: `3px solid ${feedback === "ok" ? "#52c41a" : feedback === "no" ? "#ff4d4f" : "#e5e7eb"}`,
@@ -1954,6 +2042,9 @@ function App() {
         : problem.kind === "match"
         ? <DragMatch pairs={problem.pairs} color={topic.color} isTablet={isTablet}
             onDone={() => { setInput("✓"); setFeedback("ok"); applyResult(true); }} />
+        : problem.kind === "decomp"
+        ? <DecompExercise a={problem.a} b={problem.b} color={topic.color} isTablet={isTablet} landscape={landscape}
+            onDone={() => { setInput(problem.answerText); setFeedback("ok"); applyResult(true); }} />
         : <NumPad mode={padMode} onKey={handleKey} isTablet={isTablet} landscape={landscape} />)}
       <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
         {feedback === "ok" ? (
