@@ -117,6 +117,7 @@ const ICONS = {
   plus: <g><path d="M12 5v14M5 12h14" /></g>,
   eraser: <g><path d="M8 20h12" /><path d="M14.5 5.5l4 4-7.5 7.5H7l-2.5-2.5z" /><path d="M10 9l5 5" /></g>,
   mic: <g><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0012 0" /><path d="M12 17v3M9 20h6" /></g>,
+  niqqud: <g><path d="M5 7h14" /><circle cx="8" cy="14" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none" /><circle cx="16" cy="14" r="1.5" fill="currentColor" stroke="none" /></g>,
 };
 function Icon({ name, size = 28, color = "currentColor", stroke = 1.9 }) {
   const p = ICONS[name];
@@ -132,7 +133,7 @@ const TOPIC_ICONS = {
   g2add: "plusminus", g2line: "numberline", g2mul: "multiply", g2t5: "grid",
   g2word: "book", g2shape: "shapes", g2cmp: "compare", g2eo: "parity",
   g2miss: "question", g2seq: "steps", g2time: "clock", g2place: "place",
-  rdphon: "headphones", rdsyl: "speaker", rdwords: "page", rdsent: "bubble", rdspeak: "mic",
+  rdniq: "niqqud", rdphon: "headphones", rdsyl: "speaker", rdwords: "page", rdsent: "bubble", rdspeak: "mic",
   arith: "calculator", frac: "fraction", eq: "scale", logic: "bulb",
   geo: "protractor", pow: "bolt", prime: "bricks",
 };
@@ -1087,10 +1088,78 @@ function genSpeakWord(level) {
     explanation: [`הַמִּלָּה הִיא ${w}`] };
 }
 
+/* ---------- לומדים ניקוד (אות עוגן: א) ---------- */
+const ALEPH = "א";
+const NIQQUD = [
+  { mark: "ָ", name: "קָמַץ", sound: "a", stage: 1 },
+  { mark: "ַ", name: "פַּתָּח", sound: "a", stage: 1 },
+  { mark: "ִ", name: "חִירִיק", sound: "i", stage: 1 },
+  { mark: "ֹ", name: "חוֹלָם", sound: "o", stage: 2 },
+  { mark: "ֵ", name: "צֵירֶה", sound: "e", stage: 2 },
+  { mark: "ֶ", name: "סֶגּוֹל", sound: "e", stage: 2 },
+  { mark: "ֻ", name: "קֻבּוּץ", sound: "u", stage: 3 },
+];
+const niqA = (v) => ALEPH + v.mark; // אָ, אִ, ...
+const niqForLevel = (lvl) => NIQQUD.filter((v) => (lvl === 0 ? v.stage === 1 : lvl === 1 ? v.stage <= 2 : true));
+let lastNiq = null;
+function pickNiq(pool) { let v = pick(pool); for (let t = 0; t < 20 && v === lastNiq && pool.length > 1; t++) v = pick(pool); lastNiq = v; return v; }
+function genNiqqud(level) {
+  const pool = niqForLevel(level);
+  const modes = level === 0 ? ["name", "hear", "match"] : ["name", "hear", "same", "match"];
+  const mode = pick(modes);
+  if (mode === "match") {
+    const picks = shuffle(pool).slice(0, Math.min(3, pool.length));
+    const pairs = picks.map((v, i) => ({ id: "p" + i, sign: niqA(v), name: v.name, sound: v.sound }));
+    return { kind: "match", pairs, prompt: "גָּרְרִי כָּל נִקּוּד אֶל הַשֵּׁם שֶׁלּוֹ:",
+      answerText: pairs.map((p) => `${p.sign}=${p.name}`).join(", "),
+      hint: "גְּרֹרִי אֶת הָאוֹת עִם הַנִּקּוּד אֶל הַמַּלְבֵּן עִם הַשֵּׁם הַנָּכוֹן.",
+      explanation: pairs.map((p) => `${p.sign} = ${p.name}`) };
+  }
+  if (mode === "hear") {
+    const v = pickNiq(pool);
+    const otherSounds = shuffle([...new Set(pool.filter((x) => x.sound !== v.sound).map((x) => x.sound))]);
+    const optV = [v];
+    for (const s of otherSounds) { if (optV.length >= 4) break; optV.push(pick(pool.filter((x) => x.sound === s))); }
+    const choices = shuffle(optV.map(niqA));
+    const speakMap = {}; choices.forEach((c) => { speakMap[c] = c; });
+    return { kind: "choice", expr: [], say: niqA(v), listenLabel: "אֵיזֶה נִקּוּד שָׁמַעְתְּ?", choices, speakChoices: true, speakMap,
+      prompt: "לַחֲצִי עַל הָרַמְקוֹל, וּבַחֲרִי אֶת הַנִּקּוּד שֶׁשָּׁמַעְתְּ:",
+      check: (x) => x === niqA(v), answerText: niqA(v),
+      hint: "כָּל הָאוֹתִיּוֹת זֵהוֹת (א) — הַקְשִׁיבִי לַצְּלִיל!",
+      explanation: [`שָׁמַעְתְּ "${v.sound}" — זֶה ${v.name} (${niqA(v)})`] };
+  }
+  if (mode === "same") {
+    const withP = pool.filter((v) => pool.some((o) => o !== v && o.sound === v.sound));
+    if (withP.length) {
+      const v = pickNiq(withP);
+      const partner = pick(pool.filter((o) => o !== v && o.sound === v.sound));
+      const distract = shuffle(pool.filter((o) => o.sound !== v.sound)).slice(0, 2);
+      const choices = shuffle([partner.name, ...distract.map((d) => d.name)]);
+      return { kind: "choice", text: niqA(v), say: niqA(v), choices,
+        prompt: `אֵיזֶה נִקּוּד נִשְׁמָע אוֹתוֹ דָּבָר כְּמוֹ ${v.name}?`,
+        check: (x) => x === partner.name, answerText: partner.name,
+        hint: "יֵשׁ נִקּוּד שֶׁנִּשְׁמָע זֵהֶה: קָמַץ=פַּתָּח, צֵירֶה=סֶגּוֹל.",
+        explanation: [`${v.name} וְ-${partner.name} — שְׁנֵיהֶם "${v.sound}"`] };
+    }
+  }
+  // name: רואים סימן ובוחרים את שמו
+  const v = pickNiq(pool);
+  const opts = shuffle(pool).slice(0, 4); if (!opts.includes(v)) opts[0] = v;
+  const choices = shuffle(opts.map((o) => o.name));
+  return { kind: "choice", text: niqA(v), say: niqA(v), choices,
+    prompt: "מָה שֵׁם הַנִּקּוּד? (אֶפְשָׁר לִלְחֹץ עַל הָאוֹת לִשְׁמִיעָה)",
+    check: (x) => x === v.name, answerText: v.name,
+    hint: "הִסְתַּכְּלִי עַל הַסִּימָן שֶׁמִּתַּחַת אוֹ לְיַד הָאָלֶף.",
+    explanation: [`${niqA(v)} — ${v.name} (הַצְּלִיל "${v.sound}")`] };
+}
+
 const TOPICS_READ = [
   { id: "rdphon", title: "צלילים והקשבה", emoji: "🎧", gen: genPhonics, color: "#2f54eb",
     lesson: "משחקי הקשבה לצלילים: כמה הברות יש במילה, אילו מילים מתחרזות, ואיזו מילה מתחילה באותו צליל. ההקשבה לצלילים היא הבסיס לקריאה.",
     example: { expr: [{ t: "v", v: "חָתוּל" }], answer: "2", steps: ["מוחאים כף לכל הברה", "חָ — תוּל", "שתי הברות"] } },
+  { id: "rdniq", title: "לומדים ניקוד", emoji: "🔠", gen: genNiqqud, color: "#9254de",
+    lesson: "כל סימן ניקוד יש לו שם וצליל. לומדים אותם על האות א: אָ (קמץ), אִ (חיריק), אֹ (חולם)… לוחצים על האות כדי לשמוע, ובתרגיל הגרירה מתאימים כל ניקוד לשם שלו.",
+    example: { expr: [{ t: "v", v: "אָ" }], answer: "קָמַץ", steps: ["הסימן שמתחת לאות הוא הניקוד", "אָ נקרא קָמַץ", "הצליל שלו «a»"] } },
   { id: "rdsyl", title: "ניקוד והברות", emoji: "🔊", gen: genReadSyllables, color: "#722ed1",
     lesson: "מחברים אות עם ניקוד ומקבלים הברה. אותה אות עם ניקוד שונה נשמעת אחרת: בָּ, בִּי, בּוֹ, בּוּ. לוחצים על ההברה כדי לשמוע אותה.",
     example: { expr: [{ t: "v", v: "מָ" }], answer: "קָמַץ", steps: ["האות מ עם קָמַץ", "הצליל הוא «ma»", "כל ניקוד נותן צליל אחר"] } },
@@ -1123,7 +1192,7 @@ function genFresh(t, levelId) {
   let p;
   for (let i = 0; i < 15; i++) {
     p = t.gen(levelId);
-    const sig = [p.prompt || "", JSON.stringify(p.expr || []), p.text || "", p.say || "", JSON.stringify(p.choices || []), p.figure ? JSON.stringify(p.figure) : ""].join("|");
+    const sig = [p.prompt || "", JSON.stringify(p.expr || []), p.text || "", p.say || "", JSON.stringify(p.choices || []), p.figure ? JSON.stringify(p.figure) : "", p.answerText || ""].join("|");
     if (sig !== lastSig) { lastSig = sig; return p; }
   }
   return p;
@@ -1414,6 +1483,64 @@ function SpeakCheck({ target, onDone, color, isTablet }) {
       {heard && !listening && <div dir="rtl" style={{ color: "#6b7280", fontSize: isTablet ? 16 : 14 }}>שָׁמַעְתִּי: «{heard}»</div>}
       {state === "denied" && <div style={{ color: "#cf1322", fontSize: isTablet ? 15 : 13 }}>צָרִיךְ לְאַשֵּׁר גִּישָׁה לַמִּיקְרוֹפוֹן בַּדַּפְדְּפָן.</div>}
       {state === "error" && <div style={{ color: "#cf1322", fontSize: isTablet ? 15 : 13 }}>לֹא הִצְלַחְתִּי לִשְׁמֹעַ — נַסִּי שׁוּב.</div>}
+    </div>
+  );
+}
+
+/* ---------- התאמה בגרירה ---------- */
+function DragMatch({ pairs, onDone, color, isTablet }) {
+  const [placed, setPlaced] = useState({});
+  const [drag, setDrag] = useState(null);
+  const slotRefs = useRef({});
+  const doneRef = useRef(false);
+  const order = useRef(null);
+  if (!order.current) order.current = shuffle(pairs.map((p) => p.id));
+  const byId = {}; pairs.forEach((p) => { byId[p.id] = p; });
+  const start = (e, p) => { if (placed[p.id]) return; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} setDrag({ id: p.id, x: e.clientX, y: e.clientY }); };
+  const move = (e) => { if (drag) setDrag((d) => ({ ...d, x: e.clientX, y: e.clientY })); };
+  const end = (e) => {
+    if (!drag) return;
+    const x = e.clientX, y = e.clientY; let hit = null;
+    for (const id of Object.keys(slotRefs.current)) {
+      const el = slotRefs.current[id]; if (!el) continue; const r = el.getBoundingClientRect();
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) { hit = id; break; }
+    }
+    if (hit === drag.id) {
+      const np = { ...placed, [drag.id]: true }; setPlaced(np);
+      if (Object.keys(np).length === pairs.length && !doneRef.current) { doneRef.current = true; setTimeout(() => onDone(true), 300); }
+    }
+    setDrag(null);
+  };
+  const cs = isTablet ? 74 : 62;
+  return (
+    <div style={{ width: "100%", maxWidth: 460, margin: "0 auto" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10, marginBottom: 16 }}>
+        {order.current.map((id) => {
+          const p = byId[id], done = placed[id];
+          return (
+            <div key={id} ref={(el) => { slotRefs.current[id] = el; }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+                border: `2px ${done ? "solid" : "dashed"} ${done ? color : "#cbd5e1"}`, borderRadius: 14,
+                padding: "8px 16px", background: done ? "#f6ffed" : "#fff", minHeight: isTablet ? 58 : 50 }}>
+              <span style={{ fontWeight: 800, fontSize: isTablet ? 20 : 17, color: "#1f2937" }}>{p.name}</span>
+              <span style={{ minWidth: cs, height: cs, display: "flex", alignItems: "center", justifyContent: "center", fontSize: isTablet ? 38 : 32, fontWeight: 800, color: done ? color : "#e5e7eb", direction: "rtl" }}>{done ? p.sign : "?"}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", minHeight: cs + 8 }}>
+        {pairs.map((p) => (placed[p.id] ? null : (
+          <button key={p.id} onPointerDown={(e) => start(e, p)} onPointerMove={move} onPointerUp={end} onPointerCancel={() => setDrag(null)}
+            style={{ touchAction: "none", fontFamily: "inherit", cursor: "grab", border: "none", width: cs, height: cs, borderRadius: 16,
+              background: "#fff", boxShadow: "0 4px 12px rgba(2,6,23,0.12)", fontSize: isTablet ? 38 : 32, fontWeight: 800, color: "#1f2937",
+              direction: "rtl", visibility: drag && drag.id === p.id ? "hidden" : "visible" }}>{p.sign}</button>
+        )))}
+      </div>
+      {drag && (
+        <div style={{ position: "fixed", left: drag.x, top: drag.y, transform: "translate(-50%,-50%)", pointerEvents: "none", zIndex: 90,
+          width: cs, height: cs, borderRadius: 16, background: "#fff", boxShadow: "0 10px 24px rgba(2,6,23,0.25)",
+          display: "flex", alignItems: "center", justifyContent: "center", fontSize: isTablet ? 38 : 32, fontWeight: 800, color, direction: "rtl" }}>{byId[drag.id].sign}</div>
+      )}
     </div>
   );
 }
@@ -1757,7 +1884,7 @@ function App() {
           </button>
         )}
       </div>
-      <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+      {problem.kind !== "match" && <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
         <div dir="ltr" style={{
           minWidth: isTablet ? 190 : 150, minHeight: isTablet ? 72 : 56, padding: "8px 22px", borderRadius: 18,
           border: `3px solid ${feedback === "ok" ? "#52c41a" : feedback === "no" ? "#ff4d4f" : "#e5e7eb"}`,
@@ -1766,7 +1893,7 @@ function App() {
         }}>
           {input === "" ? <span style={{ color: "#cbd5e1" }}>?</span> : renderInput(input, problem.kind)}
         </div>
-      </div>
+      </div>}
       {feedback === "ok" && (leveledUp
         ? <p style={{ textAlign: "center", color: "#722ed1", fontWeight: 800, fontSize: isTablet ? 24 : 20, margin: "16px 0 0", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%" }}><Icon name="star" size={isTablet ? 26 : 22} color="#f59e0b" stroke={2} /> עלית רמה! עכשיו {level.name}</p>
         : <p style={{ textAlign: "center", color: "#389e0d", fontWeight: 800, fontSize: isTablet ? 24 : 20, margin: "16px 0 0", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%" }}>נכון מאוד! +{level.stars} <Icon name="star" size={isTablet ? 22 : 19} color="#f59e0b" stroke={2} /></p>)}
@@ -1809,6 +1936,9 @@ function App() {
         : problem.kind === "speak"
         ? <SpeakCheck target={problem.target} color={topic.color} isTablet={isTablet}
             onDone={(ok, hr) => { setInput(hr || (ok ? problem.target : " ")); setFeedback(ok ? "ok" : "no"); applyResult(ok); }} />
+        : problem.kind === "match"
+        ? <DragMatch pairs={problem.pairs} color={topic.color} isTablet={isTablet}
+            onDone={() => { setInput("✓"); setFeedback("ok"); applyResult(true); }} />
         : <NumPad mode={padMode} onKey={handleKey} isTablet={isTablet} landscape={landscape} />)}
       <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
         {feedback === "ok" ? (
