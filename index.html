@@ -677,22 +677,35 @@ function decompSteps(a, b) {
   lines.push(`בְּיַחַד: ${aT + bT} + ${aU + bU} = ${a + b}`);
   return lines;
 }
-function genG2AddSub(level) {
-  // עלייה מדורגת: תוצאות עד 10 → 20 → 30 → 50 → 100
-  const cap = [10, 20, 30, 50, 100][Math.min(level, 4)];
-  // גיוון: ברמות הגבוהות לפעמים חיבור של שלושה מספרים
-  if (level >= 2 && Math.random() < 0.25) {
-    const a = ri(1, Math.max(2, Math.floor(cap / 3)));
-    const b = ri(1, Math.max(2, Math.floor(cap / 3)));
-    const c = ri(1, Math.max(1, cap - a - b));
-    const val = a + b + c;
-    return { kind: "number", expr: [{ t: "v", v: `${a} + ${b} + ${c} =` }], prompt: "כמה זה ביחד?",
-      check: (v) => intEqual(v, val), answerText: `${val}`,
-      hint: "מחברים שניים, ואז מוסיפים את השלישי.",
-      explanation: [`${a} + ${b} = ${a + b}`, `${a + b} + ${c}`, `= ${val}`] };
-  }
-  // ברמות הגבוהות: תרגיל אינטראקטיבי של פירוק לעשרות ויחידות (חיבור, בלי נשיאה ביחידות)
-  if (level >= 3 && Math.random() < 0.3) {
+function asProblem(a, b, op, extra) {
+  const val = op === "+" ? a + b : a - b;
+  return Object.assign({ kind: "number", expr: [{ t: "v", v: `${a} ${op} ${b} =` }],
+    prompt: op === "+" ? "כמה זה ביחד?" : "כמה נשאר?",
+    check: (v) => intEqual(v, val), answerText: `${val}` }, extra);
+}
+function simpleAddSub(cap) {
+  const op = pick(["+", "−"]);
+  let a, b;
+  if (op === "+") { a = ri(1, cap - 1); b = ri(1, cap - a); }
+  else { a = ri(2, cap); b = ri(1, a - 1); }
+  const val = op === "+" ? a + b : a - b;
+  return asProblem(a, b, op, {
+    hint: op === "+" ? "אפשר לספור קדימה מהמספר הגדול." : "אפשר לספור אחורה.",
+    explanation: [op === "+" ? "מחברים את שני המספרים" : "מחסרים מהמספר הגדול", `${a} ${op} ${b}`, `= ${val}`] });
+}
+function tensAddSub() {
+  const op = pick(["+", "−"]);
+  let a, b;
+  if (op === "+") { const aT = ri(1, 7), bT = ri(1, 9 - aT); a = aT * 10; b = bT * 10; }
+  else { const aT = ri(2, 9), bT = ri(1, aT - 1); a = aT * 10; b = bT * 10; }
+  const val = op === "+" ? a + b : a - b;
+  return asProblem(a, b, op, {
+    hint: "סופרים בעשרות שלמות: 10, 20, 30…",
+    explanation: [`${a / 10} עֶשְׂרוֹת ${op} ${b / 10} עֶשְׂרוֹת = ${val / 10} עֶשְׂרוֹת`, `= ${val}`] });
+}
+function decompAddSub(cap) {
+  // חיבור אינטראקטיבי בפירוק (שני מחוברים דו-ספרתיים, בלי נשיאה ביחידות)
+  if (Math.random() < 0.6) {
     let a = 10, b = 10;
     for (let t = 0; t < 200; t++) {
       const aU = ri(0, 8), bU = ri(0, 9 - aU);
@@ -703,30 +716,22 @@ function genG2AddSub(level) {
     return { kind: "decomp", a, b, expr: [{ t: "v", v: `${a} + ${b} =` }],
       prompt: "נְפָרֵק לְעֶשְׂרוֹת וִיחִידוֹת וּנְחַבֵּר שָׁלָב-שָׁלָב:",
       check: (v) => intEqual(v, a + b), answerText: `${a + b}`,
-      hint: "מְחַבְּרִים קֹדֶם אֶת הָעֶשְׂרוֹת, אַחַר כָּךְ אֶת הַיְּחִידוֹת, וְאָז מְחַבְּרִים יַחַד.",
+      hint: "מְחַבְּרִים קֹדֶם אֶת הָעֶשְׂרוֹת, אַחַר כָּךְ אֶת הַיְּחִידוֹת.",
       explanation: decompSteps(a, b) };
   }
-  const op = pick(["+", "−"]);
-  let a, b, val;
-  if (op === "+") { a = ri(1, cap - 1); b = ri(1, cap - a); val = a + b; }
-  else { a = ri(2, cap); b = ri(1, a - 1); val = a - b; }
-  // הסבר לפי שיטת הפרדת עשרות כשהמספרים דו-ספרתיים
-  let explanation;
-  if (op === "+" && (a >= 10 || b >= 10)) {
-    explanation = decompSteps(a, b);
-  } else if (op === "−" && a >= 10) {
-    const bT = Math.floor(b / 10) * 10, bU = b % 10;
-    explanation = bT > 0
-      ? [`מְפָרְקִים אֶת ${b} ל-${bT} וְ-${bU}`, `${a} − ${bT} = ${a - bT}`, `${a - bT} − ${bU} = ${val}`]
-      : [`${a} − ${b}`, `= ${val}`];
-  } else {
-    explanation = [op === "+" ? "מחברים את שני המספרים" : "מחסרים מהמספר הגדול", `${a} ${op} ${b}`, `= ${val}`];
-  }
-  return { kind: "number", expr: [{ t: "v", v: `${a} ${op} ${b} =` }],
-    prompt: op === "+" ? "כמה זה ביחד?" : "כמה נשאר?",
-    check: (v) => intEqual(v, val), answerText: `${val}`,
-    hint: op === "+" ? (a >= 10 || b >= 10 ? "אפשר לחבר קודם את העשרות ואז את היחידות." : "אפשר לספור קדימה מהמספר הגדול.") : "אפשר לספור אחורה, או להוריד קודם את העשרות.",
-    explanation };
+  // חיסור דו-ספרתי עם הסבר פירוק
+  const a = ri(13, cap); let b = ri(10, a - 1); if (b < 10) b = 10;
+  const val = a - b, bT = Math.floor(b / 10) * 10, bU = b % 10;
+  return asProblem(a, b, "−", {
+    hint: "מוֹרִידִים קֹדֶם אֶת הָעֶשְׂרוֹת, וְאָז אֶת הַיְּחִידוֹת.",
+    explanation: [`מְפָרְקִים אֶת ${b} ל-${bT} וְ-${bU}`, `${a} − ${bT} = ${a - bT}`, `${a - bT} − ${bU} = ${val}`] });
+}
+function genG2AddSub(level) {
+  if (level <= 0) return simpleAddSub(10);   // עד 10
+  if (level === 1) return simpleAddSub(20);  // עד 20
+  if (level === 2) return tensAddSub();      // עשרות שלמות
+  if (level === 3) return decompAddSub(30);  // עד 30 · הפרדת עשרות
+  return decompAddSub(50);                    // עד 50 · הפרדת עשרות
 }
 function genG2Mul(level) {
   const a = level === 0 ? ri(2, 4) : level === 1 ? ri(2, 5) : ri(2, 6);
@@ -900,6 +905,7 @@ function genG2Place(level) {
 
 const TOPICS_G2 = [
   { id: "g2add", title: "חיבור וחיסור", emoji: "➕", gen: genG2AddSub, color: "#ff7a45", levels: 5,
+    levelNames: ["עד 10", "עד 20", "עשרות שלמות", "עד 30 · הפרדת עשרות", "עד 50 · הפרדת עשרות"],
     lesson: "מחברים כשמוסיפים, מחסרים כשלוקחים. אפשר לעזור לעצמך בספירה קדימה ואחורה.",
     example: { expr: [{ t: "v", v: "7 + 5 =" }], answer: "12", steps: ["מחברים את שני המספרים", "7 + 5", "= 12"] } },
   { id: "g2line", title: "קו המספרים", emoji: "📏", gen: genNumLine, color: "#08979c",
@@ -1377,11 +1383,15 @@ function writeStore(v) {
 const blankP = () => ({ stars: 0, streak: 0, solved: 0, prog: {} });
 const MAXLVL = 2;          // ברירת מחדל: רמות 0..2
 const maxLvlOf = (t) => ((t && t.levels ? t.levels : 3) - 1); // מספר רמות לכל נושא
-const NEED = 10;           // תשובות נכונות לעליית רמה (יותר תרגול בכל רמה)
+const PER_LEVEL = 20;      // מספר תרגילים מינימלי ברמה
+const RUN_NEEDED = 6;      // רצף תשובות נכונות לעליית רמה
 const ADAPTIVE_COURSE = "grade2";
-const getProg = (player, topicId) => ((player && player.prog && player.prog[topicId]) || { lvl: 0, xp: 0 });
-const levelName = (lvl) => "רמה " + (lvl + 1);
-const syntheticLevel = (lvl) => ({ id: lvl, name: levelName(lvl), badge: "", stars: 1 + lvl, adaptive: true });
+const getProg = (player, topicId) => {
+  const p = (player && player.prog && player.prog[topicId]) || {};
+  return { lvl: p.lvl || 0, seen: p.seen || 0, run: p.run || 0 };
+};
+const levelLabel = (t, lvl) => (t && t.levelNames && t.levelNames[lvl]) || ("רמה " + (lvl + 1));
+const syntheticLevel = (lvl, name) => ({ id: lvl, name: name || ("רמה " + (lvl + 1)), badge: "", stars: 1 + lvl, adaptive: true });
 
 function PlayerSelect({ players, onPick, onAdd }) {
   const [name, setName] = useState("");
@@ -1478,7 +1488,7 @@ function JourneyPath({ levelIdx, color, isTablet, max = MAXLVL }) {
             {st === "cur" && <circle cx={x} cy={y} r={R + 7} fill="none" stroke={color} strokeWidth="3" opacity="0.3" />}
             <circle cx={x} cy={y} r={R} fill={fill} stroke={st === "lock" ? "#e2e8f0" : color} strokeWidth="3" />
             <text x={x} y={y + (isTablet ? 7 : 6)} textAnchor="middle" fontSize={isTablet ? 21 : 18} fontWeight="800" fill={st === "lock" ? "#cbd5e1" : "#fff"}>{i + 1}</text>
-            <text x={x} y={y + R + (isTablet ? 22 : 19)} textAnchor="middle" fontSize={isTablet ? 14 : 12} fontWeight="700" fill={st === "lock" ? "#cbd5e1" : "#64748b"}>{levelName(i)}</text>
+            <text x={x} y={y + R + (isTablet ? 22 : 19)} textAnchor="middle" fontSize={isTablet ? 14 : 12} fontWeight="700" fill={st === "lock" ? "#cbd5e1" : "#64748b"}>{"רמה " + (i + 1)}</text>
           </g>
         );
       })}
@@ -1702,18 +1712,18 @@ function App() {
     const prog = { ...(c.prog || {}) };
     let bumped = false, lvlNow = 0;
     if (adaptive && topic) {
-      const t = prog[topic.id] || { lvl: 0, xp: 0 };
-      let lvl = t.lvl, xp = t.xp;
-      if (ok) { xp += 1; if (xp >= NEED && lvl < maxLvlOf(topic)) { lvl += 1; xp = 0; bumped = true; } }
-      else { xp = Math.max(0, xp - 1); }
-      prog[topic.id] = { lvl, xp }; lvlNow = lvl;
+      const t = getProg(c, topic.id);
+      let lvl = t.lvl, seen = t.seen + 1, run = ok ? t.run + 1 : 0;
+      // עלייה: לפחות 20 תרגילים ברמה + רצף של 6 נכונים
+      if (seen >= PER_LEVEL && run >= RUN_NEEDED && lvl < maxLvlOf(topic)) { lvl += 1; seen = 0; run = 0; bumped = true; }
+      prog[topic.id] = { lvl, seen, run }; lvlNow = lvl;
     }
     const gain = ok ? (adaptive ? 1 + lvlNow : (level ? level.stars : 1)) : 0;
     const nx = ok ? { ...c, stars: c.stars + gain, streak: c.streak + 1, solved: c.solved + 1, prog }
                   : { ...c, streak: 0, prog };
     const np = { ...players, [current]: nx };
     setPlayers(np); persist(np, current);
-    if (bumped) { setLeveledUp(true); setLevel(syntheticLevel(lvlNow)); }
+    if (bumped) { setLeveledUp(true); setLevel(syntheticLevel(lvlNow, levelLabel(topic, lvlNow))); }
   }
   function resetQ() { setInput(""); setFeedback(null); setShowHint(false); setShowSol(false); setLeveledUp(false); }
   function startProblem(t, lvl) { setProblem(genFresh(t, lvl)); resetQ(); }
@@ -1723,7 +1733,7 @@ function App() {
   function nextProblem() {
     if (adaptive && topic) {
       const lvl = Math.min(getProg(players[current], topic.id).lvl, maxLvlOf(topic));
-      setLevel(syntheticLevel(lvl)); startProblem(topic, lvl);
+      setLevel(syntheticLevel(lvl, levelLabel(topic, lvl))); startProblem(topic, lvl);
     } else { startProblem(topic, level.id); }
   }
   function startLevel(t, l) {
@@ -1732,12 +1742,12 @@ function App() {
   function startAdaptive(t) {
     setTopic(t); setScreen("play");
     const lvl = Math.min(getProg(players[current], t.id).lvl, maxLvlOf(t));
-    setLevel(syntheticLevel(lvl)); startProblem(t, lvl);
+    setLevel(syntheticLevel(lvl, levelLabel(t, lvl))); startProblem(t, lvl);
   }
   function setTopicLevel(topicId, lvl, max) {
     const c = players[current] || blankP();
     const prog = { ...(c.prog || {}) };
-    prog[topicId] = { lvl: Math.max(0, Math.min(max == null ? MAXLVL : max, lvl)), xp: 0 };
+    prog[topicId] = { lvl: Math.max(0, Math.min(max == null ? MAXLVL : max, lvl)), seen: 0, run: 0 };
     const np = { ...players, [current]: { ...c, prog } };
     setPlayers(np); persist(np, current);
   }
@@ -1804,9 +1814,9 @@ function App() {
               <div style={{ fontSize: S.topicTitle, fontWeight: 800, marginTop: 10, color: "#1f2937" }}>{t.title}</div>
               {pr && (
                 <div style={{ marginTop: 8 }}>
-                  <div style={{ fontSize: isTablet ? 13 : 11, fontWeight: 700, color: t.color, marginBottom: 4 }}>{levelName(pr.lvl)}</div>
+                  <div style={{ fontSize: isTablet ? 13 : 11, fontWeight: 700, color: t.color, marginBottom: 4 }}>{levelLabel(t, pr.lvl)}</div>
                   <div style={{ height: 6, borderRadius: 99, background: "#eef2f7", overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${pr.lvl >= maxLvlOf(t) ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color, borderRadius: 99 }} />
+                    <div style={{ height: "100%", width: `${pr.lvl >= maxLvlOf(t) ? 100 : Math.round((Math.min(pr.seen, PER_LEVEL) / PER_LEVEL) * 100)}%`, background: t.color, borderRadius: 99 }} />
                   </div>
                 </div>
               )}
@@ -1872,7 +1882,6 @@ function App() {
   /* ---------- מסך מסע (כיתה ב' — מודל לומד) ---------- */
   if (screen === "journey") {
     const pr = getProg(cur, topic.id);
-    const remain = NEED - pr.xp;
     return (
       <Shell {...sp}>
         <BackBtn onClick={() => setScreen("home")} isTablet={isTablet} />
@@ -1882,9 +1891,14 @@ function App() {
           <p style={{ color: "#6b7280", fontSize: isTablet ? 18 : 15, maxWidth: 560, margin: "6px auto 0", lineHeight: 1.6 }}>{topic.lesson}</p>
         </div>
         <div style={{ maxWidth: 460, margin: "0 auto", background: "#fff", borderRadius: 26, boxShadow: "0 12px 30px rgba(2,6,23,0.06)", borderTop: `4px solid ${topic.color}`, padding: isTablet ? "22px 20px 26px" : "18px 16px 22px" }}>
-          <div style={{ textAlign: "center", fontWeight: 800, fontSize: isTablet ? 18 : 16, color: topic.color, marginBottom: 6 }}>
-            {pr.lvl >= maxLvlOf(topic) ? "כל הכבוד! הגעת לפסגה 🏆" : `${levelName(pr.lvl)} — עוד ${remain} ${remain === 1 ? "תשובה" : "תשובות"} לרמה הבאה`}
+          <div style={{ textAlign: "center", fontWeight: 800, fontSize: isTablet ? 18 : 16, color: topic.color, marginBottom: 2 }}>
+            {pr.lvl >= maxLvlOf(topic) ? "כל הכבוד! הגעת לפסגה 🏆" : levelLabel(topic, pr.lvl)}
           </div>
+          {pr.lvl < maxLvlOf(topic) && (
+            <div style={{ textAlign: "center", fontSize: isTablet ? 14 : 12, color: "#6b7280", marginBottom: 4 }}>
+              פתרת {Math.min(pr.seen, PER_LEVEL)}/{PER_LEVEL} תרגילים · רצף {Math.min(pr.run, RUN_NEEDED)}/{RUN_NEEDED} {pr.seen >= PER_LEVEL && pr.run < RUN_NEEDED ? "(עוד רצף לרמה הבאה!)" : ""}
+            </div>
+          )}
           <JourneyPath levelIdx={pr.lvl} color={topic.color} isTablet={isTablet} max={maxLvlOf(topic)} />
           <button onClick={() => startAdaptive(topic)}
             style={{ display: "block", width: "100%", marginTop: 14, fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 18,
@@ -1932,13 +1946,13 @@ function App() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 800, fontSize: isTablet ? 18 : 16, color: "#1f2937" }}>{t.title}</div>
                   <div style={{ height: 6, borderRadius: 99, background: "#eef2f7", overflow: "hidden", marginTop: 5 }}>
-                    <div style={{ height: "100%", width: `${pr.lvl >= maxLvlOf(t) ? 100 : Math.round((pr.xp / NEED) * 100)}%`, background: t.color }} />
+                    <div style={{ height: "100%", width: `${pr.lvl >= maxLvlOf(t) ? 100 : Math.round((Math.min(pr.seen, PER_LEVEL) / PER_LEVEL) * 100)}%`, background: t.color }} />
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <button onClick={() => setTopicLevel(t.id, pr.lvl - 1, maxLvlOf(t))} disabled={pr.lvl <= 0}
                     style={{ fontFamily: "inherit", cursor: pr.lvl <= 0 ? "default" : "pointer", border: "none", borderRadius: 10, width: 34, height: 34, fontSize: 22, fontWeight: 800, background: pr.lvl <= 0 ? "#f1f5f9" : "#fff1f0", color: pr.lvl <= 0 ? "#cbd5e1" : "#cf1322", boxShadow: "0 2px 6px rgba(2,6,23,0.06)" }}>−</button>
-                  <span style={{ minWidth: 58, textAlign: "center", fontWeight: 800, fontSize: isTablet ? 16 : 14, color: t.color }}>{levelName(pr.lvl)}</span>
+                  <span style={{ minWidth: 80, textAlign: "center", fontWeight: 800, fontSize: isTablet ? 14 : 12, color: t.color }}>{levelLabel(t, pr.lvl)}</span>
                   <button onClick={() => setTopicLevel(t.id, pr.lvl + 1, maxLvlOf(t))} disabled={pr.lvl >= maxLvlOf(t)}
                     style={{ fontFamily: "inherit", cursor: pr.lvl >= maxLvlOf(t) ? "default" : "pointer", border: "none", borderRadius: 10, width: 34, height: 34, fontSize: 22, fontWeight: 800, background: pr.lvl >= maxLvlOf(t) ? "#f1f5f9" : "#f6ffed", color: pr.lvl >= maxLvlOf(t) ? "#cbd5e1" : "#389e0d", boxShadow: "0 2px 6px rgba(2,6,23,0.06)" }}>+</button>
                 </div>
