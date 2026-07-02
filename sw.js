@@ -1,6 +1,6 @@
 /* Service Worker v2 — network-first עבור הדף עצמו, כך שעדכונים מופיעים מיד.
    נשען על המטמון רק כשאין אינטרנט. */
-const CACHE = "mathlab-v2";
+const CACHE = "mathlab-v3";
 const SHELL = ["./", "./index.html"];
 
 self.addEventListener("install", (e) => {
