@@ -1394,6 +1394,60 @@ const MORE_Q = [
   { level: 2, q: "מָה קוֹרֶה כְּשֶׁחֹמֶר פּוֹגֵשׁ אַנְטִי-חֹמֶר?", choices: ["מִתְאַיְּנִים וְהוֹפְכִים לְאֶנֶרְגְיָה (אוֹר)", "נִדְבָּקִים לָנֶצַח", "לֹא קוֹרֶה כְּלוּם"], a: "מִתְאַיְּנִים וְהוֹפְכִים לְאֶנֶרְגְיָה (אוֹר)", exp: ["חֹמֶר + אַנְטִי-חֹמֶר → מִתְבַּטְּלִים וְנֶהֱפָכִים לְאֶנֶרְגְיָה טְהוֹרָה (פוֹטוֹנִים)"] },
   { level: 2, q: "הָאֶלֶקְטְרוֹן שַׁיָּךְ לְמִשְׁפַּחַת...", choices: ["הַלֶּפְּטוֹנִים", "הַקְּווַרְקִים", "הַפוֹטוֹנִים"], a: "הַלֶּפְּטוֹנִים", exp: ["חֲלָקִיקֵי הַחֹמֶר: קְווַרְקִים וְלֶפְּטוֹנִים", "הָאֶלֶקְטְרוֹן וְהַנֵּייטְרִינוֹ הֵם לֶפְּטוֹנִים"] },
 ];
+/* ---- הרחבת מאגר שאלות המדע (גיוון רב יותר, פחות חזרות) ---- */
+ATOM_Q.push(
+  { level: 0, q: "כַּמָּה פְּרוֹטוֹנִים יֵשׁ בְּאָטוֹם שֶׁל מֵימָן?", choices: ["1", "2", "6"], a: "1", exp: ["לַמֵּימָן יֵשׁ פְּרוֹטוֹן אֶחָד בִּלְבַד — לָכֵן הוּא הָרִאשׁוֹן בַּטַּבְלָה."] },
+  { level: 0, q: "אֵיזֶה חֶלְקִיק הֲכִי קַל?", choices: ["אֶלֶקְטְרוֹן", "פְּרוֹטוֹן", "נֵייטְרוֹן"], a: "אֶלֶקְטְרוֹן", exp: ["הָאֶלֶקְטְרוֹן קַל בְּעֶרֶךְ פִּי 2000 מִפְּרוֹטוֹן!"] },
+  { level: 1, q: "מָה קוֹרֶה כְּשֶׁמּוֹסִיפִים פְּרוֹטוֹן לְגַרְעִין?", choices: ["הָאָטוֹם הוֹפֵךְ לִיסוֹד אַחֵר", "לֹא קוֹרֶה כְּלוּם", "הָאָטוֹם נֶעֱלָם"], a: "הָאָטוֹם הוֹפֵךְ לִיסוֹד אַחֵר", fig: { type: "atom" }, exp: ["מִסְפַּר הַפְּרוֹטוֹנִים קוֹבֵעַ אֶת הַיְסוֹד — פְּרוֹטוֹן נוֹסָף = יְסוֹד חָדָשׁ."] },
+  { level: 1, q: "רֹב הָאָטוֹם הוּא בְּעֶצֶם...", choices: ["מָקוֹם רֵיק", "בַּרְזֶל", "מַיִם"], a: "מָקוֹם רֵיק", exp: ["הַגַּרְעִין זָעִיר וְהָאֶלֶקְטְרוֹנִים רְחוֹקִים — בֵּינֵיהֶם הַרְבֵּה רֵיק."] },
+  { level: 1, q: "מָה מוֹשֵׁךְ אֶת הָאֶלֶקְטְרוֹנִים אֶל הַגַּרְעִין?", choices: ["הַמְּשִׁיכָה הַחַשְׁמַלִּית", "דֶּבֶק", "כְּבִידָה"], a: "הַמְּשִׁיכָה הַחַשְׁמַלִּית", exp: ["מִטְעָן מִינוּס נִמְשָׁךְ לְמִטְעָן פְּלוּס — לָכֵן הָאֶלֶקְטְרוֹן נִשְׁאָר לְיַד הַגַּרְעִין."] },
+  { level: 2, q: "אָטוֹם עִם 2 פְּרוֹטוֹנִים הוּא...", choices: ["הֶלְיוּם", "מֵימָן", "פַּחְמָן"], a: "הֶלְיוּם", exp: ["2 פְּרוֹטוֹנִים = הֶלְיוּם (הַיְסוֹד שֶׁמְּמַלֵּא בָּלוֹנִים)."] },
+  { level: 2, q: "הַמִּלָּה 'אָטוֹם' בְּיָוָנִית עַתִּיקָה אוֹמֶרֶת...", choices: ["'שֶׁאִי אֶפְשָׁר לַחְלֹק'", "'קָטָן'", "'עָגֹל'"], a: "'שֶׁאִי אֶפְשָׁר לַחְלֹק'", exp: ["פַּעַם חָשְׁבוּ שֶׁהָאָטוֹם הוּא הֲכִי קָטָן — הַיּוֹם יוֹדְעִים שֶׁיֵּשׁ בּוֹ עוֹד חֲלָקִיקִים."] }
+);
+QUARK_Q.push(
+  { level: 0, q: "כַּמָּה קְווַרְקִים יֵשׁ בְּנֵייטְרוֹן?", choices: ["3", "2", "1"], a: "3", fig: { type: "quarks", kind: "neutron" }, exp: ["גַּם הַנֵּייטְרוֹן בָּנוּי מִ-3 קְווַרְקִים (↑↓↓)."] },
+  { level: 1, q: "אֵיזֶה קְווַרְק מוֹפִיעַ פַּעֲמַיִם בַּפְּרוֹטוֹן?", choices: ["מַעְלָה", "מַטָּה", "קֶסֶם"], a: "מַעְלָה", fig: { type: "quarks", kind: "proton" }, exp: ["פְּרוֹטוֹן = מַעְלָה + מַעְלָה + מַטָּה."] },
+  { level: 1, q: "הַגְּלוּאוֹנִים הֵם כְּמוֹ...", choices: ["דֶּבֶק שֶׁמְּחַבֵּר קְווַרְקִים", "אֶלֶקְטְרוֹנִים", "אוֹר"], a: "דֶּבֶק שֶׁמְּחַבֵּר קְווַרְקִים", exp: ["'גְּלוּ' בְּאַנְגְּלִית = דֶּבֶק. הַגְּלוּאוֹנִים מַחֲזִיקִים אֶת הַקְּווַרְקִים."] },
+  { level: 1, q: "מָה קָטָן יוֹתֵר?", choices: ["קְווַרְק", "פְּרוֹטוֹן", "אָטוֹם"], a: "קְווַרְק", exp: ["קְווַרְק < פְּרוֹטוֹן < אָטוֹם. הַקְּווַרְק זָעִיר בְּיוֹתֵר."] },
+  { level: 2, q: "מִמָּה בָּנוּי כִּמְעַט כָּל מָה שֶׁאֲנַחְנוּ רוֹאִים?", choices: ["קְווַרְקִים וְאֶלֶקְטְרוֹנִים", "רַק אוֹר", "רַק מַיִם"], a: "קְווַרְקִים וְאֶלֶקְטְרוֹנִים", exp: ["הַחֹמֶר הָרָגִיל בָּנוּי מִקְּווַרְקִים (בַּגַּרְעִין) וְאֶלֶקְטְרוֹנִים סְבִיבוֹ."] }
+);
+FIELD_Q.push(
+  { level: 0, q: "הַכְּבִידָה מוֹשֶׁכֶת אוֹתָנוּ...", choices: ["לְמַטָּה, אֶל הָאֲדָמָה", "לְמַעְלָה", "הַצִּדָּה"], a: "לְמַטָּה, אֶל הָאֲדָמָה", exp: ["שְׂדֵה הַכְּבִידָה שֶׁל כַּדּוּר הָאָרֶץ מוֹשֵׁךְ אוֹתָנוּ לְמַטָּה."] },
+  { level: 1, q: "שְׁנֵי מַגְנֵטִים עִם אוֹתוֹ קֹטֶב (N-N)...", choices: ["דּוֹחִים זֶה אֶת זֶה", "נִדְבָּקִים חָזָק", "לֹא מַרְגִּישִׁים"], a: "דּוֹחִים זֶה אֶת זֶה", fig: { type: "magnet" }, exp: ["קְטָבִים זֵהִים דּוֹחִים, קְטָבִים שׁוֹנִים נִמְשָׁכִים."] },
+  { level: 1, q: "מָה עוֹבֵר דֶּרֶךְ שָׂדֶה מַגְנֵטִי?", choices: ["כֹּחַ, גַּם בְּלִי מַגָּע", "מַיִם", "רַק קוֹל"], a: "כֹּחַ, גַּם בְּלִי מַגָּע", exp: ["הַשָּׂדֶה מַעֲבִיר אֶת הַכֹּחַ בֵּין הַמַּגְנֵטִים בְּלִי שֶׁיִּגְּעוּ."] },
+  { level: 2, q: "אוֹר הוּא גַּל בַּשָּׂדֶה...", choices: ["הָאֶלֶקְטְרוֹמַגְנֵטִי", "שֶׁל הַכְּבִידָה", "שֶׁל הַקּוֹל"], a: "הָאֶלֶקְטְרוֹמַגְנֵטִי", exp: ["פוֹטוֹן = אַדְוָה בַּשָּׂדֶה הָאֶלֶקְטְרוֹמַגְנֵטִי."] },
+  { level: 2, q: "אֵיפֹה יֵשׁ שָׂדוֹת?", choices: ["בְּכָל מָקוֹם בַּמֶּרְחָב", "רַק בְּמַגְנֵטִים", "רַק בֶּחָלָל"], a: "בְּכָל מָקוֹם בַּמֶּרְחָב", exp: ["הַשָּׂדוֹת מְמַלְּאִים אֶת כָּל הַמֶּרְחָב, גַּם אִם לֹא רוֹאִים אוֹתָם."] }
+);
+MORE_Q.push(
+  { level: 0, q: "כַּמָּה מָסָה יֵשׁ לְפוֹטוֹן (חֶלְקִיק הָאוֹר)?", choices: ["אֵין לוֹ מָסָה", "הַרְבֵּה מָסָה", "קְצָת מָסָה"], a: "אֵין לוֹ מָסָה", exp: ["לַפוֹטוֹן אֵין מָסָה — לָכֵן הוּא נָע בִּמְהִירוּת הָאוֹר."] },
+  { level: 1, q: "מָה עוֹבֵר דֶּרֶךְ הַגּוּף שֶׁלָּנוּ כָּל הַזְּמַן בְּלִי שֶׁנַּרְגִּישׁ?", choices: ["נֵייטְרִינוֹ", "פְּרוֹטוֹן", "אֶבֶן"], a: "נֵייטְרִינוֹ", exp: ["מִילְיוֹנֵי נֵייטְרִינוֹ מֵהַשֶּׁמֶשׁ עוֹבְרִים דַּרְכֵּנוּ כָּל שְׁנִיָּה."] },
+  { level: 1, q: "הַתְּאוֹם הַנֶּגְדִּי שֶׁל הַחֹמֶר נִקְרָא...", choices: ["אַנְטִי-חֹמֶר", "עַל-חֹמֶר", "תַּת-חֹמֶר"], a: "אַנְטִי-חֹמֶר", exp: ["לְכָל חֶלְקִיק יֵשׁ אַנְטִי-חֶלְקִיק עִם מִטְעָן הָפוּךְ."] },
+  { level: 2, q: "מָה הֲכִי מָהִיר בַּיְּקוּם?", choices: ["הָאוֹר", "מָטוֹס סִילוֹן", "הַקּוֹל"], a: "הָאוֹר", exp: ["שׁוּם דָּבָר לֹא נָע מָהֵר יוֹתֵר מֵהָאוֹר."] },
+  { level: 0, q: "הַשֶּׁמֶשׁ שׁוֹלַחַת אֵלֵינוּ בְּעִקָּר...", choices: ["אוֹר וְחֹם", "אֲבָנִים", "מַיִם"], a: "אוֹר וְחֹם", exp: ["אֶנֶרְגְיָה מֵהַשֶּׁמֶשׁ מַגִּיעָה כְּאוֹר וְחֹם (פוֹטוֹנִים)."] }
+);
+
+/* מאגר מדע מאוחד + עריכת/פסילת שאלות (מסך הורה). מפתחות נפרדים — לא נוגעים ב-livenotes_/ln_ */
+const SCI_TOPIC_LABEL = { atom: "הָאָטוֹם", quark: "קְווַרְקִים", field: "שָׂדוֹת", more: "חֲלָקִיקִים נוֹסָפִים" };
+const SCI_BANK = [];
+[["atom", ATOM_Q], ["quark", QUARK_Q], ["field", FIELD_Q], ["more", MORE_Q]].forEach(([k, pool]) => {
+  pool.forEach((q, i) => SCI_BANK.push({ ...q, id: k + "-" + i, topic: k }));
+});
+const SCI_EDITS_KEY = "mathlab_sci_edits_v1", SCI_OFF_KEY = "mathlab_sci_off_v1";
+function readSci(key, def) { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : def; } catch (_) { return def; } }
+function writeSci(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (_) {} }
+/* מחילים עריכות הורה על שאלה */
+function sciEffective(q, edits) {
+  const e = edits && edits[q.id];
+  if (!e) return q;
+  return { ...q, q: e.q != null ? e.q : q.q, exp: e.exp != null ? e.exp : q.exp };
+}
+/* מאגר פעיל: מסננים שאלות שנפסלו, מחילים עריכות, ואופציונלית מסננים לפי נושא */
+function sciActiveBank(topic) {
+  const off = readSci(SCI_OFF_KEY, []);
+  const edits = readSci(SCI_EDITS_KEY, {});
+  return SCI_BANK.filter((q) => off.indexOf(q.id) < 0 && (!topic || q.topic === topic)).map((q) => sciEffective(q, edits));
+}
+
 /* מאגר שאלות סופי — משתמשים בכל המאגר בכל רמה (גיוון מלא; המסע הוא ציר תרגול) */
 const genFromPool = (pool) => () => qProblem(pick(pool));
 const genAtom = genFromPool(ATOM_Q);
@@ -1519,7 +1573,176 @@ function DrillCard({ title, sub, color, icon, onClick, isTablet }) {
   );
 }
 
-function Explorer({ course, sp, isTablet, onBack }) {
+/* חידון מדע — שאלות משתנות, המשך רציף בלי מגבלת התקדמות */
+function QuizPanel({ topic, accent, isTablet, onScore }) {
+  const bank = sciActiveBank(topic);
+  const draw = (prevId) => {
+    if (!bank.length) return null;
+    let q = pick(bank);
+    for (let i = 0; i < 20 && bank.length > 1 && q.id === prevId; i++) q = pick(bank);
+    return { ...q, choices: shuffle(q.choices.slice()) };
+  };
+  const [q, setQ] = useState(() => draw(null));
+  const [chosen, setChosen] = useState(null);
+  const [stat, setStat] = useState({ n: 0, ok: 0 });
+  if (!q) return (
+    <div style={{ maxWidth: 560, margin: "20px auto", textAlign: "center", color: "#9ca3af", fontSize: isTablet ? 18 : 15 }}>
+      אֵין כָּעֵת שְׁאֵלוֹת זְמִינוֹת. אֶפְשָׁר לְהַחֲזִיר שְׁאֵלוֹת בְּמָסָךְ הַהוֹרִים.
+    </div>
+  );
+  const answered = chosen != null;
+  const choose = (c) => {
+    if (answered) return;
+    const good = c === q.a;
+    setChosen(c);
+    setStat((s) => ({ n: s.n + 1, ok: s.ok + (good ? 1 : 0) }));
+    if (good && onScore) onScore(true);
+  };
+  const next = () => { setChosen(null); setQ(draw(q.id)); };
+  return (
+    <div style={{ maxWidth: 620, margin: "0 auto" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
+        <h2 style={{ fontFamily: "'Rubik', sans-serif", fontSize: isTablet ? 30 : 24, margin: 0, color: "#1f2937" }}>חִידוֹן הַחֹמֶר</h2>
+        <span style={{ background: `${accent}18`, color: accent, borderRadius: 12, padding: "4px 12px", fontSize: isTablet ? 14 : 12, fontWeight: 800 }}>{SCI_TOPIC_LABEL[q.topic]}</span>
+      </div>
+      <div style={{ textAlign: "center", color: "#9ca3af", fontSize: isTablet ? 14 : 12, marginBottom: 14 }}>עָנִית {stat.n} · נָכוֹן {stat.ok} · מַמְשִׁיכִים כְּכָל שֶׁרוֹצִים 🌱</div>
+      <div style={{ background: "#fff", borderRadius: 22, boxShadow: "0 8px 22px rgba(2,6,23,0.06)", padding: isTablet ? "22px 24px" : "18px 16px" }}>
+        {q.fig && <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><Figure fig={q.fig} color={accent} /></div>}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 8, marginBottom: 16 }}>
+          <div style={{ fontSize: isTablet ? 22 : 18, fontWeight: 800, color: "#1f2937", textAlign: "center", lineHeight: 1.5 }}>{q.q}</div>
+          <ExpSpeak text={q.q} color={accent} size={isTablet ? 38 : 32} />
+        </div>
+        <div style={{ display: "grid", gap: 10 }}>
+          {q.choices.map((c, i) => {
+            let bg = "#fff", bd = "#e5e7eb", col = "#1f2937";
+            if (answered) {
+              if (c === q.a) { bg = "#f6ffed"; bd = "#52c41a"; col = "#389e0d"; }
+              else if (c === chosen) { bg = "#fff1f0"; bd = "#ff4d4f"; col = "#cf1322"; }
+            }
+            return (
+              <button key={i} onClick={() => choose(c)} disabled={answered}
+                style={{ fontFamily: "inherit", cursor: answered ? "default" : "pointer", border: `2px solid ${bd}`, background: bg, color: col,
+                  borderRadius: 14, padding: isTablet ? "14px 16px" : "12px 14px", fontSize: isTablet ? 19 : 16, fontWeight: 700, textAlign: "center",
+                  touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}>
+                {c}{answered && c === q.a ? " ✓" : ""}
+              </button>
+            );
+          })}
+        </div>
+        {answered && (
+          <div style={{ marginTop: 16, background: "#fafafa", borderRadius: 14, padding: isTablet ? "14px 16px" : "12px 14px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <span style={{ fontSize: isTablet ? 16 : 14, fontWeight: 800, color: chosen === q.a ? "#389e0d" : "#cf1322" }}>{chosen === q.a ? "כָּל הַכָּבוֹד! ✓" : "כִּמְעַט — הִנֵּה הַהֶסְבֵּר:"}</span>
+              <ExpSpeak text={(q.exp || []).join(". ")} color={accent} size={isTablet ? 34 : 30} />
+            </div>
+            {(q.exp || []).map((ln, i) => <div key={i} style={{ fontSize: isTablet ? 17 : 15, color: "#1f2937", lineHeight: 1.5, marginTop: 2 }}>{ln}</div>)}
+          </div>
+        )}
+      </div>
+      {answered && (
+        <div style={{ textAlign: "center", marginTop: 18 }}>
+          <button onClick={next} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 16, padding: isTablet ? "14px 30px" : "12px 24px", fontSize: isTablet ? 19 : 16, fontWeight: 800, background: accent, color: "#fff", boxShadow: "0 6px 16px rgba(2,6,23,0.15)", display: "inline-flex", alignItems: "center", gap: 8 }}>שְׁאֵלָה הַבָּאָה ←</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* מסך הורה — תיקון או פסילת שאלות מדע (עם שער כפל פשוט) */
+function SciParent({ accent, isTablet, onBack }) {
+  const [pq] = useState(() => ({ a: ri(3, 9), b: ri(3, 9) }));
+  const [gate, setGate] = useState("");
+  const [ok, setOk] = useState(false);
+  const [off, setOff] = useState(() => readSci(SCI_OFF_KEY, []));
+  const [edits, setEdits] = useState(() => readSci(SCI_EDITS_KEY, {}));
+  const [editId, setEditId] = useState(null);
+  const [fq, setFq] = useState("");
+  const [fexp, setFexp] = useState("");
+
+  const saveOff = (arr) => { setOff(arr); writeSci(SCI_OFF_KEY, arr); };
+  const saveEdits = (obj) => { setEdits(obj); writeSci(SCI_EDITS_KEY, obj); };
+  const toggleOff = (id) => { const has = off.indexOf(id) >= 0; saveOff(has ? off.filter((x) => x !== id) : off.concat([id])); };
+  const startEdit = (q) => { const eff = sciEffective(q, edits); setEditId(q.id); setFq(eff.q); setFexp((eff.exp || []).join("\n")); };
+  const saveEdit = () => {
+    const base = SCI_BANK.find((x) => x.id === editId);
+    const next = { ...edits };
+    const nq = fq.trim(), nexp = fexp.split("\n").map((s) => s.trim()).filter(Boolean);
+    const o = {};
+    if (nq && nq !== base.q) o.q = nq;
+    if (nexp.length && JSON.stringify(nexp) !== JSON.stringify(base.exp || [])) o.exp = nexp;
+    if (Object.keys(o).length) next[editId] = o; else delete next[editId];
+    saveEdits(next); setEditId(null);
+  };
+  const resetEdit = (id) => { const next = { ...edits }; delete next[id]; saveEdits(next); if (editId === id) setEditId(null); };
+
+  if (!ok) {
+    return (
+      <div style={{ maxWidth: 420, margin: "10px auto", textAlign: "center" }}>
+        <button onClick={onBack} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "transparent", color: "#6b7280", fontSize: isTablet ? 18 : 16, fontWeight: 700, padding: 5, display: "block", marginBottom: 14 }}>→ חֲזָרָה</button>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}><Icon name="user" size={44} color={accent} /></div>
+        <h2 style={{ fontFamily: "'Rubik', sans-serif", fontSize: isTablet ? 28 : 23, color: "#1f2937", margin: "0 0 6px" }}>אֵזוֹר הוֹרִים</h2>
+        <p style={{ color: "#6b7280", fontSize: isTablet ? 17 : 15, margin: "0 0 16px" }}>כְּדֵי לְהִכָּנֵס, פִּתְרוּ: <b dir="ltr">{pq.a} × {pq.b}</b></p>
+        <input value={gate} onChange={(e) => setGate(e.target.value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => { if (e.key === "Enter" && Number(gate) === pq.a * pq.b) setOk(true); }} inputMode="numeric" placeholder="תְּשׁוּבָה" style={{ fontFamily: "inherit", fontSize: 20, padding: "12px 14px", borderRadius: 14, border: "2px solid #e5e7eb", outline: "none", textAlign: "center", width: 140 }} />
+        <div style={{ marginTop: 14 }}>
+          <button onClick={() => { if (Number(gate) === pq.a * pq.b) setOk(true); else setGate(""); }} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 14, padding: "12px 26px", fontSize: 18, fontWeight: 800, background: accent, color: "#fff" }}>כְּנִיסָה</button>
+        </div>
+      </div>
+    );
+  }
+
+  const groups = [["atom", ATOM_Q], ["quark", QUARK_Q], ["field", FIELD_Q], ["more", MORE_Q]];
+  return (
+    <div style={{ maxWidth: 680, margin: "0 auto" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        <button onClick={onBack} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "transparent", color: "#6b7280", fontSize: isTablet ? 18 : 16, fontWeight: 700, padding: 5 }}>→ חֲזָרָה</button>
+      </div>
+      <h2 style={{ fontFamily: "'Rubik', sans-serif", fontSize: isTablet ? 28 : 23, color: "#1f2937", textAlign: "center", margin: "0 0 4px" }}>עֲרִיכַת שְׁאֵלוֹת הַמַּדָּע</h2>
+      <p style={{ color: "#6b7280", fontSize: isTablet ? 15 : 13, textAlign: "center", margin: "0 0 18px" }}>אֶפְשָׁר לְתַקֵּן נֻסַּח שֶׁל שְׁאֵלָה, אוֹ לִפְסֹל שְׁאֵלָה כָּךְ שֶׁלֹּא תּוֹפִיעַ בַּחִידוֹן.</p>
+      {groups.map(([k, pool]) => (
+        <div key={k} style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: isTablet ? 16 : 14, fontWeight: 800, color: accent, marginBottom: 8 }}>{SCI_TOPIC_LABEL[k]} ({pool.length})</div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {pool.map((q0, i) => {
+              const id = k + "-" + i;
+              const q = sciEffective(SCI_BANK.find((x) => x.id === id), edits);
+              const isOff = off.indexOf(id) >= 0;
+              const isEd = edits[id] != null;
+              const editing = editId === id;
+              return (
+                <div key={id} style={{ background: "#fff", borderRadius: 14, border: `1px solid ${isOff ? "#ffccc7" : "#eef2f7"}`, padding: isTablet ? "12px 14px" : "10px 12px", opacity: isOff ? 0.6 : 1 }}>
+                  {!editing ? (
+                    <div>
+                      <div style={{ fontSize: isTablet ? 16 : 14, fontWeight: 700, color: "#1f2937", lineHeight: 1.5 }}>{q.q} {isEd && <span style={{ color: "#faad14", fontSize: 12 }}>(תֻּקַּן)</span>}</div>
+                      <div style={{ fontSize: isTablet ? 13 : 12, color: "#9ca3af", marginTop: 3 }}>תְּשׁוּבָה: {q.a}</div>
+                      <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                        <button onClick={() => startEdit(SCI_BANK.find((x) => x.id === id))} style={{ fontFamily: "inherit", cursor: "pointer", border: "1px solid #e5e7eb", background: "#fff", color: "#1f2937", borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 700 }}>תַּקֵּן</button>
+                        <button onClick={() => toggleOff(id)} style={{ fontFamily: "inherit", cursor: "pointer", border: "1px solid #e5e7eb", background: isOff ? "#f6ffed" : "#fff1f0", color: isOff ? "#389e0d" : "#cf1322", borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 700 }}>{isOff ? "הַחֲזֵר" : "פְּסֹל"}</button>
+                        {isEd && <button onClick={() => resetEdit(id)} style={{ fontFamily: "inherit", cursor: "pointer", border: "1px solid #e5e7eb", background: "#fff", color: "#9ca3af", borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 700 }}>בַּטֵּל תִּקּוּן</button>}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280" }}>נֻסַּח הַשְּׁאֵלָה</label>
+                      <textarea value={fq} onChange={(e) => setFq(e.target.value)} dir="rtl" rows={2} style={{ width: "100%", boxSizing: "border-box", fontFamily: "inherit", fontSize: 15, padding: "8px 10px", borderRadius: 10, border: "2px solid #e5e7eb", outline: "none", margin: "4px 0 10px", resize: "vertical" }} />
+                      <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280" }}>הֶסְבֵּר (שׁוּרָה לְכָל מִשְׁפָּט)</label>
+                      <textarea value={fexp} onChange={(e) => setFexp(e.target.value)} dir="rtl" rows={3} style={{ width: "100%", boxSizing: "border-box", fontFamily: "inherit", fontSize: 15, padding: "8px 10px", borderRadius: 10, border: "2px solid #e5e7eb", outline: "none", margin: "4px 0 10px", resize: "vertical" }} />
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={saveEdit} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: accent, color: "#fff", borderRadius: 10, padding: "8px 18px", fontSize: 14, fontWeight: 800 }}>שְׁמֹר</button>
+                        <button onClick={() => setEditId(null)} style={{ fontFamily: "inherit", cursor: "pointer", border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280", borderRadius: 10, padding: "8px 18px", fontSize: 14, fontWeight: 700 }}>בַּטֵּל</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Explorer({ course, sp, isTablet, onBack, onScore }) {
   const [stack, setStack] = useState([{ view: "table" }]);
   const view = stack[stack.length - 1];
   const push = (v) => setStack((s) => s.concat([v]));
@@ -1538,6 +1761,8 @@ function Explorer({ course, sp, isTablet, onBack }) {
     if (v.view === "lepton") return "אֶלֶקְטְרוֹן";
     if (v.view === "force") return "הַכּוֹחַ הֶחָזָק";
     if (v.view === "field") return "שָׂדֶה";
+    if (v.view === "quiz") return "חִידוֹן";
+    if (v.view === "parent") return "הוֹרִים";
     return "";
   };
 
@@ -1585,6 +1810,7 @@ function Explorer({ course, sp, isTablet, onBack }) {
       <div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
           <button onClick={onBack} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "transparent", color: "#6b7280", fontSize: isTablet ? 18 : 16, fontWeight: 700, padding: 5 }}>→ חֲזָרָה</button>
+          <button onClick={() => push({ view: "parent" })} style={{ fontFamily: "inherit", cursor: "pointer", border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280", borderRadius: 12, padding: isTablet ? "6px 12px" : "5px 10px", fontSize: isTablet ? 14 : 12, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 5 }}><Icon name="user" size={14} color="#9ca3af" /> הוֹרִים</button>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
           <h2 style={{ fontFamily: "'Rubik', sans-serif", fontSize: isTablet ? 32 : 24, margin: 0, color: "#1f2937", textAlign: "center" }}>הַטַּבְלָה הַמַּחְזוֹרִית</h2>
@@ -1621,6 +1847,10 @@ function Explorer({ course, sp, isTablet, onBack }) {
               <span style={{ width: 12, height: 12, borderRadius: 4, background: EL_CAT[k].color }} />{EL_CAT[k].name}
             </span>
           ))}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 22 }}>
+          <button onClick={() => push({ view: "quiz" })} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", borderRadius: 16, padding: isTablet ? "14px 26px" : "12px 20px", fontSize: isTablet ? 19 : 16, fontWeight: 800, background: accent, color: "#fff", boxShadow: "0 6px 16px rgba(2,6,23,0.15)", display: "inline-flex", alignItems: "center", gap: 8 }}><Icon name="bulb" size={isTablet ? 20 : 18} color="#fff" /> בְּחָנִי אֶת עַצְמֵךְ</button>
+          <div style={{ fontSize: isTablet ? 13 : 11, color: "#9ca3af", marginTop: 6 }}>שְׁאֵלוֹת מִשְׁתַּנּוֹת עַל אָטוֹם · קְווַרְקִים · שָׂדוֹת — בְּלִי מַגְבָּלוֹת</div>
         </div>
       </div>
     );
@@ -1800,6 +2030,23 @@ function Explorer({ course, sp, isTablet, onBack }) {
         </div>
       </div>
     );
+  }
+
+  /* ---------- חידון (רציף, בלי מגבלת התקדמות) ---------- */
+  else if (view.view === "quiz") {
+    body = (
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <button onClick={pop} style={{ fontFamily: "inherit", cursor: "pointer", border: "none", background: "transparent", color: "#6b7280", fontSize: isTablet ? 18 : 16, fontWeight: 700, padding: 5 }}>→ חֲזָרָה</button>
+        </div>
+        <QuizPanel topic={view.topic} accent={accent} isTablet={isTablet} onScore={onScore} />
+      </div>
+    );
+  }
+
+  /* ---------- מסך הורה: תיקון / פסילת שאלות ---------- */
+  else if (view.view === "parent") {
+    body = <SciParent accent={accent} isTablet={isTablet} onBack={pop} />;
   }
 
   return <Shell {...sp}>{body}</Shell>;
@@ -2311,6 +2558,14 @@ function App() {
     setPlayers(np); persist(np, current);
     if (bumped) { setLeveledUp(true); setLevel(syntheticLevel(lvlNow, levelLabel(topic, lvlNow))); }
   }
+  // ניקוד לחידון החוקר — כוכבים בלבד, בלי רמות/מגבלות
+  function scoreOnly(ok) {
+    if (!ok) return;
+    const c = players[current] || blankP();
+    const nx = { ...c, stars: c.stars + 1, solved: c.solved + 1 };
+    const np = { ...players, [current]: nx };
+    setPlayers(np); persist(np, current);
+  }
   function resetQ() { setInput(""); setFeedback(null); setShowHint(false); setShowSol(false); setLeveledUp(false); }
   function startProblem(t, lvl) { setProblem(genFresh(t, lvl)); resetQ(); }
 
@@ -2370,7 +2625,7 @@ function App() {
   if (!course) return <WorkbookSelect courses={COURSES} onPick={setCourse} onBack={switchPlayer} />;
   const courseObj = COURSES.find((c) => c.id === course) || COURSES[0];
   const backToCourses = () => { setScreen("home"); setProblem(null); setCourse(null); setTopic(null); };
-  if (courseObj.mode === "explore") return <Explorer course={courseObj} sp={sp} isTablet={isTablet} onBack={backToCourses} />;
+  if (courseObj.mode === "explore") return <Explorer course={courseObj} sp={sp} isTablet={isTablet} onBack={backToCourses} onScore={scoreOnly} />;
   const courseTopics = courseObj.topics;
 
   /* ---------- בית ---------- */
