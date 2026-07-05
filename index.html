@@ -2494,6 +2494,7 @@ function App() {
   const [players, setPlayers] = useState({});
   const [current, setCurrent] = useState(null);
   const [course, setCourse] = useState(null);
+  const [deepCourse, setDeepCourse] = useState(() => { try { return new URLSearchParams(window.location.search).get("course"); } catch (e) { return null; } });
   const [loaded, setLoaded] = useState(false);
   const [leveledUp, setLeveledUp] = useState(false);
   const [parentOk, setParentOk] = useState(false);
@@ -2528,6 +2529,13 @@ function App() {
     }
     setLoaded(true);
   }, []);
+
+  // deep-link: ?course=<id> פותח ישירות את הקורס המבוקש ברגע שיש שחקנית פעילה
+  useEffect(() => {
+    if (loaded && current && deepCourse && COURSES.some((c) => c.id === deepCourse)) {
+      setCourse(deepCourse); setScreen("home"); setDeepCourse(null);
+    }
+  }, [loaded, current, deepCourse]);
 
   const cur = (current && players[current]) || blankP();
   const stars = cur.stars, streak = cur.streak, solved = cur.solved;
