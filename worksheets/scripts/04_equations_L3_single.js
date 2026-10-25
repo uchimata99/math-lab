@@ -23,8 +23,8 @@ body { font-family:'DejaVu Sans',Arial,sans-serif; direction:rtl; color:#2b2f42;
 .pill { font-size:12px; color:#3a3f5a; background:#eef0f7; border:1px solid #e2e5f0; padding:3px 12px; border-radius:20px; font-weight:bold; }
 .title h1 { font-size:27px; margin:0 0 2px; color:#21243a; font-weight:800; }
 .title .sub { font-size:13px; color:#8a8fa5; margin-bottom:12px; }
-.cards { flex:1; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:20px; min-height:0; }
-.card { position:relative; border:1px solid #e7e9f1; border-radius:16px; background:#fff; box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; }
+.cards { flex:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-auto-rows:1fr; gap:20px; min-height:0; }
+.card { position:relative; border:1px solid #e7e9f1; border-radius:16px; background:#fff; box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; min-width:0; overflow:hidden; }
 .badge { position:absolute; top:12px; right:14px; width:26px; height:26px; border-radius:50%; background:#eef0f5; color:#9aa0b5; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:center; }
 .prompt { text-align:center; font-size:23px; padding:8px 30px 4px; }
 .two-prompt { text-align:center; font-size:22px; padding:6px 30px 4px; line-height:1.7; }
@@ -48,13 +48,20 @@ function card(it,n){
   return `<div class="card"><div class="badge">${n}</div>${inner}</div>`;
 }
 
-const cards = items.map((it,i)=>card(it,i+1)).join('');
-fs.writeFileSync(`${OUT}/07-equations-L3.html`, `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>משוואות בנעלם — רמה ${LEVEL}</title><style>${CSS}</style></head><body>
+// פיצול: נעלם אחד 4 כרטיסים (2 טורים) · שני נעלמים 2 כרטיסים (טור יחיד)
+const GRID=c=>c===1?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)';
+function sheet(file,sub,list,cols,offset){
+  const cards=list.map((it,i)=>card(it,offset+i+1)).join('');
+  fs.writeFileSync(`${OUT}/${file}`, `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>משוואות בנעלם — רמה ${LEVEL}</title><style>${CSS}</style></head><body>
 <div class="topbar"><div class="brand">מַעְבְּדַת הַמִּסְפָּרִים • דַּף עֲבוֹדָה</div><div class="pill">רָמָה ${LEVEL} / ${LEVELS}</div></div>
-<div class="title"><h1>מִשְׁוָאוֹת בְּנֶעֱלָם — רָמָה ${LEVEL}</h1><div class="sub">נֶעֱלָם מִשְּׁנֵי הַצְּדָדִים, וּמַעֲרָכוֹת עִם שְׁנֵי מְקַדְּמִים</div></div>
-<div class="cards">${cards}</div>
+<div class="title"><h1>מִשְׁוָאוֹת בְּנֶעֱלָם — רָמָה ${LEVEL}</h1><div class="sub">${sub}</div></div>
+<div class="cards" style="grid-template-columns:${GRID(cols)}">${cards}</div>
 <div class="foot">מַעְבְּדַת הַמִּסְפָּרִים — דַּף עֲבוֹדָה לְהַדְפָּסָה</div>
 </body></html>`);
+}
+const ones=items.filter(it=>!it.two).slice(0,4), twos=items.filter(it=>it.two).slice(0,2);
+sheet('07-equations-L3.html','נֶעֱלָם מִשְּׁנֵי הַצְּדָדִים',ones,2,0);
+sheet('07-equations-L3-two.html','מַעֲרָכוֹת עִם שְׁנֵי מְקַדְּמִים',twos,1,ones.length);
 
 const kits = items.map((it,i)=>`<span class="kitem"><span class="num">${i+1})</span> ${it.key} → ${it.ans}</span>`).join('');
 fs.writeFileSync(`${OUT}/07-equations-L3-answers.html`, `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>מפתח — משוואות רמה ${LEVEL}</title><style>${CSS}</style></head><body>

@@ -60,8 +60,8 @@ body { font-family:'DejaVu Sans',Arial,sans-serif; direction:rtl; color:#2b2f42;
 .pill { font-size:12px; color:#3a3f5a; background:#eef0f7; border:1px solid #e2e5f0; padding:3px 12px; border-radius:20px; font-weight:bold; }
 .title h1 { font-size:26px; margin:0 0 2px; color:#21243a; font-weight:800; }
 .title .sub { font-size:13px; color:#8a8fa5; margin-bottom:12px; }
-.cards { flex:1; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:20px; min-height:0; }
-.card { position:relative; border:1px solid #e7e9f1; border-radius:16px; background:#fff; box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; }
+.cards { flex:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-auto-rows:1fr; gap:20px; min-height:0; }
+.card { position:relative; border:1px solid #e7e9f1; border-radius:16px; background:#fff; box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; min-width:0; overflow:hidden; }
 .badge { position:absolute; top:12px; right:14px; width:26px; height:26px; border-radius:50%; background:#eef0f5; color:#9aa0b5; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:center; }
 .prompt { text-align:center; font-size:23px; padding:8px 30px 4px; }
 .two-prompt { text-align:center; font-size:22px; padding:6px 30px 4px; line-height:1.7; }
@@ -84,11 +84,12 @@ function card(it,n){
     : `<div class="prompt"><span class="math">${it.prompt}</span></div><div class="workbox"></div><div class="solline"><span class="seg">x =<span class="dots"></span></span></div>`;
   return `<div class="card"><div class="badge">${n}</div>${inner}</div>`;
 }
-function page({pill,title,sub,items}){
+const GRID=c=>c===1?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)';
+function page({pill,title,sub,items,cols=2}){
   return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>${title}</title><style>${CSS}</style></head><body>
 <div class="topbar"><div class="brand">מַעְבְּדַת הַמִּסְפָּרִים • דַּף עֲבוֹדָה</div><div class="pill">${pill}</div></div>
 <div class="title"><h1>${title}</h1><div class="sub">${sub}</div></div>
-<div class="cards">${items.map((it,i)=>card(it,i+1)).join('')}</div>
+<div class="cards" style="grid-template-columns:${GRID(cols)}">${items.map((it,i)=>card(it,i+1)).join('')}</div>
 <div class="foot">מַעְבְּדַת הַמִּסְפָּרִים — דַּף עֲבוֹדָה לְהַדְפָּסָה</div>
 </body></html>`;
 }
@@ -106,24 +107,26 @@ function keyPage({title,sub,groups}){
 const seenOne=new Set(), seenTwo=new Set();
 const onePages=[], twoPages=[];
 for(let p=0;p<4;p++){
-  const its=Array.from({length:6},()=>genOne(seenOne));
+  const its=Array.from({length:4},()=>genOne(seenOne));          // 4 לעמוד — מרווח לפתרון
   onePages.push(its);
   fs.writeFileSync(`${OUT}/L3one-${p+1}.html`, page({pill:`רָמָה 3 / 10`, title:`מִשְׁוָאוֹת בְּנֶעֱלָם אֶחָד — רָמָה 3`, sub:`נֶעֱלָם מִשְּׁנֵי הַצְּדָדִים · עַמּוּד ${p+1} מִתּוֹךְ 4`, items:its}));
 }
 for(let p=0;p<4;p++){
-  const its=Array.from({length:6},()=>genTwo(seenTwo));
+  const its=Array.from({length:2},()=>genTwo(seenTwo));          // 2 לעמוד, טור יחיד — הכי הרבה מקום
   twoPages.push(its);
-  fs.writeFileSync(`${OUT}/L3two-${p+1}.html`, page({pill:`רָמָה 3 / 10`, title:`מִשְׁוָאוֹת בִּשְׁנֵי נֶעֱלָמִים — רָמָה 3`, sub:`מַעֲרָכוֹת עִם שְׁנֵי מְקַדְּמִים · עַמּוּד ${p+1} מִתּוֹךְ 4`, items:its}));
+  fs.writeFileSync(`${OUT}/L3two-${p+1}.html`, page({cols:1, pill:`רָמָה 3 / 10`, title:`מִשְׁוָאוֹת בִּשְׁנֵי נֶעֱלָמִים — רָמָה 3`, sub:`מַעֲרָכוֹת עִם שְׁנֵי מְקַדְּמִים · עַמּוּד ${p+1} מִתּוֹךְ 4`, items:its}));
 }
-fs.writeFileSync(`${OUT}/L4.html`, page({pill:`רָמָה 4 / 10`, title:`מִשְׁוָאוֹת בְּנֶעֱלָם — רָמָה 4`, sub:`נֶעֱלָם עִם סוֹגְרַיִם, וּמַעֲרָכוֹת שֶׁדּוֹרְשׁוֹת הַכְפָּלָה`, items:L4}));
+// רמה 4 — שני נעלמים (נעלם אחד ברמה 4 מופק במחולל 07)
+const L4two = L4.filter(it=>it.two);
+fs.writeFileSync(`${OUT}/L4.html`, page({cols:1, pill:`רָמָה 4 / 10`, title:`מִשְׁוָאוֹת בִּשְׁנֵי נֶעֱלָמִים — רָמָה 4`, sub:`מַעֲרָכוֹת שֶׁדּוֹרְשׁוֹת הַכְפָּלָה לִפְנֵי חִסּוּר`, items:L4two}));
 
 /* מפתחות */
 fs.writeFileSync(`${OUT}/key-L3one.html`, keyPage({title:'מַפְתֵּחַ פִּתְרוֹנוֹת', sub:'נֶעֱלָם אֶחָד — רָמָה 3',
   groups:onePages.map((its,p)=>({label:`עַמּוּד ${p+1}`, items:its.map(it=>`${it.key} → ${it.ans}`)}))}));
 fs.writeFileSync(`${OUT}/key-L3two.html`, keyPage({title:'מַפְתֵּחַ פִּתְרוֹנוֹת', sub:'שְׁנֵי נֶעֱלָמִים — רָמָה 3',
   groups:twoPages.map((its,p)=>({label:`עַמּוּד ${p+1}`, items:its.map(it=>`${it.key} → ${it.ans}`)}))}));
-fs.writeFileSync(`${OUT}/key-L4.html`, keyPage({title:'מַפְתֵּחַ פִּתְרוֹנוֹת', sub:'רָמָה 4',
-  groups:[{label:'רָמָה 4', items:L4.map(it=>`${it.key} → ${it.ans}`)}]}));
+fs.writeFileSync(`${OUT}/key-L4.html`, keyPage({title:'מַפְתֵּחַ פִּתְרוֹנוֹת', sub:'שְׁנֵי נֶעֱלָמִים — רָמָה 4',
+  groups:[{label:'רָמָה 4 · שְׁנֵי נֶעֱלָמִים', items:L4two.map(it=>`${it.key} → ${it.ans}`)}]}));
 
 console.log('נכתבו: L3one-1..4, L3two-1..4, L4, key-L3one, key-L3two, key-L4');
 

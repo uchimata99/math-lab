@@ -67,11 +67,11 @@ function card(it,n){
 fs.writeFileSync(`${OUT}/p8-frac-L4.html`, `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>שברים רמה 4</title><style>${CSS}</style></head><body>
 <div class="topbar"><div class="brand">מַעְבְּדַת הַמִּסְפָּרִים • דַּף עֲבוֹדָה</div><div class="pill">רָמָה 4 / 10</div></div>
 <div class="title"><h1>חִבּוּר וְחִסּוּר שְׁבָרִים — רָמָה 4</h1><div class="sub">מִסְפָּרִים מְעֹרָבִים עִם מְכַנִּים שׁוֹנִים — כִּתְבוּ שָׁלֵם בַּמִּשְׁבֶּצֶת וְשֶׁבֶר עַל הַקַּו</div></div>
-<div class="cards">${ITEMS.map((it,i)=>card(it,i+1)).join('')}</div>
+<div class="cards">${ITEMS.slice(0,4).map((it,i)=>card(it,i+1)).join('')}</div>
 <div class="foot">מַעְבְּדַת הַמִּסְפָּרִים — דַּף עֲבוֹדָה לְהַדְפָּסָה</div>
 </body></html>`);
 
-const kit=ITEMS.map((it,i)=>{const [w1,n1,d1,op,w2,n2,d2]=it;
+const kit=ITEMS.slice(0,4).map((it,i)=>{const [w1,n1,d1,op,w2,n2,d2]=it;
   return `<span class="kitem"><span class="num">${i+1})</span> ${mixed(w1,n1,d1)} ${op} ${mixed(w2,n2,d2)} = ${ansTxt(value(it))}</span>`;}).join('');
 fs.writeFileSync(`${OUT}/p8-frac-L4-answers.html`, `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>מפתח</title><style>${CSS}</style></head><body>
 <div class="topbar"><div class="brand">מַעְבְּדַת הַמִּסְפָּרִים • דַּף עֲבוֹדָה</div><div class="pill">לַהוֹרֶה</div></div>

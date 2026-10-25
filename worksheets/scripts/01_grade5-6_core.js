@@ -19,27 +19,29 @@ const sheets = [
   { file:'01-fractions.html', idx:1, type:'fraction',
     title:'חִבּוּר וְחִסּוּר שְׁבָרִים', sub:'מְכַנֶּה שָׁוֶה וּמְכַנִּים שׁוֹנִים',
     items:[
-      {a:[5,8],op:'+',b:[1,8]}, {a:[5,9],op:'+',b:[1,9]}, {a:[3,4],op:'+',b:[1,4]},
-      {a:[1,2],op:'+',b:[1,4]}, {a:[2,3],op:'-',b:[1,6]}, {a:[5,6],op:'-',b:[1,3]},
+      {a:[5,8],op:'+',b:[1,8]}, {a:[3,4],op:'+',b:[1,4]},
+      {a:[1,2],op:'+',b:[1,4]}, {a:[2,3],op:'-',b:[1,6]},
     ]},
   { file:'02-powers.html', idx:2, type:'power',
     title:'חֶזְקוֹת', sub:'חַשְּׁבוּ אֶת עֵרֶךְ הַחֶזְקָה',
     items:[
-      {expr:pw(2,3),val:8}, {expr:pw(5,2),val:25}, {expr:pw(10,2),val:100},
-      {expr:`${pw(2,4)} <span class="op">+</span> ${pw(3,2)}`,val:25},
-      {expr:pw(5,3),val:125},
+      {expr:pw(2,3),val:8}, {expr:pw(10,2),val:100}, {expr:pw(5,3),val:125},
       {expr:`${pw(3,3)} <span class="op">−</span> ${pw(2,4)}`,val:11},
     ]},
   { file:'03-factors.html', idx:3, type:'factor',
     title:'פֵּרוּק לְגוֹרְמִים', sub:'עַד 50 — כִּתְבוּ כְּמַכְפֶּלֶת גּוֹרְמִים רִאשׁוֹנִיִּים',
-    items:[ {n:12},{n:18},{n:20},{n:24},{n:28},{n:45} ]},
+    items:[ {n:12},{n:18},{n:24},{n:45} ]},
   { file:'04-equations.html', idx:4, type:'equation',
-    title:'מִשְׁוָאוֹת בְּנֶעֱלָם', sub:'מִצְאוּ אֶת הַנֶּעֱלָם',
+    title:'מִשְׁוָאוֹת בְּנֶעֱלָם', sub:'נֶעֱלָם אֶחָד — מִצְאוּ אֶת הַנֶּעֱלָם',
     items:[
       {prompt:`<span class="mono">5x</span> <span class="op">=</span> 20`, key:'5x = 20', ans:'x = 4'},
       {prompt:`x <span class="op">+</span> 7 <span class="op">=</span> 15`, key:'x + 7 = 15', ans:'x = 8'},
       {prompt:`12 <span class="op">−</span> x <span class="op">=</span> 5`, key:'12 − x = 5', ans:'x = 7'},
       {prompt:`${frac('x',3)} <span class="op">=</span> 4`, key:'x/3 = 4', ans:'x = 12'},
+    ]},
+  { file:'05-equations-two.html', idx:5, type:'equation', cols:1,
+    title:'מִשְׁוָאוֹת בִּשְׁנֵי נֶעֱלָמִים', sub:'מִצְאוּ אֶת x וְאֶת y',
+    items:[
       {two:true, lines:['x <span class="op">+</span> y <span class="op">=</span> 10','x <span class="op">−</span> y <span class="op">=</span> 4'], key:'x+y=10, x−y=4', ans:'x = 7 , y = 3'},
       {two:true, lines:['x <span class="op">+</span> y <span class="op">=</span> 9','x <span class="op">−</span> y <span class="op">=</span> 1'], key:'x+y=9, x−y=1', ans:'x = 5 , y = 4'},
     ]},
@@ -70,9 +72,9 @@ body { font-family:'DejaVu Sans',Arial,sans-serif; direction:rtl; color:#2b2f42;
   padding:3px 12px; border-radius:20px; font-weight:bold; }
 .title h1 { font-size:27px; margin:0 0 2px; color:#21243a; font-weight:800; }
 .title .sub { font-size:13px; color:#8a8fa5; margin-bottom:12px; }
-.cards { flex:1; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:20px; min-height:0; }
+.cards { flex:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-auto-rows:1fr; gap:20px; min-height:0; }
 .card { position:relative; border:1px solid #e7e9f1; border-radius:16px; background:#fff;
-  box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; }
+  box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; min-width:0; overflow:hidden; }
 .badge { position:absolute; top:12px; right:14px; width:26px; height:26px; border-radius:50%;
   background:#eef0f5; color:#9aa0b5; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:center; }
 .prompt { text-align:center; font-size:24px; padding:8px 30px 4px; }
@@ -145,7 +147,7 @@ function renderSheet(sheet, total){
   return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>${sheet.title}</title><style>${CSS}</style></head><body>
 <div class="topbar"><div class="brand">מַעְבְּדַת הַמִּסְפָּרִים • דַּף עֲבוֹדָה</div><div class="pill">דַּף ${sheet.idx} / ${total}</div></div>
 <div class="title"><h1>${sheet.title}</h1><div class="sub">${sheet.sub}</div></div>
-<div class="cards">${cards}</div>
+<div class="cards" style="grid-template-columns:${sheet.cols===1?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)'}">${cards}</div>
 <div class="foot">מַעְבְּדַת הַמִּסְפָּרִים — דַּף עֲבוֹדָה לְהַדְפָּסָה</div>
 </body></html>`;
 }
@@ -175,7 +177,7 @@ function renderAnswers(){
 /* ---------- הפקה ---------- */
 const total=sheets.length;
 sheets.forEach(sh=>{ fs.writeFileSync(`${OUT}/${sh.file}`, renderSheet(sh,total)); console.log(`${sh.file}: ${sh.items.length} כרטיסים`); });
-fs.writeFileSync(`${OUT}/05-answers.html`, renderAnswers());
+fs.writeFileSync(`${OUT}/06-answers.html`, renderAnswers());
 console.log('05-answers.html: מפתח פתרונות');
 // בדיקת שפיות תשובות
 sheets.forEach(sh=>sh.items.forEach((it,i)=>{const a=answerFor(sh,it);if(!a)console.log('חסר תשובה',sh.file,i+1);}));

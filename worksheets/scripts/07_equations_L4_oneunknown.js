@@ -28,7 +28,7 @@ function gen(){
   return {prompt:`${mono(a)}(x <span class="op">+</span> ${b}) <span class="op">=</span> ${dTerm} <span class="op">+</span> ${c}`, key:`${a}(x + ${b}) = ${dKey} + ${c}`, x};
 }
 const seen=new Set(), items=[]; let g=0;
-while(items.length<12 && g++<6000){ const it=gen(); if(!it) continue; if(seen.has(it.key)) continue; seen.add(it.key); items.push(it); }
+while(items.length<8 && g++<6000){ const it=gen(); if(!it) continue; if(seen.has(it.key)) continue; seen.add(it.key); items.push(it); }
 
 const CSS=`
 @page { size: A4; margin: 12mm 12mm 10mm; }
@@ -59,17 +59,17 @@ function page(pageItems,p){
   return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>משוואות רמה 4</title><style>${CSS}</style></head><body>
 <div class="topbar"><div class="brand">מַעְבְּדַת הַמִּסְפָּרִים • דַּף עֲבוֹדָה</div><div class="pill">רָמָה 4 / 10</div></div>
 <div class="title"><h1>מִשְׁוָאוֹת בְּנֶעֱלָם אֶחָד — רָמָה 4</h1><div class="sub">מִשְׁוָאוֹת עִם סוֹגְרַיִם · עַמּוּד ${p} מִתּוֹךְ 2</div></div>
-<div class="cards">${pageItems.map((it,i)=>card(it,(p-1)*6+i+1)).join('')}</div>
+<div class="cards">${pageItems.map((it,i)=>card(it,(p-1)*4+i+1)).join('')}</div>
 <div class="foot">מַעְבְּדַת הַמִּסְפָּרִים — דַּף עֲבוֹדָה לְהַדְפָּסָה</div>
 </body></html>`;
 }
-fs.writeFileSync(`${OUT}/p7-1.html`, page(items.slice(0,6),1));
-fs.writeFileSync(`${OUT}/p7-2.html`, page(items.slice(6,12),2));
+fs.writeFileSync(`${OUT}/p7-1.html`, page(items.slice(0,4),1));
+fs.writeFileSync(`${OUT}/p7-2.html`, page(items.slice(4,8),2));
 const kit=(arr,off)=>arr.map((it,i)=>`<span class="kitem"><span class="num">${off+i+1})</span> ${it.key} → x = ${it.x}</span>`).join('');
 fs.writeFileSync(`${OUT}/p7-answers.html`, `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>מפתח</title><style>${CSS}</style></head><body>
 <div class="topbar"><div class="brand">מַעְבְּדַת הַמִּסְפָּרִים • דַּף עֲבוֹדָה</div><div class="pill">לַהוֹרֶה</div></div>
 <div class="title"><h1>מַפְתֵּחַ פִּתְרוֹנוֹת</h1><div class="sub">מִשְׁוָאוֹת בְּנֶעֱלָם אֶחָד — רָמָה 4</div></div>
-<div class="kwrap"><div class="krow"><span class="kt">עַמּוּד 1:</span> ${kit(items.slice(0,6),0)}</div><div class="krow"><span class="kt">עַמּוּד 2:</span> ${kit(items.slice(6,12),6)}</div></div>
+<div class="kwrap"><div class="krow"><span class="kt">עַמּוּד 1:</span> ${kit(items.slice(0,4),0)}</div><div class="krow"><span class="kt">עַמּוּד 2:</span> ${kit(items.slice(4,8),4)}</div></div>
 <div class="foot">מַעְבְּדַת הַמִּסְפָּרִים — מַפְתֵּחַ פִּתְרוֹנוֹת</div>
 </body></html>`);
 // אימות: לפתור כל משוואה מהמפתח ולוודא x
