@@ -37,8 +37,8 @@ body { font-family:'DejaVu Sans',Arial,sans-serif; direction:rtl; color:#2b2f42;
 .pill { font-size:12px; color:#3a3f5a; background:#eef0f7; border:1px solid #e2e5f0; padding:3px 12px; border-radius:20px; font-weight:bold; }
 .title h1 { font-size:27px; margin:0 0 2px; color:#21243a; font-weight:800; }
 .title .sub { font-size:13px; color:#8a8fa5; margin-bottom:12px; }
-.cards { flex:1; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:20px; min-height:0; }
-.card { position:relative; border:1px solid #e7e9f1; border-radius:16px; background:#fff; box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; }
+.cards { flex:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-auto-rows:1fr; gap:20px; min-height:0; }
+.card { position:relative; border:1px solid #e7e9f1; border-radius:16px; background:#fff; box-shadow:0 1px 3px rgba(20,20,60,.05); padding:18px 20px; display:flex; flex-direction:column; min-height:0; min-width:0; overflow:hidden; }
 .badge { position:absolute; top:12px; right:14px; width:26px; height:26px; border-radius:50%; background:#eef0f5; color:#9aa0b5; font-size:12px; font-weight:bold; display:flex; align-items:center; justify-content:center; }
 .prompt { text-align:center; font-size:24px; padding:8px 30px 4px; }
 .math { direction:ltr; unicode-bidi:isolate; display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; }
@@ -91,7 +91,7 @@ function keyPage({groups}){
 <div class="foot">מַעְבְּדַת הַמִּסְפָּרִים — מַפְתֵּחַ פִּתְרוֹנוֹת</div>
 </body></html>`;
 }
-const half=(arr,p)=>arr.slice(p*6,p*6+6);
+const half=(arr,p)=>arr.slice(p*4,p*4+4);
 
 /* ---- הפקה ---- */
 const groups=[];
